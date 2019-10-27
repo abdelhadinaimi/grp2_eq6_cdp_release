@@ -1,0 +1,25 @@
+{
+  "name": "cdp_dev",
+  "version": "1.0.0",
+  "description": "Projet CDP 2019",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "start:dev": "nodemon src/app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Version-Project/grp2_eq6_cdp_dev.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Version-Project/grp2_eq6_cdp_dev/issues"
+  },
+  "homepage": "https://github.com/Version-Project/grp2_eq6_cdp_dev#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "mongoose": "^5.7.7"
+  }
+}
