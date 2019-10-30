@@ -13,12 +13,12 @@ module.exports.createUser = async user => {
     await newUser.save();
     return { success: true };
   } catch (error) {
-    const errorMsg = { success: false };
-    if (error instanceof MongoError) {
-      if (error.code === 11000) {
+    const errorMsg = { success: false, errors: [] };
+    if (error instanceof MongoError) { // if the error is a mongoDB error
+      if (error.code === 11000) { // if the error is a duplication error (a unique field inserted twice)
         const errorKeys = Object.keys(error["keyPattern"]);
-        errorKeys.forEach(k => {
-          errorMsg[k] = errorMessages[k].exists;
+        errorKeys.forEach(k => { // push the errors into the object one by one
+          errorMsg.errors.push({[k] : errorMessages[k].exists});
         });
       }
     }

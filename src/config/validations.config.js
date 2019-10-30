@@ -2,17 +2,36 @@ const { body, validationResult } = require("express-validator");
 const errors = require("../constants").errorMessages;
 
 const userValidations = [
-  // username must be an email
-  body('username').isEmail(),
-  // password must be at least 5 chars long
-  body('password').isLength({ min: 5 }),
+  body("email")
+    .isEmail()
+    .withMessage(errors.email.valid),
+  body("username")
+    .isLength({ max: 20 })
+    .withMessage(errors.username.max),
+  body("password")
+    .isLength({ min: 8 })
+    .withMessage(errors.password.min)
+    .isLength({ max: 32 })
+    .withMessage(errors.password.max)
+    .matches(/\d/) // must contain at least one number
+    .withMessage(errors.password.number)
+    .matches(/[a-z]/) // must contain at least one lowercase char
+    .withMessage(errors.password.lower)
+    .matches(/[A-Z]/) // must contain at least one uppercase char
+    .withMessage(errors.password.upper)
 ];
 
-const validate = (res, req, next) => {
+/** 
+ * valides, a middleware to validate the request using the provided validators
+ * if there are errors, returns a list of errors with 442 HTTP Code else it executes
+ * the next middleware.
+*/
+const validate = (req, res, next) => {
   const errors = validationResult(req);
-  console.log(errors);
   if (!errors.isEmpty()) {
-    return res.status(422).json({ errors: errors.array() });
+    const errorMessages = [];
+    errors.array().map(e => errorMessages.push({ [e.param]: e.msg }));
+    return res.status(422).json({ success: false, errors: errorMessages });
   }
   next();
 };
