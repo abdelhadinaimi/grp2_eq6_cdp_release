@@ -1,7 +1,10 @@
 const route = require("express").Router();
-
-route.get("/", (req, res) => {
-  res.send("hello");
-});
-
+const userController = require("../controllers/user.controller");
+const { validate, userValidations } = require("../config/validations.config");
+route.post(
+  "/register",
+  userValidations,
+  validate,
+  userController.postRegisterUser
+);
 module.exports = route;

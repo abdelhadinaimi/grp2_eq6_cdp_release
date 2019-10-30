@@ -14,3 +14,11 @@ module.exports = mongoose.connect(
   `mongodb://${USER}:${PASS}@${URL}:${PORT}`,
   mongooseOptions
 );
+
+// register schemas
+
+const userModel = require("../models/user.model");
+mongoose.model(userModel.name,userModel.schema);
+
+// const projectModel = require("../models/project.model");
+// mongoose.model(projectModel.name,projectModel.schema);
