@@ -1,6 +1,6 @@
 const userRepo = require("../repositories/user.repository");
 
-const postRegisterUser = (req, res) => {
+module.exports.postRegisterUser = (req, res) => {
   // TODO validate fields
   const user = {
     username: req.body.username,
@@ -18,6 +18,26 @@ const postRegisterUser = (req, res) => {
     });
 };
 
-module.exports = {
-  postRegisterUser
+module.exports.postLoginUser = (req, res) => {
+  // TODO validate fields
+  const user = {
+    email: req.body.email,
+    password: req.body.password
+  };
+  userRepo
+    .checkLogin(user)
+    .then(result => {
+      if (!result.success) {
+        return res
+          .status(401)
+          .send(result)
+          .end();
+      }
+      res.cookie("token", result.token, { maxAge: process.env.JWT_EXP * 1000, httpOnly: true });
+      res.send({ success: true, user: result.user }).end();
+    })
+    .catch(error => {
+      console.error(error);
+      res.status(500).send();
+    });
 };

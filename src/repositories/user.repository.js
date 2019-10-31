@@ -14,14 +14,31 @@ module.exports.createUser = async user => {
     return { success: true };
   } catch (error) {
     const errorMsg = { success: false, errors: [] };
-    if (error instanceof MongoError) { // if the error is a mongoDB error
-      if (error.code === 11000) { // if the error is a duplication error (a unique field inserted twice)
+    // if the error is a mongoDB error
+    if (error instanceof MongoError) {
+      // if the error is a duplication error (a unique field inserted twice)
+      if (error.code === 11000) {
         const errorKeys = Object.keys(error["keyPattern"]);
-        errorKeys.forEach(k => { // push the errors into the object one by one
-          errorMsg.errors.push({[k] : errorMessages[k].exists});
+        errorKeys.forEach(k => {
+          // push the errors into the object one by one
+          errorMsg.errors.push({ [k]: errorMessages[k].exists });
         });
       }
     }
     return errorMsg;
   }
+};
+
+module.exports.checkLogin = async user => {
+  const foundUser = await User.findOne({ email: user.email });
+
+  if (!foundUser) {
+    return { success: false, errors: { email: errorMessages.user.not_found } };
+  }
+  if (!foundUser.verifyPassword(user.password)) {
+    return { success: false, errors: { password: errorMessages.password.incorrect } };
+  }
+  const userInfo = { _id: foundUser._id, username: foundUser.username };
+  return { success: true, token: foundUser.generateJwt(), user: userInfo };
+  // call auth.config.authUser(userId)
 };

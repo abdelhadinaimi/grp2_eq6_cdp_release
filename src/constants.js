@@ -1,7 +1,8 @@
 module.exports.errorMessages = {
   username: {
     exists: "nom d'utilisateur exist déja",
-    max: "nom d'utilisateur ne doit pas dépasser 20 char"
+    max: "doit etre au max 20 char",
+    min: "doit etre au moin 4 char"
   },
   email: {
     exists: "email déja utilisé",
@@ -9,6 +10,7 @@ module.exports.errorMessages = {
     max: "email ne doit pas dépasser 256 char"
   },
   password: {
+    incorrect: "mot de passe incorrect",
     min: "doit etre au moin 8 char",
     max: "doit etre au max 32 char",
     number: "doit avoir au moin un chiffre",
