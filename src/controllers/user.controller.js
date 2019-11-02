@@ -2,7 +2,7 @@ const userRepo = require("../repositories/user.repository");
 const global = require('../util/constants').global;
 
 module.exports.getRegisterUser = (req, res) => {
-  res.render('user/register', {
+  res.status(200).render('user/register', {
     appName: global.app.name,
     pageTitle: 'Créer un Compte',
     errors: [],
@@ -11,13 +11,18 @@ module.exports.getRegisterUser = (req, res) => {
 };
 
 module.exports.getLoginUser = (req, res) => {
-  res.render('user/login', {
+  res.status(200).render('user/login', {
     appName: global.app.name,
     pageTitle: 'Connexion',
     errors: [],
     values: undefined,
     toasts: req.flash('toast')
   });
+};
+
+module.exports.getLogoutUser = (req, res) => {
+  req.session.destroy();
+  res.status(204).redirect('/');
 };
 
 module.exports.postRegisterUser = (req, res) => {
@@ -80,8 +85,8 @@ module.exports.postLoginUser = (req, res) => {
         });
       }
 
-      res.cookie("token", result.token, {maxAge: process.env.JWT_EXP * 1000, httpOnly: true});
-      res.send({success: true, user: result.user}).end();
+      req.session.user = result.user;
+      res.redirect('/');
     })
     .catch(error => {
       console.error(error);

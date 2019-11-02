@@ -1,6 +1,8 @@
 const route = require("express").Router();
 
-route.get("/", (req, res) => {
+const isAuth = require('../config/auth.config').isAuth;
+
+route.get("/", isAuth, (req, res) => {
   res.send("all projects");
 });
 

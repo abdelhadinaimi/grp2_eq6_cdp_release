@@ -2,10 +2,6 @@ const route = require("express").Router();
 
 const indexController = require('../controllers/index.controller');
 
-const { verifyJWT } = require("../config/auth.config");
-
-// route.get('/', verifyJWT, indexController.getIndexConnected);
-
-route.get('/', indexController.getIndexNotConnected);
+route.get('/', indexController.getIndex);
 
 module.exports = route;
