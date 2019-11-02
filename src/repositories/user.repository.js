@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const User = mongoose.model("User");
 const MongoError = require("mongodb").MongoError;
-const errorMessages = require("../constants").errorMessages;
+const errorMessages = require("../util/constants").errorMessages;
 
 module.exports.createUser = async user => {
   const newUser = new User();

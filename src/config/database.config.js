@@ -6,6 +6,7 @@ const USER = process.env.MONGO_USER || "root";
 const PASS = process.env.MONGO_PASS || "example";
 
 const mongooseOptions = {
+  useCreateIndex: true,
   useNewUrlParser: true,
   useUnifiedTopology: true
 };

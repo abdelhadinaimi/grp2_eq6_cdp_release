@@ -2,12 +2,17 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
 const dotenv = require("dotenv");
+const flash = require('connect-flash');
+const path = require('path');
+const session = require('express-session');
 
 const connection = require("./config/database.config");
+
 const issuesRoutes = require("./routes/issues.routes");
 const projectRoutes = require("./routes/project.routes");
-const userRoutes = require("./routes/user.routes");
 const indexRoutes = require("./routes/index.routes");
+const userRoutes = require("./routes/user.routes");
+const errorRoutes = require('./routes/error.routes');
 
 try {
   console.log("Loading variables from .env ...");
@@ -20,17 +25,23 @@ try {
 const PORT = process.env.SERVER_PORT || 8080;
 const app = express();
 
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+app.use(express.static(path.join(__dirname, 'public')));
+
 app.use(bodyParser.json());
 app.use(
   bodyParser.urlencoded({
     extended: true
   })
 );
-app.use(cookieParser())
+app.use(cookieParser());
+app.use(session({secret: 'secret session',  resave: false, saveUninitialized: false}));
+app.use(flash());
 
 app.use("/projects/:projectId/issues", issuesRoutes);
 app.use("/projects", projectRoutes);
-app.use("/", indexRoutes, userRoutes);
+app.use(indexRoutes, userRoutes, errorRoutes);
 
 connection
   .then(() => {

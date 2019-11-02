@@ -1,7 +1,11 @@
 const route = require("express").Router();
 
-route.get("/", (req, res) => {
-  res.send("Hello world!");
-});
+const indexController = require('../controllers/index.controller');
+
+const { verifyJWT } = require("../config/auth.config");
+
+// route.get('/', verifyJWT, indexController.getIndexConnected);
+
+route.get('/', indexController.getIndexNotConnected);
 
 module.exports = route;

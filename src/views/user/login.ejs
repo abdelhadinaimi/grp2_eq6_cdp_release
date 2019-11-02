@@ -1,0 +1,45 @@
+<%- include('../partials/head.ejs') %>
+
+<%- include('../partials/nav-not-connected.ejs') %>
+
+<form class="form row" action="/login" method="post">
+    <div class="col s12 m8 offset-m2 l6 offset-l3">
+        <div class="row card-panel white center-align">
+            <div class="form col s12">
+                <div class="row">
+                    <h5>Se Connecter</h5>
+                </div>
+                <div class="row">
+                    <div class="input-field col s12 m6">
+                        <% let index = errors.findIndex(error => error.email) %>
+                        <i class="material-icons prefix">mail</i>
+                        <input id="email" name="email" type="email"
+                               class="validate <%= (index >= 0) ? 'invalid' : (errors.length > 0) ? 'valid' : '' %>"
+                               value="<%= values ? values.email : '' %>">
+                        <label for="email">Email</label>
+                        <span class="helper-text"
+                              data-error="<%= (index >= 0) ? errors[index].email : '' %>"></span>
+                    </div>
+                    <div class="input-field col s12 m6">
+                        <% index = errors.findIndex(error => error.password) %>
+                        <i class="material-icons prefix">lock</i>
+                        <input id="password" name="password" type="password"
+                               class="validate <%= (index >= 0) ? 'invalid' : (errors.length > 0) ? 'valid' : '' %>"
+                               value="<%= values ? values.password : '' %>">
+                        <label for="password">Password</label>
+                        <span class="helper-text"
+                              data-error="<%= (index >= 0) ? errors[index].password : '' %>"></span>
+                    </div>
+                </div>
+                <div class="row right-align">
+                    <a class="btn red darken-3" href="/">Annuler</a>
+                    <button class="btn green darken-1" type="submit">Connexion</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<%- include('../partials/scripts.ejs') %>
+<%- include('../partials/toast.ejs') %>
+<%- include('../partials/foot.ejs') %>

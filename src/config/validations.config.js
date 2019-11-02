@@ -1,14 +1,14 @@
-const { body, validationResult } = require("express-validator");
-const errors = require("../constants").errorMessages;
+const {body, validationResult} = require("express-validator");
+const errors = require("../util/constants").errorMessages;
 
 module.exports.userValidations = [
   body("email")
     .isEmail()
     .withMessage(errors.email.valid),
   body("password")
-    .isLength({ min: 8 })
+    .isLength({min: 8})
     .withMessage(errors.password.min)
-    .isLength({ max: 32 })
+    .isLength({max: 32})
     .withMessage(errors.password.max)
     .matches(/\d/) // must contain at least one number
     .withMessage(errors.password.number)
@@ -17,9 +17,9 @@ module.exports.userValidations = [
     .matches(/[A-Z]/) // must contain at least one uppercase char
     .withMessage(errors.password.upper),
   body("username")
-    .isLength({ min: 4 })
+    .isLength({min: 4})
     .withMessage(errors.username.min)
-    .isLength({ max: 20 })
+    .isLength({max: 20})
     .withMessage(errors.username.max)
 ];
 
@@ -29,11 +29,12 @@ module.exports.userValidations = [
  * the next middleware.
  */
 module.exports.validate = (req, res, next) => {
+  req.validation = {success: true};
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     const errorMessages = [];
-    errors.array().forEach(e => errorMessages.push({ [e.param]: e.msg }));
-    return res.status(422).json({ success: false, errors: errorMessages });
+    errors.array().forEach(e => errorMessages.push({[e.param]: e.msg}));
+    req.validation = {success: false, errors: errorMessages};
   }
   next();
 };

@@ -1,14 +1,14 @@
 const route = require("express").Router();
-const { postRegisterUser, postLoginUser } = require("../controllers/user.controller");
+const userController = require("../controllers/user.controller");
 const { validate, userValidations } = require("../config/validations.config");
-const { verifyJWT } = require("../config/auth.config");
 
-route.post("/register", userValidations, validate, postRegisterUser);
+route.get('/register', userController.getRegisterUser);
 
-// only use the first & secound validations ie the email & password
-route.post("/login", [userValidations[0], userValidations[1]], validate, postLoginUser);
+route.get('/login', userController.getLoginUser);
 
-route.get("/hello", verifyJWT, (req, res) => {
-  res.send(req.user);
-});
+route.post("/register", userValidations, validate, userController.postRegisterUser);
+
+// only use the first & second validations ie the email & password
+route.post("/login", [userValidations[0], userValidations[1]], validate, userController.postLoginUser);
+
 module.exports = route;
