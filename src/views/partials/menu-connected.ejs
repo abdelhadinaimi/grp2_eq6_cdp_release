@@ -1,0 +1,29 @@
+<ul id="dropdown" class="dropdown-content light-blue darken-3">
+    <li><a href="/projects" class="white-text">Mes Projets</a></li>
+    <li><a href="/account" class="white-text">Mon Compte</a></li>
+    <li class="divider"></li>
+    <li><a href="/logout" class="red-text text-lighten-3">Se Déconnecter</a></li>
+</ul>
+
+<ul id="mobile-demo" class="sidenav">
+    <li><a href="/projects">Mes Projets</a></li>
+    <li><a href="/account">Mon Compte</a></li>
+    <li class="divider"></li>
+    <li><a href="/logout">Se Déconnecter</a></li>
+</ul>
+
+<nav>
+    <div class="nav-wrapper light-blue darken-3">
+        <a href="/" class="brand-logo center"><%=appName%></a>
+        <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+        <ul class="right hide-on-med-and-down">
+            <li>
+                <a class="dropdown-trigger" data-target="dropdown">
+                    <i class="material-icons left">account_circle</i>
+                    <%=username%>
+                    <i class="material-icons right">arrow_drop_down</i>
+                </a>
+            </li>
+        </ul>
+    </div>
+</nav>

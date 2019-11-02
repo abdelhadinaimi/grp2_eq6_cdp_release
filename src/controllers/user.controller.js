@@ -85,6 +85,7 @@ module.exports.postLoginUser = (req, res) => {
         });
       }
 
+      req.flash('toast', 'Bienvenue ' + result.user.username + ' !');
       req.session.user = result.user;
       res.redirect('/');
     })

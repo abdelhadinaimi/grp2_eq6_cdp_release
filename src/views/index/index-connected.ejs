@@ -1,14 +1,86 @@
 <%- include('../partials/head.ejs') %>
 
-<div class="row">
-    <div class="col s12 m8 offset-m2 l6 offset-l3">
-        <div class="row card-panel white center-align">
-            <div class="col s12">
-                <h1>Hello <%=username%> !</h1>
-                <a href="/logout">Déconnexion</a>
+<%- include('../partials/menu-connected.ejs') %>
+
+<% if (projects.length > 0) { %>
+    <div class="row">
+        <div class="col s12 m10 offset-m1 l8 offset-l2">
+            <ul class="collapsible popout">
+                <% projects.forEach( project => { %>
+                    <li>
+                        <div class="collapsible-header center-align" style="display: block">
+                            <%=project.title%>
+                        </div>
+                        <div class="collapsible-body">
+                            <div class="row">
+                                <div class="col s12 m9 l10">
+                                    <div class="row">
+                                        <div class="col s12 m6 center-align">
+                                            Début : <%=project.beginDate%>
+                                        </div>
+                                        <div class="col s12 m6 center-align">
+                                            Fin Prévisionnelle : <%=project.endDate%>
+                                        </div>
+                                        <div class="col s12 m6 center-align">
+                                            Contributeur(s) : <%=project.contributorNb%>
+                                        </div>
+                                        <div class="col s8 offset-s2 m4 offset-m1">
+                                            <div class="row">
+                                                <span class="col s10" style="padding: 0">Avancement</span>
+                                                <span class="col s2 right-align"><%=project.completion%>%</span>
+                                                <div class="progress">
+                                                    <div class="determinate" style="width: <%=project.completion%>%"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col s12 m10 offset-m1">
+                                            Description :<br>
+                                            <%=project.description%>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col s12 m3 l2 center-align">
+                                    <div class="row">
+                                        <a href="" class="btn" style="width: 100%">Consulter</a>
+                                    </div>
+                                    <div class="row">
+                                        <a href="" class="btn" style="width: 100%">Modifier</a>
+                                    </div>
+                                    <div class="row">
+                                        <a href="" class="btn" style="width: 100%">Supprimer</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                <% }) %>
+            </ul>
+        </div>
+    </div>
+<% } else { %>
+    <div class="row valign-wrapper" style="margin-top: 10%">
+        <div class="col s12 center-align">
+            <div class="row">
+                <h5>Vous n'êtes contributeur dans aucun des projets...</h5>
+            </div>
+            <div class="row">
+                <h6>Commencez par créer votre tout premier projet !</h6>
+            </div>
+            <div class="row">
+                <a class="btn-flat green-text waves-effect">Créer mon premier projet</a>
             </div>
         </div>
     </div>
-</div>
+<% } %>
+
+<%- include('../partials/scripts.ejs') %>
+<%- include('../partials/toast.ejs') %>
+<%- include('../partials/menu-connected-script.ejs') %>
+
+<script>
+  $(document).ready(() => {
+    $('.collapsible').collapsible();
+  });
+</script>
 
 <%- include('../partials/foot.ejs') %>
