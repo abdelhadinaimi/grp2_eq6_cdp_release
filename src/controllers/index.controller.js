@@ -11,6 +11,22 @@ module.exports.getIndex = (req, res) => {
         beginDate: '30/10/2019',
         endDate: '15/01/2020',
         contributorNb: 3,
+        completion: 100
+      },
+      {
+        title: 'Un Autre Projet',
+        description: 'Ceci est la description de cet autre projet !',
+        beginDate: '25/08/2019',
+        endDate: '25/11/2019',
+        contributorNb: 25,
+        completion: undefined
+      },
+      {
+        title: 'Dernier Projet',
+        description: 'Ceci est la description du dernier projet !',
+        beginDate: '10/10/2019',
+        endDate: undefined,
+        contributorNb: 13,
         completion: 65
       }
     ];
