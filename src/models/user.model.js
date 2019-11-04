@@ -2,24 +2,27 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
-const UserSchema = new mongoose.Schema({
-  username: {
-    type: String,
-    unique: true,
-    maxlength: 20,
-    required: true
+const UserSchema = new mongoose.Schema(
+  {
+    username: {
+      type: String,
+      unique: true,
+      maxlength: 20,
+      required: true
+    },
+    email: {
+      type: String,
+      unique: true,
+      maxlength: 256,
+      required: true
+    },
+    password: {
+      type: String,
+      required: true
+    }
   },
-  email: {
-    type: String,
-    unique: true,
-    maxlength: 256,
-    required: true
-  },
-  password: {
-    type: String,
-    required: true
-  }
-});
+  { timestamps: true }
+);
 
 UserSchema.methods.generateHash = function(password) {
   const salt = bcrypt.genSaltSync(8);
