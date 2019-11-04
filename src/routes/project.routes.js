@@ -8,6 +8,10 @@ route.get("/", isAuth, (req, res) => {
   res.send("all projects");
 });
 
+route.get("/:projectId", projectController.getProject);
+
+
+
 route.post('/add', isAuth, projectController.postAdd);
 
 module.exports = route;
