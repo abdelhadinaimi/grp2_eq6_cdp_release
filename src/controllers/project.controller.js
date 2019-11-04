@@ -1,6 +1,16 @@
 const projectRepo = require('../repositories/project.repository');
 const {global} = require('../util/constants');
 
+module.exports.getProject = (req, res) => {
+  const projectId = req.params.projectId;
+  res.status(200).render('project/project', {
+    appName: global.app.name,
+    pageTitle: projectId,
+    username: req.session.user.username,
+    projectId: projectId
+  });
+};
+
 module.exports.getAdd = (req, res) => {
   res.render('project/add-edit', {
     appName: global.app.name,

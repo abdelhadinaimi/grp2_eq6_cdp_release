@@ -9,6 +9,8 @@ route.get("/", isAuth, (req, res) => {
   res.send("all projects");
 });
 
+route.get("/:projectId", projectController.getProject);
+
 route.get('/add', isAuth, projectController.getAdd);
 
 route.post('/add', isAuth, projectValidations, validate, projectController.postAdd);
