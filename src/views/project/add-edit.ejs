@@ -1,0 +1,96 @@
+<%- include('../partials/head.ejs') %>
+
+<%- include('../partials/menu-connected.ejs') %>
+
+<div class="row" style="margin-top: 20px">
+    <div class="col s12 center-align">
+        <a href="/" class="btn white black-text">Accueil</a>
+    </div>
+</div>
+<div class="row">
+    <div class="col s12 m10 offset-m1 l8 offset-l2">
+        <div class="card-panel">
+            <div class="row">
+                <div class="col s12">
+                    <h5 class="center-align">Créer un Nouveau Projet</h5>
+                </div>
+            </div>
+            <form action="/projects/add" method="post">
+                <div class="row">
+                    <div class="col s12">
+                        <div class="row">
+                            <div class="input-field col s12 m8">
+                                <% let index = errors.findIndex(error => error.title) %>
+                                <i class="material-icons prefix">title</i>
+                                <input id="title" name="title" type="text" data-length="128" required
+                                       class="validate <%= (index >= 0) ? 'invalid' : (errors.length > 0) ? 'valid' : '' %>"
+                                       value="<%= values ? values.title : '' %>">
+                                <label for="title">Titre</label>
+                                <span class="helper-text"
+                                      data-error="<%= (index >= 0) ? errors[index].title : '' %>"></span>
+                            </div>
+                            <div class="input-field col s12 m4">
+                                <% index = errors.findIndex(error => error.dueDate) %>
+                                <i class="material-icons prefix">date_range</i>
+                                <input id="dueDate" name="dueDate" type="text" placeholder="Optionnelle"
+                                       class="datepicker validate <%= (index >= 0) ? 'invalid' : (errors.length > 0) ? 'valid' : '' %>"
+                                       value="<%= values ? values.dueDate : '' %>">
+                                <label for="dueDate">Date de Rendu</label>
+                                <span class="helper-text"
+                                      data-error="<%= (index >= 0) ? errors[index].dueDate : '' %>"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <% index = errors.findIndex(error => error.description) %>
+                                <i class="material-icons prefix">description</i>
+                                <textarea id="description" name="description" placeholder="Optionnelle"
+                                          data-length="3000"
+                                          class="materialize-textarea validate <%= (index >= 0) ? 'invalid' : (errors.length > 0) ? 'valid' : '' %>"
+                                ><%= values ? values.description : '' %></textarea>
+                                <label for="description">Description</label>
+                                <span class="helper-text"
+                                      data-error="<%= (index >= 0) ? errors[index].description : '' %>"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col s12 right-align">
+                        <a href="/" class="waves-effect waves-green btn-flat red-text">Annuler</a>
+                        <button type="submit" class="waves-effect waves-green btn-flat green-text">Ajouter</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/scripts.ejs') %>
+<%- include('../partials/menu-connected-script.ejs') %>
+
+<script>
+  $(document).ready(() => {
+    $('.collapsible').collapsible();
+    $('.datepicker').datepicker({
+      container: 'body',
+      firstDay: 1,
+      format: 'dd/mm/yyyy',
+      showClearBtn: 'true',
+      yearRange: [2019, 2040],
+      i18n: {
+        cancel: 'Annuler',
+        clear: 'Effacer',
+        months: ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'],
+        monthsShort: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Jui', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'],
+        weekdays: ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'],
+        weekdaysShort: ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'],
+        weekdaysAbbrev: ['D', 'L', 'Ma', 'Me', 'J', 'V', 'S']
+      }
+    });
+    $('.modal').modal();
+    $('input#title, textarea#description').characterCounter();
+  });
+</script>
+
+<%- include('../partials/foot.ejs') %>
