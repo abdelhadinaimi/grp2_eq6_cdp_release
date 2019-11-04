@@ -4,7 +4,7 @@ module.exports.global = {
   }
 };
 
-module.exports.errorMessages = {
+module.exports.errorUserMessages = {
   username: {
     exists: "Le nom d'utilisateur existe déjà.",
     max: "Le nom d'utilisateur ne doit pas dépasser 20 char.",
@@ -25,5 +25,18 @@ module.exports.errorMessages = {
   },
   user: {
     not_found: "Cet utilisateur n'existe pas."
+  }
+};
+
+module.exports.errorProjectMessages = {
+  title: {
+    empty: 'Il faut spécifier un titre à ce projet.',
+    max: 'Le titre ne doit pas dépasser 128 char.'
+  },
+  dueDate: {
+    format: 'La date ne respecte pas le format (dd/mm/yyyy).'
+  },
+  description: {
+    max: 'La description ne doit pas dépasser 3000 char.'
   }
 };

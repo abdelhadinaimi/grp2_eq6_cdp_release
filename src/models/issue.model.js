@@ -3,12 +3,12 @@ const Schema = mongoose.Schema;
 
 const User = require("./user.model");
 
-const IssueSchema = new Schema(
+const issueSchema = new Schema(
   {
     userType: { type: String, maxlength: 1000, required: true },
     userGoal: { type: String, maxlength: 1000, required: true },
     userReason: { type: String, maxlength: 1000, required: true },
-    storyId: { type: String, maxlength: 20, unique: true },
+    storyId: { type: String, maxlength: 20, sparse: true },
     priority: { type: String, enum: ["high", "normal", "low"] },
     cost: { type: Number, min: 1 },
     testLink: String,
@@ -17,4 +17,4 @@ const IssueSchema = new Schema(
   { timestamps: true }
 );
 
-module.exports = { name: "Issue", schema: IssueSchema };
+module.exports = { name: "Issue", schema: issueSchema };

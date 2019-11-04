@@ -12,7 +12,7 @@
                             <h5>Mes Projets</h5>
                         </div>
                         <div class="col m4 center-align">
-                            <a class="btn green modal-trigger" href="#addProject">Nouveau Projet</a>
+                            <a class="btn green modal-trigger" href="/projects/add">Nouveau Projet</a>
                         </div>
                     </div>
                     <div class="row valign-wrapper hide-on-med-and-up">
@@ -20,7 +20,7 @@
                             <h5>Mes Projets</h5>
                         </div>
                         <div class="col s3 center-align">
-                            <a class="btn-floating green modal-trigger" href="#addProject"><i class="material-icons">add</i></a>
+                            <a class="btn-floating green modal-trigger" href="/projects/add"><i class="material-icons">add</i></a>
                         </div>
                     </div>
                 </div>
@@ -36,12 +36,12 @@
                             <div class="collapsible-body">
                                 <div class="row center-align hide-on-med-and-up">
                                     <div class="col s4">
-                                        <a href="" class="btn-floating blue">
+                                        <a href="/projects/<%=project.id%>" class="btn-floating blue">
                                             <i class="material-icons">remove_red_eye</i>
                                         </a>
                                     </div>
                                     <div class="col s4">
-                                        <a href="" class="btn-floating white">
+                                        <a href="/projects/<%=project.id%>/edit" class="btn-floating white">
                                             <i class="material-icons black-text">edit</i>
                                         </a>
                                     </div>
@@ -88,17 +88,19 @@
                                                 <% } %>
                                             </div>
                                             <div class="col s12 m10 offset-m1">
-                                                Description :<br>
-                                                <%= project.description %>
+                                                <% if (project.description) { %>
+                                                    Description :<br>
+                                                    <%= project.description %>
+                                                <% } %>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="col s12 m3 l2 center-align hide-on-small-only">
                                         <div class="row">
-                                            <a href="" class="btn blue" style="width: 100%">Consulter</a>
+                                            <a href="/projects/<%=project.id%>" class="btn blue" style="width: 100%">Consulter</a>
                                         </div>
                                         <div class="row">
-                                            <a href="" class="btn white black-text" style="width: 100%">Modifier</a>
+                                            <a href="/projects/<%=project.id%>/edit" class="btn white black-text" style="width: 100%">Modifier</a>
                                         </div>
                                         <div class="row">
                                             <a href="" class="btn red" style="width: 100%">Supprimer</a>
@@ -132,29 +134,10 @@
 <%- include('../partials/scripts.ejs') %>
 <%- include('../partials/toast.ejs') %>
 <%- include('../partials/menu-connected-script.ejs') %>
-<%- include('../project/modal-add.ejs') %>
 
 <script>
-  $(document).ready(() => {
+  $(document).ready(function(){
     $('.collapsible').collapsible();
-    $('.datepicker').datepicker({
-      container: 'body',
-      firstDay: 1,
-      format: 'dd/mm/yyyy',
-      showClearBtn: 'true',
-      yearRange: [2019, 2040],
-      i18n: {
-        cancel: 'Annuler',
-        clear: 'Effacer',
-        months: ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'],
-        monthsShort: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Jui', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'],
-        weekdays: ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'],
-        weekdaysShort: ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'],
-        weekdaysAbbrev: ['D', 'L', 'Ma', 'Me', 'J', 'V', 'S']
-      }
-    });
-    $('.modal').modal();
-    $('input#title, textarea#description').characterCounter();
   });
 </script>
 

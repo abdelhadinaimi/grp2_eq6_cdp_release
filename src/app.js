@@ -3,6 +3,7 @@ const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
 const dotenv = require("dotenv");
 const flash = require('connect-flash');
+const methodOverride = require('method-override');
 const path = require('path');
 const session = require('express-session');
 
@@ -38,6 +39,7 @@ app.use(
 app.use(cookieParser());
 app.use(session({secret: 'secret session',  resave: false, saveUninitialized: false}));
 app.use(flash());
+app.use(methodOverride('_method'));
 
 app.use("/projects/:projectId/issues", issuesRoutes);
 app.use("/projects", projectRoutes);

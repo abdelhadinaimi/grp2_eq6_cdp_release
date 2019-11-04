@@ -1,5 +1,5 @@
 const userRepo = require("../repositories/user.repository");
-const global = require('../util/constants').global;
+const {global} = require('../util/constants');
 
 module.exports.getRegisterUser = (req, res) => {
   res.status(200).render('user/register', {
@@ -44,11 +44,17 @@ module.exports.postRegisterUser = (req, res) => {
   userRepo
     .createUser(user)
     .then(result => {
-      if (result.success) {
-        req.flash('toast', 'Compte créé avec succès !');
-        return res.status(201).redirect('/login');
+      if (!result.success) {
+        return res.status(401).render('user/register', {
+          appName: global.app.name,
+          pageTitle: 'Créer un Compte',
+          errors: result.errors,
+          values: {username: user.username, email: user.email, password: user.password}
+        });
       }
-      res.send(result);
+
+      req.flash('toast', 'Compte créé avec succès !');
+      return res.status(201).redirect('/login');
     })
     .catch(error => {
       console.error(error);
@@ -61,16 +67,6 @@ module.exports.postLoginUser = (req, res) => {
     email: req.body.email,
     password: req.body.password
   };
-
-  if (!req.validation.success) {
-    return res.status(422).render('user/login', {
-      appName: global.app.name,
-      pageTitle: 'Connexion',
-      errors: req.validation.errors,
-      values: {email: user.email, password: user.password},
-      toasts: req.flash('toast')
-    });
-  }
 
   userRepo
     .checkLogin(user)

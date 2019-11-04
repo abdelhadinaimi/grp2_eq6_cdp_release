@@ -10,7 +10,6 @@ route.get('/logout', userController.getLogoutUser);
 
 route.post('/register', userValidations, validate, userController.postRegisterUser);
 
-// only use the first & second validations ie the email & password
-route.post('/login', [userValidations[0], userValidations[1]], validate, userController.postLoginUser);
+route.post('/login', userController.postLoginUser);
 
 module.exports = route;
