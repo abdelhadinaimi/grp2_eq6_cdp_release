@@ -1,18 +1,23 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const cookieParser = require('cookie-parser');
+const cookieParser = require("cookie-parser");
+const csrf = require("csurf");
 const dotenv = require("dotenv");
-const flash = require('connect-flash');
-const path = require('path');
-const session = require('express-session');
-
+const flash = require("connect-flash");
+const methodOverride = require("method-override");
+const path = require("path");
+const session = require("express-session");
+const MongoStore = require("connect-mongo")(session);
+const mongoose = require("mongoose");
 const connection = require("./config/database.config");
+
+const global = require("./util/constants").global;
 
 const issuesRoutes = require("./routes/issues.routes");
 const projectRoutes = require("./routes/project.routes");
 const indexRoutes = require("./routes/index.routes");
 const userRoutes = require("./routes/user.routes");
-const errorRoutes = require('./routes/error.routes');
+const errorRoutes = require("./routes/error.routes");
 
 try {
   console.log("Loading variables from .env ...");
@@ -24,20 +29,34 @@ try {
 
 const PORT = process.env.SERVER_PORT || 8080;
 const app = express();
+const csrfProtection = csrf();
 
-app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'));
-app.use(express.static(path.join(__dirname, 'public')));
+app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "views"));
+app.use(express.static(path.join(__dirname, "public")));
 
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser());
 app.use(
-  bodyParser.urlencoded({
-    extended: true
+  session({
+    secret: "secret session",
+    resave: false,
+    saveUninitialized: false,
+    store: new MongoStore({ mongooseConnection: mongoose.connection })
   })
 );
-app.use(cookieParser());
-app.use(session({secret: 'secret session',  resave: false, saveUninitialized: false}));
+app.use(csrfProtection);
 app.use(flash());
+app.use(methodOverride("_method"));
+
+app.use((req, res, next) => {
+  res.locals.appName = global.app.name;
+  res.locals.csrfToken = req.csrfToken();
+  res.locals.toasts = req.flash("toast");
+  if (req.session.user) res.locals.username = req.session.user.username;
+  next();
+});
 
 app.use("/projects/:projectId/issues", issuesRoutes);
 app.use("/projects", projectRoutes);

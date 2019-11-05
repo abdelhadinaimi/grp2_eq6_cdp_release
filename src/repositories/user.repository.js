@@ -1,7 +1,9 @@
 const mongoose = require("mongoose");
 const User = mongoose.model("User");
 const MongoError = require("mongodb").MongoError;
-const errorMessages = require("../util/constants").errorMessages;
+const crypto = require('crypto');
+
+const errorMessages = require("../util/constants").errorUserMessages;
 
 module.exports.createUser = async user => {
   const newUser = new User();
@@ -41,3 +43,40 @@ module.exports.checkLogin = async user => {
 
   return {success: true, user: foundUser};
 };
+
+module.exports.generateResetPasswordToken = email => new Promise((resolve, reject) => {
+  User
+    .findOne({email: email})
+    .then(user => {
+      if (user) {
+        crypto.randomBytes(32, (err, buffer) => {
+          if (err)
+            reject(err);
+
+          const token = buffer.toString('hex');
+          user.resetToken = token;
+          user.resetTokenExpiration = Date.now() + 3600000;
+          user.save()
+            .then(() => resolve(token))
+            .catch(err => reject(err));
+        });
+      }
+    });
+});
+
+module.exports.resetPassword = (token, password) => new Promise((resolve, reject) => {
+  User
+    .findOne({resetToken: token, resetTokenExpiration: {$gt: Date.now()}})
+    .then(user => {
+      if (!user) {
+        resolve({success: false});
+      } else {
+        user.password = user.generateHash(password);
+        user.resetToken = undefined;
+        user.resetTokenExpiration = undefined;
+        return user.save();
+      }
+    })
+    .then(() => resolve({success: true}))
+    .catch(err => reject(err));
+});
