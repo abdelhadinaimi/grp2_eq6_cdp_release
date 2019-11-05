@@ -18,7 +18,8 @@ module.exports.getAdd = (req, res) => {
     username: req.session.user.username,
     errors: [],
     values: undefined,
-    editing: false
+    editing: false,
+    csrfToken: req.csrfToken()
   });
 };
 
@@ -37,7 +38,8 @@ module.exports.postAdd = (req, res) => {
       username: req.session.user.username,
       errors: req.validation.errors,
       values: {title: project.title, dueDate: project.dueDate, description: project.description},
-      editing: false
+      editing: false,
+      csrfToken: req.csrfToken()
     });
   }
 
@@ -51,7 +53,8 @@ module.exports.postAdd = (req, res) => {
           username: req.session.user.username,
           errors: result.errors,
           values: {title: project.title, dueDate: project.dueDate, description: project.description},
-          editing: false
+          editing: false,
+          csrfToken: req.csrfToken()
         });
       }
 
@@ -74,7 +77,8 @@ module.exports.getEdit = (req, res) => {
         username: req.session.user.username,
         errors: [],
         values: project,
-        editing: true
+        editing: true,
+        csrfToken: req.csrfToken()
       });
     })
     .catch(err => {
@@ -98,7 +102,8 @@ module.exports.putEdit = (req, res) => {
       username: req.session.user.username,
       errors: req.validation.errors,
       values: {id: project.id, title: project.title, dueDate: project.dueDate, description: project.description},
-      editing: true
+      editing: true,
+      csrfToken: req.csrfToken()
     });
   }
 
@@ -112,7 +117,8 @@ module.exports.putEdit = (req, res) => {
           username: req.session.user.username,
           errors: result.errors,
           values: {id: project.id, title: project.title, dueDate: project.dueDate, description: project.description},
-          editing: true
+          editing: true,
+          csrfToken: req.csrfToken()
         });
       }
 

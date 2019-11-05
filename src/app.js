@@ -1,6 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
+const csrf = require('csurf');
 const dotenv = require("dotenv");
 const flash = require('connect-flash');
 const methodOverride = require('method-override');
@@ -25,21 +26,20 @@ try {
 
 const PORT = process.env.SERVER_PORT || 8080;
 const app = express();
+const csrfProtection = csrf();
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(bodyParser.json());
-app.use(
-  bodyParser.urlencoded({
-    extended: true
-  })
-);
+app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
 app.use(session({secret: 'secret session',  resave: false, saveUninitialized: false}));
+app.use(csrfProtection);
 app.use(flash());
 app.use(methodOverride('_method'));
+
 
 app.use("/projects/:projectId/issues", issuesRoutes);
 app.use("/projects", projectRoutes);

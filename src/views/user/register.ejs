@@ -13,7 +13,7 @@
                     <div class="input-field col s12 m6">
                         <% let index = errors.findIndex(error => error.username) %>
                         <i class="material-icons prefix">account_circle</i>
-                        <input id="username" name="username" type="text"
+                        <input id="username" name="username" type="text" required
                                class="validate <%= (index >= 0) ? 'invalid' : (errors.length > 0) ? 'valid' : '' %>"
                                value="<%= values ? values.username : '' %>">
                         <label for="username">Nom d'Utilisateur</label>
@@ -23,7 +23,7 @@
                     <div class="input-field col s12 m6">
                         <% index = errors.findIndex(error => error.email) %>
                         <i class="material-icons prefix">mail</i>
-                        <input id="email" name="email" type="email"
+                        <input id="email" name="email" type="email" required
                                class="validate <%= (index >= 0) ? 'invalid' : (errors.length > 0) ? 'valid' : '' %>"
                                value="<%= values ? values.email : '' %>">
                         <label for="email">Email</label>
@@ -33,7 +33,7 @@
                     <div class="input-field col s12 offset-m3 m6">
                         <% index = errors.findIndex(error => error.password) %>
                         <i class="material-icons prefix">lock</i>
-                        <input id="password" name="password" type="password"
+                        <input id="password" name="password" type="password" required
                                class="validate <%= (index >= 0) ? 'invalid' : (errors.length > 0) ? 'valid' : '' %>"
                                value="<%= values ? values.password : '' %>">
                         <label for="password">Password</label>
@@ -42,6 +42,7 @@
                     </div>
                 </div>
                 <div class="row right-align">
+                    <input type="hidden" name="_csrf" value="<%=csrfToken%>">
                     <a class="btn-flat red-text" href="/">Annuler</a>
                     <button class="btn-flat green-text" type="submit">Valider</button>
                 </div>

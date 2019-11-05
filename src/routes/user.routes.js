@@ -2,14 +2,16 @@ const route = require("express").Router();
 const userController = require("../controllers/user.controller");
 const { validate, userValidations } = require("../config/validations.config");
 
-route.get('/register', userController.getRegisterUser);
+const {isAuth, isNotAuth} = require('../config/auth.config');
 
-route.get('/login', userController.getLoginUser);
+route.get('/register', isNotAuth, userController.getRegisterUser);
 
-route.get('/logout', userController.getLogoutUser);
+route.get('/login', isNotAuth, userController.getLoginUser);
 
-route.post('/register', userValidations, validate, userController.postRegisterUser);
+route.get('/logout', isAuth, userController.getLogoutUser);
 
-route.post('/login', userController.postLoginUser);
+route.post('/register', isNotAuth, userValidations, validate, userController.postRegisterUser);
+
+route.post('/login', isNotAuth, userController.postLoginUser);
 
 module.exports = route;

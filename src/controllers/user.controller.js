@@ -6,7 +6,8 @@ module.exports.getRegisterUser = (req, res) => {
     appName: global.app.name,
     pageTitle: 'Créer un Compte',
     errors: [],
-    values: undefined
+    values: undefined,
+    csrfToken: req.csrfToken()
   });
 };
 
@@ -16,7 +17,8 @@ module.exports.getLoginUser = (req, res) => {
     pageTitle: 'Connexion',
     errors: [],
     values: undefined,
-    toasts: req.flash('toast')
+    toasts: req.flash('toast'),
+    csrfToken: req.csrfToken()
   });
 };
 
@@ -37,7 +39,8 @@ module.exports.postRegisterUser = (req, res) => {
       appName: global.app.name,
       pageTitle: 'Créer un Compte',
       errors: req.validation.errors,
-      values: {username: user.username, email: user.email, password: user.password}
+      values: {username: user.username, email: user.email, password: user.password},
+      csrfToken: req.csrfToken()
     });
   }
 
@@ -49,7 +52,8 @@ module.exports.postRegisterUser = (req, res) => {
           appName: global.app.name,
           pageTitle: 'Créer un Compte',
           errors: result.errors,
-          values: {username: user.username, email: user.email, password: user.password}
+          values: {username: user.username, email: user.email, password: user.password},
+          csrfToken: req.csrfToken()
         });
       }
 
@@ -77,7 +81,8 @@ module.exports.postLoginUser = (req, res) => {
           pageTitle: 'Connexion',
           errors: [result.errors],
           values: {email: user.email, password: user.password},
-          toasts: req.flash('toast')
+          toasts: req.flash('toast'),
+          csrfToken: req.csrfToken()
         });
       }
 

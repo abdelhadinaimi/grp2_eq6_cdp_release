@@ -13,7 +13,7 @@
                     <div class="input-field col s12 m6">
                         <% let index = errors.findIndex(error => error.email) %>
                         <i class="material-icons prefix">mail</i>
-                        <input id="email" name="email" type="email"
+                        <input id="email" name="email" type="email" required
                                class="validate <%= (index >= 0) ? 'invalid' : (errors.length > 0) ? 'valid' : '' %>"
                                value="<%= values ? values.email : '' %>">
                         <label for="email">Email</label>
@@ -23,7 +23,7 @@
                     <div class="input-field col s12 m6">
                         <% index = errors.findIndex(error => error.password) %>
                         <i class="material-icons prefix">lock</i>
-                        <input id="password" name="password" type="password"
+                        <input id="password" name="password" type="password" required
                                class="validate <%= (index >= 0) ? 'invalid' : (errors.length > 0) ? 'valid' : '' %>"
                                value="<%= values ? values.password : '' %>">
                         <label for="password">Password</label>
@@ -32,6 +32,7 @@
                     </div>
                 </div>
                 <div class="row right-align">
+                    <input type="hidden" name="_csrf" value="<%=csrfToken%>">
                     <a class="btn-flat red-text" href="/">Annuler</a>
                     <button class="btn-flat green-text" type="submit">Connexion</button>
                 </div>
