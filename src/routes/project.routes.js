@@ -15,7 +15,7 @@ route.post('/add', isAuth, projectValidations, validate, projectController.postA
 
 route.get('/:projectId/edit', isAuth, projectController.getEdit);
 
-route.get("/:projectId", projectController.getProject);
+route.get("/:projectId", isAuth, projectController.getProject);
 
 route.put('/:projectId', isAuth, projectValidations, validate, projectController.putEdit);
 
