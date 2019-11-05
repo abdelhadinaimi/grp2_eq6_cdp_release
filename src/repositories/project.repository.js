@@ -6,11 +6,11 @@ const dateformat = require('dateformat');
 module.exports.createProject = async project => new Promise((resolve, reject) => {
   const newProject = new Project();
   newProject.title = project.title;
-  if (project.dueDate.length > 0) {
+  if (project.dueDate && project.dueDate.length > 0) {
     const [day, month, year] = project.dueDate.split('/');
     newProject.dueDate = new Date(year, month - 1, day);
   }
-  if (project.description.length > 0) {
+  if (project.description && project.description.length > 0) {
     newProject.description = project.description;
   }
   newProject.projectOwner = project.projectOwner;
@@ -32,13 +32,13 @@ module.exports.updateProject = project => new Promise((resolve, reject) => {
     .findById(project.id)
     .then(projectToUpdate => {
       projectToUpdate.title = project.title;
-      if (project.dueDate.length > 0) {
+      if (project.dueDate && project.dueDate.length > 0) {
         const [day, month, year] = project.dueDate.split('/');
         projectToUpdate.dueDate = new Date(year, month - 1, day);
       } else {
         projectToUpdate.dueDate = undefined;
       }
-      if (project.description.length > 0)
+      if (project.description && project.description.length > 0)
         projectToUpdate.description = project.description;
       else
         projectToUpdate.description = undefined;
