@@ -1,16 +1,16 @@
-const projectRepo = require('../repositories/project.repository');
+const projectRepo = require("../repositories/project.repository");
 
 module.exports.getProject = (req, res) => {
   const projectId = req.params.projectId;
-  res.status(200).render('project/project', {
+  res.status(200).render("project/project", {
     pageTitle: projectId,
     projectId: projectId
   });
 };
 
 module.exports.getAdd = (req, res) => {
-  res.render('project/add-edit', {
-    pageTitle: 'Nouveau Projet',
+  res.render("project/add-edit", {
+    pageTitle: "Nouveau Projet",
     errors: [],
     values: undefined,
     editing: false
@@ -26,10 +26,10 @@ module.exports.postAdd = (req, res) => {
   };
 
   if (!req.validation.success) {
-    return res.status(422).render('project/add-edit', {
-      pageTitle: 'Nouveau Projet',
+    return res.status(422).render("project/add-edit", {
+      pageTitle: "Nouveau Projet",
       errors: req.validation.errors,
-      values: {title: project.title, dueDate: project.dueDate, description: project.description},
+      values: { title: project.title, dueDate: project.dueDate, description: project.description },
       editing: false
     });
   }
@@ -38,20 +38,24 @@ module.exports.postAdd = (req, res) => {
     .createProject(project)
     .then(result => {
       if (!result.success) {
-        return res.status(401).render('project/add-edit', {
-          pageTitle: 'Nouveau Projet',
+        return res.status(401).render("project/add-edit", {
+          pageTitle: "Nouveau Projet",
           errors: result.errors,
-          values: {title: project.title, dueDate: project.dueDate, description: project.description},
+          values: {
+            title: project.title,
+            dueDate: project.dueDate,
+            description: project.description
+          },
           editing: false
         });
       }
 
-      req.flash('toast', 'Projet créé avec succès !');
-      return res.status(201).redirect('/');
+      req.flash("toast", "Projet créé avec succès !");
+      return res.status(201).redirect("/");
     })
     .catch(err => {
       console.log(err);
-      return res.status(500).redirect('/500');
+      return res.status(500).redirect("/500");
     });
 };
 
@@ -59,8 +63,8 @@ module.exports.getEdit = (req, res) => {
   projectRepo
     .getProjectById(req.params.projectId)
     .then(project => {
-      return res.render('project/add-edit', {
-        pageTitle: 'Éditer Projet',
+      return res.render("project/add-edit", {
+        pageTitle: "Éditer Projet",
         errors: [],
         values: project,
         editing: true
@@ -68,8 +72,8 @@ module.exports.getEdit = (req, res) => {
     })
     .catch(err => {
       console.log(err);
-      return res.status(500).redirect('/500');
-    })
+      return res.status(500).redirect("/500");
+    });
 };
 
 module.exports.putEdit = (req, res) => {
@@ -81,10 +85,15 @@ module.exports.putEdit = (req, res) => {
   };
 
   if (!req.validation.success) {
-    return res.status(422).render('project/add-edit', {
-      pageTitle: 'Éditer Projet',
+    return res.status(422).render("project/add-edit", {
+      pageTitle: "Éditer Projet",
       errors: req.validation.errors,
-      values: {id: project.id, title: project.title, dueDate: project.dueDate, description: project.description},
+      values: {
+        id: project.id,
+        title: project.title,
+        dueDate: project.dueDate,
+        description: project.description
+      },
       editing: true
     });
   }
@@ -93,23 +102,41 @@ module.exports.putEdit = (req, res) => {
     .updateProject(project)
     .then(result => {
       if (!result.success) {
-        return res.status(401).render('project/add-edit', {
-          pageTitle: 'Éditer Projet',
+        return res.status(401).render("project/add-edit", {
+          pageTitle: "Éditer Projet",
           errors: result.errors,
-          values: {id: project.id, title: project.title, dueDate: project.dueDate, description: project.description},
+          values: {
+            id: project.id,
+            title: project.title,
+            dueDate: project.dueDate,
+            description: project.description
+          },
           editing: true
         });
       }
 
-      req.flash('toast', 'Projet mis à jour !');
-      return res.status(201).redirect('/projects/' + project.id);
+      req.flash("toast", "Projet mis à jour !");
+      return res.status(201).redirect("/projects/" + project.id);
     })
     .catch(err => {
       console.log(err);
-      return res.status(500).redirect('/500');
+      return res.status(500).redirect("/500");
     });
 };
 
-module.exports.deleteDelete = (req, res) => {
-
+module.exports.deleteProject = (req, res) => {
+  projectRepo
+    .deleteProject(req.params.projectId, req.session.user._id)
+    .then(result => {
+      if (!result.success) {
+        req.flash("toast", result.errors.error);
+        return res.status(401).redirect("/");
+      }
+      req.flash("toast", "Projet supprimé avec succès !");
+      return res.status(200).redirect("/");
+    })
+    .catch(err => {
+      console.log(err);
+      return res.status(500).redirect("/500");
+    });
 };

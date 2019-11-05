@@ -49,20 +49,22 @@ module.exports.updateProject = project => new Promise((resolve, reject) => {
     .catch(err => reject(err))
 });
 
-module.exports.deleteProject = (projectId, userId) => new Promise((resolve, reject) => {
-  Project
-    .findById(projectId)
-    .then(project => {
-      if (project.contributors.find(contributor => contributor._id.toString() === userId.toString()))
-        return project
-          .delete()
-          .then(() => resolve({success: true}))
-          .catch(err => reject(err));
+module.exports.deleteProject = async (projectId, userId) => {
+  const foundProject = await Project.findById(projectId);
 
-      return resolve({success: false, error: 'Not authorized'});
-    })
-    .catch(err => reject(err));
-});
+  if (!foundProject) {
+    return {success: false, errors: {error: "projet non trouve"}};
+  }
+  if(foundProject.projectOwner.toString() !== userId.toString()) {
+    return {success: false, errors: {error:"Vous n'êtes pas authorisé"}};
+  }
+  try{
+    await foundProject.delete();
+  }catch(error){
+    return {success: false, errors: {error:error}};
+  }
+  return {success: true};
+};
 
 module.exports.getProjectById = projectId => new Promise((resolve, reject) => {
   Project
@@ -101,3 +103,4 @@ module.exports.getProjectsByContributorId = contributorId => new Promise((resolv
     })
     .catch(err => reject(err));
 });
+
