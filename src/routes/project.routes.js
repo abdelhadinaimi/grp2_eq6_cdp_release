@@ -19,6 +19,6 @@ route.get("/:projectId", isAuth, projectController.getProject);
 
 route.put('/:projectId', isAuth, projectValidations, validate, projectController.putEdit);
 
-route.delete('/:projectId', isAuth, projectController.deleteDelete);
+route.delete('/:projectId', isAuth, projectController.deleteProject);
 
 module.exports = route;

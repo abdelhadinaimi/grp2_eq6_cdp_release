@@ -3,7 +3,7 @@ const Project = mongoose.model('Project');
 
 const dateformat = require('dateformat');
 
-module.exports.createProject = async project => new Promise((resolve, reject) => {
+module.exports.createProject = project => new Promise((resolve, reject) => {
   const newProject = new Project();
   newProject.title = project.title;
   if (project.dueDate && project.dueDate.length > 0) {
@@ -28,6 +28,9 @@ module.exports.createProject = async project => new Promise((resolve, reject) =>
 });
 
 module.exports.updateProject = (project, userId) => new Promise((resolve, reject) => {
+  if (!mongoose.Types.ObjectId.isValid(project.id) || !mongoose.Types.ObjectId.isValid(userId))
+    return resolve({success: false, error: 'Modification non Autorisée !'});
+
   Project
     .findOne({_id: project.id, projectOwner: userId})
     .then(projectToUpdate => {
@@ -51,22 +54,26 @@ module.exports.updateProject = (project, userId) => new Promise((resolve, reject
     .catch(err => reject(err))
 });
 
-module.exports.deleteProject = (projectId, userId) => new Promise((resolve, reject) => {
-  Project
-    .findById(projectId)
-    .then(project => {
-      if (project.contributors.find(contributor => contributor._id.toString() === userId.toString()))
-        return project
-          .delete()
-          .then(() => resolve({success: true}))
-          .catch(err => reject(err));
+module.exports.deleteProject = (projectId, userId) => new Promise(resolve => {
+  if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(userId))
+    return resolve({success: false, errors: {error: "Suppression non Autorisée !"}});
 
-      return resolve({success: false, error: 'Not authorized'});
+  Project
+    .findOne({_id: projectId, projectOwner: userId})
+    .then(project => {
+      if (!project)
+        return resolve({success: false, errors: {error: "Suppression non Autorisée !"}});
+
+      return project.delete();
     })
-    .catch(err => reject(err));
+    .then(() => resolve({success: true}))
+    .catch(err => resolve({success: false, errors: {error: err}}));
 });
 
 module.exports.getProjectById = (projectId, userId) => new Promise((resolve, reject) => {
+  if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(userId))
+    return resolve(undefined);
+
   Project
     .findOne({_id: projectId, projectOwner: userId}, 'title description dueDate')
     .then(project => {
@@ -105,3 +112,4 @@ module.exports.getProjectsByContributorId = contributorId => new Promise((resolv
     })
     .catch(err => reject(err));
 });
+
