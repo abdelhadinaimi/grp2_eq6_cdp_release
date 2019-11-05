@@ -23,14 +23,16 @@ module.exports.createProject = async project => new Promise((resolve, reject) =>
 
   newProject
     .save()
-    .then(() => resolve({success: true}))
+    .then(() => resolve(true))
     .catch(err => reject(err));
 });
 
-module.exports.updateProject = project => new Promise((resolve, reject) => {
+module.exports.updateProject = (project, userId) => new Promise((resolve, reject) => {
   Project
-    .findById(project.id)
+    .findOne({_id: project.id, projectOwner: userId})
     .then(projectToUpdate => {
+      if (!projectToUpdate) return resolve({success: false, error: 'Modification non Autorisée !'});
+
       projectToUpdate.title = project.title;
       if (project.dueDate && project.dueDate.length > 0) {
         const [day, month, year] = project.dueDate.split('/');
@@ -64,35 +66,37 @@ module.exports.deleteProject = (projectId, userId) => new Promise((resolve, reje
     .catch(err => reject(err));
 });
 
-module.exports.getProjectById = projectId => new Promise((resolve, reject) => {
+module.exports.getProjectById = (projectId, userId) => new Promise((resolve, reject) => {
   Project
-    .findById(projectId, 'title description dueDate')
+    .findOne({_id: projectId, projectOwner: userId}, 'title description dueDate')
     .then(project => {
-      const proj = {id: projectId, title: project.title};
+      if (!project) return resolve(undefined);
 
+      const proj = {id: projectId, title: project.title};
       if (project.description)
         proj.description = project.description;
       if (project.dueDate)
         proj.dueDate = dateformat(project.dueDate, 'dd/mm/yyyy');
-
-      resolve(proj);
+      return resolve(proj);
     })
     .catch(err => reject(err));
 });
 
 module.exports.getProjectsByContributorId = contributorId => new Promise((resolve, reject) => {
   Project
-    .find({'collaborators._id': contributorId}, 'title description createdAt dueDate collaborators')
+    .find({'collaborators._id': contributorId}, 'title description createdAt dueDate collaborators projectOwner')
     .then(projects => {
       projects = projects.map(project => {
         const newProject = {id: project._id, title: project.title};
         newProject.contributorNb = project.collaborators.length;
         newProject.beginDate = dateformat(project.createdAt, 'dd/mm/yyyy');
-
         if (project.description)
           newProject.description = project.description;
         if (project.dueDate)
           newProject.endDate = dateformat(project.dueDate, 'dd/mm/yyyy');
+        if (project.projectOwner.toString() === contributorId.toString()) {
+          newProject.deleteEdit = true;
+        }
 
         return newProject;
       });

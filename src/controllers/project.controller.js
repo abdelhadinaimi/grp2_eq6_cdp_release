@@ -37,13 +37,9 @@ module.exports.postAdd = (req, res) => {
   projectRepo
     .createProject(project)
     .then(result => {
-      if (!result.success) {
-        return res.status(401).render('project/add-edit', {
-          pageTitle: 'Nouveau Projet',
-          errors: result.errors,
-          values: {title: project.title, dueDate: project.dueDate, description: project.description},
-          editing: false
-        });
+      if (!result) {
+        req.flash('toast', 'Projet non créé...');
+        res.status(403).redirect('/');
       }
 
       req.flash('toast', 'Projet créé avec succès !');
@@ -56,15 +52,23 @@ module.exports.postAdd = (req, res) => {
 };
 
 module.exports.getEdit = (req, res) => {
+  const {projectId} = req.params;
+  const userId = req.session.user._id;
+
   projectRepo
-    .getProjectById(req.params.projectId)
+    .getProjectById(projectId, userId)
     .then(project => {
-      return res.render('project/add-edit', {
-        pageTitle: 'Éditer Projet',
-        errors: [],
-        values: project,
-        editing: true
-      });
+      if (project) {
+        return res.render('project/add-edit', {
+          pageTitle: 'Éditer Projet',
+          errors: [],
+          values: project,
+          editing: true
+        });
+      } else {
+        req.flash('toast', 'Accès non Autorisé');
+        return res.status(403).redirect('/');
+      }
     })
     .catch(err => {
       console.log(err);
@@ -90,15 +94,11 @@ module.exports.putEdit = (req, res) => {
   }
 
   projectRepo
-    .updateProject(project)
+    .updateProject(project, req.session.user._id)
     .then(result => {
       if (!result.success) {
-        return res.status(401).render('project/add-edit', {
-          pageTitle: 'Éditer Projet',
-          errors: result.errors,
-          values: {id: project.id, title: project.title, dueDate: project.dueDate, description: project.description},
-          editing: true
-        });
+        req.flash('toast', result.error);
+        return res.status(403).redirect('/');
       }
 
       req.flash('toast', 'Projet mis à jour !');
