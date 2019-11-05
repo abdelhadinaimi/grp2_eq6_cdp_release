@@ -1,25 +1,19 @@
 const projectRepo = require('../repositories/project.repository');
-const {global} = require('../util/constants');
 
 module.exports.getProject = (req, res) => {
   const projectId = req.params.projectId;
   res.status(200).render('project/project', {
-    appName: global.app.name,
     pageTitle: projectId,
-    username: req.session.user.username,
     projectId: projectId
   });
 };
 
 module.exports.getAdd = (req, res) => {
   res.render('project/add-edit', {
-    appName: global.app.name,
     pageTitle: 'Nouveau Projet',
-    username: req.session.user.username,
     errors: [],
     values: undefined,
-    editing: false,
-    csrfToken: req.csrfToken()
+    editing: false
   });
 };
 
@@ -33,13 +27,10 @@ module.exports.postAdd = (req, res) => {
 
   if (!req.validation.success) {
     return res.status(422).render('project/add-edit', {
-      appName: global.app.name,
       pageTitle: 'Nouveau Projet',
-      username: req.session.user.username,
       errors: req.validation.errors,
       values: {title: project.title, dueDate: project.dueDate, description: project.description},
-      editing: false,
-      csrfToken: req.csrfToken()
+      editing: false
     });
   }
 
@@ -48,13 +39,10 @@ module.exports.postAdd = (req, res) => {
     .then(result => {
       if (!result.success) {
         return res.status(401).render('project/add-edit', {
-          appName: global.app.name,
           pageTitle: 'Nouveau Projet',
-          username: req.session.user.username,
           errors: result.errors,
           values: {title: project.title, dueDate: project.dueDate, description: project.description},
-          editing: false,
-          csrfToken: req.csrfToken()
+          editing: false
         });
       }
 
@@ -72,13 +60,10 @@ module.exports.getEdit = (req, res) => {
     .getProjectById(req.params.projectId)
     .then(project => {
       return res.render('project/add-edit', {
-        appName: global.app.name,
         pageTitle: 'Éditer Projet',
-        username: req.session.user.username,
         errors: [],
         values: project,
-        editing: true,
-        csrfToken: req.csrfToken()
+        editing: true
       });
     })
     .catch(err => {
@@ -97,13 +82,10 @@ module.exports.putEdit = (req, res) => {
 
   if (!req.validation.success) {
     return res.status(422).render('project/add-edit', {
-      appName: global.app.name,
       pageTitle: 'Éditer Projet',
-      username: req.session.user.username,
       errors: req.validation.errors,
       values: {id: project.id, title: project.title, dueDate: project.dueDate, description: project.description},
-      editing: true,
-      csrfToken: req.csrfToken()
+      editing: true
     });
   }
 
@@ -112,13 +94,10 @@ module.exports.putEdit = (req, res) => {
     .then(result => {
       if (!result.success) {
         return res.status(401).render('project/add-edit', {
-          appName: global.app.name,
           pageTitle: 'Éditer Projet',
-          username: req.session.user.username,
           errors: result.errors,
           values: {id: project.id, title: project.title, dueDate: project.dueDate, description: project.description},
-          editing: true,
-          csrfToken: req.csrfToken()
+          editing: true
         });
       }
 

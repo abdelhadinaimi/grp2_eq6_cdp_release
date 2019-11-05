@@ -10,6 +10,8 @@ const session = require('express-session');
 
 const connection = require("./config/database.config");
 
+const global = require('./util/constants').global;
+
 const issuesRoutes = require("./routes/issues.routes");
 const projectRoutes = require("./routes/project.routes");
 const indexRoutes = require("./routes/index.routes");
@@ -40,6 +42,14 @@ app.use(csrfProtection);
 app.use(flash());
 app.use(methodOverride('_method'));
 
+app.use((req, res, next) => {
+  res.locals.appName = global.app.name;
+  res.locals.csrfToken = req.csrfToken();
+  res.locals.toasts = req.flash('toast');
+  if (req.session.user)
+    res.locals.username =  req.session.user.username;
+  next();
+});
 
 app.use("/projects/:projectId/issues", issuesRoutes);
 app.use("/projects", projectRoutes);

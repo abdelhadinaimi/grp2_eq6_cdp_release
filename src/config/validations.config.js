@@ -16,6 +16,13 @@ module.exports.userValidations = [
     .withMessage(errorUserMessages.password.lower)
     .matches(/[A-Z]/) // must contain at least one uppercase char
     .withMessage(errorUserMessages.password.upper),
+  body("confirmPassword")
+    .custom((value, {req}) => {
+      if (value !== req.body.password) {
+        throw new Error(errorUserMessages.confirmPassword.same);
+      }
+      return true;
+    }),
   body("username")
     .isLength({min: 4})
     .withMessage(errorUserMessages.username.min)

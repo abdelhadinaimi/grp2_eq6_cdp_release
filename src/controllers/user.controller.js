@@ -1,24 +1,18 @@
 const userRepo = require("../repositories/user.repository");
-const {global} = require('../util/constants');
 
 module.exports.getRegisterUser = (req, res) => {
   res.status(200).render('user/register', {
-    appName: global.app.name,
     pageTitle: 'Créer un Compte',
     errors: [],
-    values: undefined,
-    csrfToken: req.csrfToken()
+    values: undefined
   });
 };
 
 module.exports.getLoginUser = (req, res) => {
   res.status(200).render('user/login', {
-    appName: global.app.name,
     pageTitle: 'Connexion',
     errors: [],
-    values: undefined,
-    toasts: req.flash('toast'),
-    csrfToken: req.csrfToken()
+    values: undefined
   });
 };
 
@@ -31,16 +25,20 @@ module.exports.postRegisterUser = (req, res) => {
   const user = {
     username: req.body.username,
     email: req.body.email,
-    password: req.body.password
+    password: req.body.password,
+    confirmPassword: req.body.confirmPassword
   };
 
   if (!req.validation.success) {
     return res.status(422).render('user/register', {
-      appName: global.app.name,
       pageTitle: 'Créer un Compte',
       errors: req.validation.errors,
-      values: {username: user.username, email: user.email, password: user.password},
-      csrfToken: req.csrfToken()
+      values: {
+        username: user.username,
+        email: user.email,
+        password: user.password,
+        confirmPassword: user.confirmPassword
+      }
     });
   }
 
@@ -49,11 +47,14 @@ module.exports.postRegisterUser = (req, res) => {
     .then(result => {
       if (!result.success) {
         return res.status(401).render('user/register', {
-          appName: global.app.name,
           pageTitle: 'Créer un Compte',
           errors: result.errors,
-          values: {username: user.username, email: user.email, password: user.password},
-          csrfToken: req.csrfToken()
+          values: {
+            username: user.username,
+            email: user.email,
+            password: user.password,
+            confirmPassword: user.confirmPassword
+          }
         });
       }
 
@@ -77,12 +78,9 @@ module.exports.postLoginUser = (req, res) => {
     .then(result => {
       if (!result.success) {
         return res.status(401).render('user/login', {
-          appName: global.app.name,
           pageTitle: 'Connexion',
           errors: [result.errors],
-          values: {email: user.email, password: user.password},
-          toasts: req.flash('toast'),
-          csrfToken: req.csrfToken()
+          values: {email: user.email, password: user.password}
         });
       }
 

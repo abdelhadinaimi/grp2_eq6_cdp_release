@@ -1,5 +1,3 @@
-const global = require('../util/constants').global;
-
 const projectRepo = require('../repositories/project.repository');
 
 module.exports.getIndex = (req, res) => {
@@ -8,11 +6,8 @@ module.exports.getIndex = (req, res) => {
       .getProjectsByContributorId(req.session.user._id)
       .then(projects => {
         res.render('index/index-connected', {
-          appName: global.app.name,
           pageTitle: 'Accueil',
-          username: req.session.user.username,
-          projects: projects,
-          toasts: req.flash('toast')
+          projects: projects
         });
       })
       .catch(err => {
@@ -21,7 +16,6 @@ module.exports.getIndex = (req, res) => {
       });
   } else {
     res.render('index/index-not-connected', {
-      appName: global.app.name,
       pageTitle: 'Accueil'
     });
   }

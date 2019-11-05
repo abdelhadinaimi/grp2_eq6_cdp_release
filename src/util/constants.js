@@ -23,6 +23,9 @@ module.exports.errorUserMessages = {
     upper: "Le mot de passe doit avoir au moins une majuscule.",
     lower: "Le mot de passe doit avoir au moins une minuscule."
   },
+  confirmPassword:  {
+    same: "Vos mots de passe ne correspondent pas."
+  },
   user: {
     not_found: "Cet utilisateur n'existe pas."
   }
