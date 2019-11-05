@@ -65,5 +65,18 @@ module.exports.generateResetPasswordToken = email => new Promise((resolve, rejec
 });
 
 module.exports.resetPassword = (token, password) => new Promise((resolve, reject) => {
-
+  User
+    .findOne({resetToken: token, resetTokenExpiration: {$gt: Date.now()}})
+    .then(user => {
+      if (!user) {
+        resolve({success: false});
+      } else {
+        user.password = user.generateHash(password);
+        user.resetToken = undefined;
+        user.resetTokenExpiration = undefined;
+        return user.save();
+      }
+    })
+    .then(() => resolve({success: true}))
+    .catch(err => reject(err));
 });
