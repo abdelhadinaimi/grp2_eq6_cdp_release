@@ -97,7 +97,7 @@ module.exports.putEdit = (req, res) => {
       pageTitle: 'Éditer Projet',
       username: req.session.user.username,
       errors: req.validation.errors,
-      values: {title: project.title, dueDate: project.dueDate, description: project.description},
+      values: {id: project.id, title: project.title, dueDate: project.dueDate, description: project.description},
       editing: true
     });
   }
@@ -111,13 +111,13 @@ module.exports.putEdit = (req, res) => {
           pageTitle: 'Éditer Projet',
           username: req.session.user.username,
           errors: result.errors,
-          values: {title: project.title, dueDate: project.dueDate, description: project.description},
+          values: {id: project.id, title: project.title, dueDate: project.dueDate, description: project.description},
           editing: true
         });
       }
 
       req.flash('toast', 'Projet mis à jour !');
-      return res.status(201).redirect('/projects/'+project.id);
+      return res.status(201).redirect('/projects/' + project.id);
     })
     .catch(err => {
       console.log(err);
