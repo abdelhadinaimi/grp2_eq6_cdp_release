@@ -10,8 +10,12 @@ route.get('/login', isNotAuth, userController.getLoginUser);
 
 route.get('/logout', isAuth, userController.getLogoutUser);
 
+route.get('/forgot-password', isNotAuth, userController.getForgotPassword);
+
 route.post('/register', isNotAuth, userValidations, validate, userController.postRegisterUser);
 
 route.post('/login', isNotAuth, userController.postLoginUser);
+
+route.post('/forgot-password', isNotAuth, userController.postForgotPassword);
 
 module.exports = route;

@@ -1,6 +1,8 @@
 const mongoose = require("mongoose");
 const User = mongoose.model("User");
 const MongoError = require("mongodb").MongoError;
+const crypto = require('crypto');
+
 const errorMessages = require("../util/constants").errorUserMessages;
 
 module.exports.createUser = async user => {
@@ -41,3 +43,27 @@ module.exports.checkLogin = async user => {
 
   return {success: true, user: foundUser};
 };
+
+module.exports.generateResetPasswordToken = email => new Promise((resolve, reject) => {
+  User
+    .findOne({email: email})
+    .then(user => {
+      if (user) {
+        crypto.randomBytes(32, (err, buffer) => {
+          if (err)
+            reject(err);
+
+          const token = buffer.toString('hex');
+          user.resetToken = token;
+          user.resetTokenExpiration = Date.now() + 3600000;
+          user.save()
+            .then(() => resolve(token))
+            .catch(err => reject(err));
+        });
+      }
+    });
+});
+
+module.exports.resetPassword = (token, password) => new Promise((resolve, reject) => {
+
+});

@@ -1,5 +1,7 @@
 const userRepo = require("../repositories/user.repository");
 
+const {sendMail} = require('../util/mail');
+
 module.exports.getRegisterUser = (req, res) => {
   res.status(200).render('user/register', {
     pageTitle: 'Créer un Compte',
@@ -19,6 +21,13 @@ module.exports.getLoginUser = (req, res) => {
 module.exports.getLogoutUser = (req, res) => {
   req.session.destroy();
   res.status(204).redirect('/');
+};
+
+module.exports.getForgotPassword = (req, res) => {
+  res.render('user/forgot-password', {
+    pageTitle: 'Mot de Passe Oublié',
+    info: req.flash('info')
+  })
 };
 
 module.exports.postRegisterUser = (req, res) => {
@@ -92,4 +101,18 @@ module.exports.postLoginUser = (req, res) => {
       console.error(error);
       res.status(500).redirect('/500');
     });
+};
+
+module.exports.postForgotPassword = (req, res) => {
+  userRepo
+    .generateResetPasswordToken(req.body.email)
+    .then(token => {
+      sendMail(req.body.email, 'Sujet du Message', token);
+    })
+    .catch(err => {
+      console.log(err);
+    });
+
+  req.flash('info', 'Si votre compte existe bien, un mail vous a été envoyé pour réinitialiser votre mot de passe.');
+  res.redirect('/forgot-password');
 };
