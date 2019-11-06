@@ -5,6 +5,8 @@ const dateformat = require('dateformat');
 
 module.exports.createProject = project => new Promise((resolve, reject) => {
   const newProject = new Project();
+  if (project.id)
+    newProject._id = project.id;
   newProject.title = project.title;
   if (project.dueDate && project.dueDate.length > 0) {
     const [day, month, year] = project.dueDate.split('/');
@@ -112,7 +114,6 @@ module.exports.getProjectsByContributorId = contributorId => new Promise((resolv
     })
     .catch(err => reject(err));
 });
-
 
 module.exports.getProjectIssues = (projectId, userId) => new Promise((resolve, reject) => {
   if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(userId))

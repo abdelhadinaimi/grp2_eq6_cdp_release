@@ -1,0 +1,3 @@
+test/unit/
+--recursive
+--timeout 5000

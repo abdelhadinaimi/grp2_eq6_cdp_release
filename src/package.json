@@ -7,7 +7,7 @@
     "start": "node app.js",
     "start:dev": "nodemon app.js",
     "debug": "node --inspect app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha"
   },
   "repository": {
     "type": "git",
@@ -39,5 +39,9 @@
     "nodemailer": "^6.3.1",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^6.2.2"
   }
 }
