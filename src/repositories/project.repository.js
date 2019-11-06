@@ -128,3 +128,14 @@ module.exports.getProjectIssues = (projectId, userId) => new Promise((resolve, r
     })
     .catch(err => reject(err));
 });
+
+module.exports.checkIfProjectOwner = (projectId, userId) => new Promise(resolve => {
+  if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(userId))
+    return resolve(false);
+
+  Project
+    .findOne({_id: projectId, projectOwner: userId})
+    .then(project => {
+      return project ? resolve(true) : resolve(false);
+    });
+});
