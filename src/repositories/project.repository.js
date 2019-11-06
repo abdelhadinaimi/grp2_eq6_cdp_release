@@ -75,7 +75,7 @@ module.exports.getProjectById = (projectId, userId) => new Promise((resolve, rej
     return resolve(undefined);
 
   Project
-    .findOne({_id: projectId, projectOwner: userId}, 'title description dueDate')
+    .findOne({_id: projectId, 'collaborators._id': userId}, 'title description dueDate')
     .then(project => {
       if (!project) return resolve(undefined);
 
@@ -113,3 +113,17 @@ module.exports.getProjectsByContributorId = contributorId => new Promise((resolv
     .catch(err => reject(err));
 });
 
+
+module.exports.getProjectIssues = (projectId, userId) => new Promise((resolve, reject) => {
+  if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(userId))
+    return resolve(undefined);
+
+    Project
+    .findOne({_id: projectId, 'collaborators._id': userId}, 'title issues')
+    .then(project => {
+      if (!project) return resolve(undefined);
+      const proj = {id: projectId, title: project.title, issues: project.issues};
+    return resolve(proj);
+    })
+    .catch(err => reject(err));
+});
