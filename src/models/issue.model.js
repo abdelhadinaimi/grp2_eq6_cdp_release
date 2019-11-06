@@ -18,3 +18,4 @@ const issueSchema = new Schema(
 );
 
 module.exports = { name: "Issue", schema: issueSchema };
+//db.projects.updateOne({"_id" : ObjectId("5dc2f58318e5242291e92d1d")},{$addToSet: {issues: {userType:"acheteur",userGoal:"acheter",userReason:"etre cool",priority:"low",createdBy:ObjectId("5dbfee5ee25c6822df10632d")}}});
