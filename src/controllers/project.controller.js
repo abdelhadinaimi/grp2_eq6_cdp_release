@@ -55,16 +55,7 @@ module.exports.getEdit = (req, res) => {
   const {projectId} = req.params;
   const userId = req.session.user._id;
 
-  projectRepo
-    .checkIfProjectOwner(projectId, userId)
-    .then(result => {
-      if (!result) {
-        req.flash("toast", "Accès non Autorisé");
-        return res.status(403).redirect("/");
-      }
-
-      return projectRepo.getProjectById(projectId, userId);
-    })
+    projectRepo.getProjectById(projectId, userId)
     .then(project => {
       if (project) {
         return res.render("project/add-edit", {
@@ -79,7 +70,7 @@ module.exports.getEdit = (req, res) => {
       }
     })
     .catch(err => {
-      console.log(err);
+      console.error(err);
       return res.status(500).redirect("/500");
     });
 };
