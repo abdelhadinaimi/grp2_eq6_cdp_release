@@ -1,5 +1,5 @@
 const {body, validationResult} = require("express-validator");
-const {errorUserMessages, errorProjectMessages} = require("../util/constants");
+const {errorUserMessages, errorProjectMessages,errorIssueMessages} = require("../util/constants");
 
 module.exports.userValidations = [
   body("email")
@@ -45,6 +45,36 @@ module.exports.projectValidations = [
     .optional({checkFalsy: true})
     .isLength({max: 3000})
     .withMessage(errorProjectMessages.description.max)
+];
+
+module.exports.issueValidations = [
+  body("userType")
+    .not()
+    .isEmpty()
+    .withMessage(errorIssueMessages.userType.empty)
+    .isLength({max:1000})
+    .withMessage(errorIssueMessages.userType.max),
+  body("userGoal")
+    .not()
+    .isEmpty()
+    .withMessage(errorIssueMessages.userGoal.empty)
+    .isLength({max:1000})
+    .withMessage(errorIssueMessages.userGoal.max),
+  body("userReason")
+    .not()
+    .isEmpty()
+    .withMessage(errorIssueMessages.userReason.empty)
+    .isLength({max:1000})
+    .withMessage(errorIssueMessages.userReason.max),
+  body("storyId")
+    .isLength({max:20})
+    .withMessage(errorIssueMessages.storyId.max),
+  body("cost")
+    .not()
+    .isEmpty()
+    .withMessage(errorIssueMessages.cost.empty)
+    .isInt({min:1})
+    .withMessage(errorIssueMessages.cost.min)
 ];
 
 /**

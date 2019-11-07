@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const Project = mongoose.model('Project');
-
+const { errorGeneralMessages } = require('../util/constants');
 const dateformat = require('dateformat');
 
 module.exports.createProject = project => new Promise((resolve, reject) => {
@@ -31,12 +31,12 @@ module.exports.createProject = project => new Promise((resolve, reject) => {
 
 module.exports.updateProject = (project, userId) => new Promise((resolve, reject) => {
   if (!mongoose.Types.ObjectId.isValid(project.id) || !mongoose.Types.ObjectId.isValid(userId))
-    return resolve({success: false, error: 'Modification non Autorisée !'});
+    return resolve({success: false, error: errorGeneralMessages.modificationNotAllowed});
 
   Project
     .findOne({_id: project.id, projectOwner: userId})
     .then(projectToUpdate => {
-      if (!projectToUpdate) return resolve({success: false, error: 'Modification non Autorisée !'});
+      if (!projectToUpdate) return resolve({success: false, error: errorGeneralMessages.modificationNotAllowed});
 
       projectToUpdate.title = project.title;
       if (project.dueDate && project.dueDate.length > 0) {
@@ -58,13 +58,13 @@ module.exports.updateProject = (project, userId) => new Promise((resolve, reject
 
 module.exports.deleteProject = (projectId, userId) => new Promise(resolve => {
   if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(userId))
-    return resolve({success: false, errors: {error: "Suppression non Autorisée !"}});
+    return resolve({success: false, errors: {error: errorGeneralMessages.deleteNotAllowed}});
 
   Project
     .findOne({_id: projectId, projectOwner: userId})
     .then(project => {
       if (!project)
-        return resolve({success: false, errors: {error: "Suppression non Autorisée !"}});
+        return resolve({success: false, errors: {error: errorGeneralMessages.deleteNotAllowed}});
 
       return project.delete();
     })
@@ -115,6 +115,8 @@ module.exports.getProjectsByContributorId = contributorId => new Promise((resolv
     .catch(err => reject(err));
 });
 
+/** ISSUES */
+
 module.exports.getProjectIssues = (projectId, userId) => new Promise((resolve, reject) => {
   if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(userId))
     return resolve(undefined);
@@ -125,6 +127,43 @@ module.exports.getProjectIssues = (projectId, userId) => new Promise((resolve, r
       if (!project) return resolve(undefined);
       const proj = {id: projectId, title: project.title, issues: project.issues};
     return resolve(proj);
+    })
+    .catch(err => reject(err));
+});
+
+module.exports.createIssue = (projectId,issue,userId) => new Promise((resolve, reject) => {
+  return Project.findIfUserIsPoOrPm(projectId,userId)
+  .then(project => {
+    project.issues.push(issue);
+    project.save();
+    return resolve({success: true});
+  })
+});
+
+module.exports.updateIssue = (projectId,issue,userId) => new Promise((resolve, reject) => {
+  const errorMessage = {success: false, error: errorGeneralMessages.modificationNotAllowed};
+  
+  if (!mongoose.Types.ObjectId.isValid(projectId)){
+    return resolve(errorMessage);
+  }
+  
+  const set = {};
+  for(const field in issue){
+    if(field !== '_id'){
+      set[`issues.$.${field}`] = issue[field];
+    }
+  }  
+  return Project.findOneAndUpdate(
+    {
+      _id: projectId,
+      collaborators: { $elemMatch: { _id: userId, userType: { $in: ["po", "pm"] } } },
+      "issues._id": issue._id
+    },
+    { $set: set }
+  )
+    .then(project => {
+      if (!project) return reject(errorMessage);
+      return resolve({ success: true });
     })
     .catch(err => reject(err));
 });
