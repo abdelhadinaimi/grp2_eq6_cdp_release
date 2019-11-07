@@ -39,21 +39,13 @@ module.exports.postIssue = (req, res) => {
       editing: true
     });
   }
-<<<<<<< HEAD
+
   projectRepo.createIssue(req.params.projectId, issue, req.session.user._id)
     .then(result => {
       if (!result.success) {
         req.flash("toast", result.error);
         return res.status(403).redirect("/projects/" + req.params.projectId);
       }
-=======
-  return projectRepo.createIssue(req.params.projectId,issue,req.session.user._id)
-  .then(result => {
-    if (!result.success) {
-      req.flash("toast", result.error);
-      return res.status(403).redirect("/projects/" + req.params.projectId);
-    }
->>>>>>> 23603e6a5c55f106c7837438dc39fac685835ec3
 
       req.flash("toast", "Issue créée avec succès !");
       return res.status(201).redirect("/projects/" + req.params.projectId);
