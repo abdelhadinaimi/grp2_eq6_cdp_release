@@ -57,7 +57,7 @@ module.exports.getEdit = (req, res) => {
 
     projectRepo.getProjectById(projectId, userId)
     .then(project => {
-      if (project) {
+      if (project && project.projectOwner.toString() === userId) {
         return res.render("project/add-edit", {
           pageTitle: "Éditer Projet",
           errors: [],
