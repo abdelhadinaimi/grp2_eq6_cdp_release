@@ -2,9 +2,21 @@ const projectRepo = require('../repositories/project.repository');
 
 module.exports.getProject = (req, res) => {
   const projectId = req.params.projectId;
-  res.status(200).render('project/project', {
-    pageTitle: projectId,
-    projectId: projectId
+  projectRepo.getProjectById(projectId)
+  .then(project => {
+    res.status(200).render('project/project', {
+      pageTitle: project.title,
+      projectId: projectId,
+      title: project.title,
+      description: project.description,
+      owner: project.projectOwner,
+      dueDate: project.dueDate,
+      collaborators: project.collaborators
+    });
+  })
+  .catch(err => {
+    console.log(err);
+    res.status(500).redirect('/500');
   });
 };
 

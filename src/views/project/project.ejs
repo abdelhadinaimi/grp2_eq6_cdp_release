@@ -1,9 +1,75 @@
 <%- include('../partials/head.ejs') %>
 <%- include('../project/project-header.ejs') %>
 
+<ul id="settings-dropdown" class="dropdown-content light-blue darken-3">
+    <li><a href="/projects/<%=projectId%>/edit" class="white-text">Modifier<span class="hide-on-med-and-down"> les
+                informations</span></a></li>
+    <li><a href="/projects/<%=projectId%>/settings" class="white-text">Supprimer<span class="hide-on-med-and-down"> le
+                projet</span></a></li>
+</ul>
+
 <div class="row">
     <div class="col s12">
-        <h1><%=projectId%></h1>
+        <div class="row light-blue darken-1">
+            <div class="col s10">
+                <h1 class="left-align" style="color:white; margin-left: 20px;"><%=projectId%></h1>
+            </div>
+            <div class="col s2">
+                <div class="line">
+                    <ul class="right" style="margin-right: 15px;vertical-align: bottom;">
+                        <li>
+                            <a class='dropdown-trigger btn light-blue darken-3' data-target='settings-dropdown'>
+                                <i class="material-icons left">settings</i>
+                                <span class="hide-on-med-and-down">
+                                    Paramètres du projet
+                                    <i class="material-icons right">arrow_drop_down</i>
+                                </span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="row" style="margin-left: 10px;">
+            <div class="col s12">
+                <h6 style="margin-left: 55px;margin-bottom: 10px;"><b>Date de rendu : </b><%=dueDate%></h6>
+            </div>
+            <div class="col s8">
+                <h4>Description</h4>
+                <blockquote><%=description%></blockquote>
+            </div>
+        </div>
+        <div class="row" style="margin-left: 10px;">
+            <div class="col s10">
+                <h4>Contributeurs</h4>
+                <div class="card-panel">
+                    <table class="highlight">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Added by</th>
+                                <th>Role</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% collaborators.forEach( collaborator => { %>
+                            <tr>
+                                <td>
+                                    <%=collaborator._id%>
+                                </td>
+                                <td>
+                                    <%=collaborator.addedBy%>
+                                </td>
+                                <td>
+                                    <%=collaborator.userType%>
+                                </td>
+                            </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
