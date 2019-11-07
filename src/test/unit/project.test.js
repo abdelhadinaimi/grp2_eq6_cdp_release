@@ -1,7 +1,7 @@
 const expect = require('chai').expect;
 const mongoose = require('mongoose');
 
-const testDatabase = require('../../config/database.test.config');
+const buildConnection = require('../../config/database.config');
 const projectRepo = require('../../repositories/project.repository');
 const Project = mongoose.model('Project');
 const User = mongoose.model('User');
@@ -14,7 +14,7 @@ const fakeProjectId = '5dbccabe7d93dd0015eac666';
 
 describe('UT Project Repository', () => {
   before((done) => {
-    testDatabase
+    buildConnection('unit-test')
       .then(() => {
         return User.create({
           _id: userId,

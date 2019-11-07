@@ -9,7 +9,7 @@ const path = require("path");
 const session = require("express-session");
 const MongoStore = require("connect-mongo")(session);
 const mongoose = require("mongoose");
-const connection = require("./config/database.config");
+const buildConnection = require("./config/database.config");
 
 const global = require("./util/constants").global;
 const isAuth = require("./config/auth.config").isAuth;
@@ -19,6 +19,8 @@ const projectRoutes = require("./routes/project.routes");
 const indexRoutes = require("./routes/index.routes");
 const userRoutes = require("./routes/user.routes");
 const errorRoutes = require("./routes/error.routes");
+
+const DBNAME = process.env.MONGO_NAME || "cdp2019";
 
 try {
   console.log("Loading variables from .env ...");
@@ -63,7 +65,7 @@ app.use("/projects/:projectId/issues", issuesRoutes);
 app.use("/projects", isAuth, projectRoutes);
 app.use(indexRoutes, userRoutes, errorRoutes);
 
-connection
+buildConnection(DBNAME)
   .then(() => {
     app.listen(PORT, () => {
       console.log(`Server running on localhost:${PORT}`);
