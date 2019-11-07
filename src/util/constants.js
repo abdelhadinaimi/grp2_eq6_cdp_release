@@ -1,9 +1,13 @@
 module.exports.global = {
   app: {
-    name: 'Nom de l\'Application'
+    name: "Nom de l'Application"
   }
 };
 
+module.exports.errorGeneralMessages = {
+  modificationNotAllowed: "Modification non Autorisée !",
+  deleteNotAllowed: "Suppression non Autorisée !",
+};
 module.exports.errorUserMessages = {
   username: {
     exists: "Le nom d'utilisateur existe déjà.",
@@ -23,7 +27,7 @@ module.exports.errorUserMessages = {
     upper: "Le mot de passe doit avoir au moins une majuscule.",
     lower: "Le mot de passe doit avoir au moins une minuscule."
   },
-  confirmPassword:  {
+  confirmPassword: {
     same: "Vos mots de passe ne correspondent pas."
   },
   user: {
@@ -33,13 +37,35 @@ module.exports.errorUserMessages = {
 
 module.exports.errorProjectMessages = {
   title: {
-    empty: 'Il faut spécifier un titre à ce projet.',
-    max: 'Le titre ne doit pas dépasser 128 char.'
+    empty: "Il faut spécifier un titre à ce projet.",
+    max: "Le titre ne doit pas dépasser 128 char."
   },
   dueDate: {
-    format: 'La date ne respecte pas le format (dd/mm/yyyy).'
+    format: "La date ne respecte pas le format (dd/mm/yyyy)."
   },
   description: {
-    max: 'La description ne doit pas dépasser 3000 char.'
+    max: "La description ne doit pas dépasser 3000 char."
   }
+};
+
+module.exports.errorIssueMessages = {
+  userType: {
+    empty: "Il faut spécifier un type d'utilisateur.",
+    max: "Le type du user ne doit pas dépasser 1000 char."
+  },
+  userGoal: {
+    empty: "Il faut spécifier un but ",
+    max: "Le but ne doit pas dépasser 1000 char."
+  },
+  userReason: {
+    empty: "Il faut spécifier une raison.",
+    max: "La raison ne doit pas dépasser 1000 char."
+  },
+  storyId: {
+    max: "l'identifiant ne doit pas dépasser 20 char."
+  },
+  cost: {
+    empty: "Il faut spécifier un côut.",
+    min: "Le côut doit être > 1."
+  },
 };

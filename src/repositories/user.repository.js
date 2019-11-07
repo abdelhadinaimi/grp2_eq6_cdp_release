@@ -41,7 +41,7 @@ module.exports.checkLogin = async user => {
     return {success: false, errors: {password: errorMessages.password.incorrect}};
   }
 
-  return {success: true, user: foundUser};
+  return {success: true, user: {_id:foundUser._id, username:foundUser.username}};
 };
 
 module.exports.generateResetPasswordToken = email => new Promise((resolve, reject) => {

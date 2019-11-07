@@ -1,10 +1,12 @@
 const mongoose = require('mongoose');
 const Project = mongoose.model('Project');
-
+const { errorGeneralMessages } = require('../util/constants');
 const dateformat = require('dateformat');
 
-module.exports.createProject = async project => new Promise((resolve, reject) => {
+module.exports.createProject = project => new Promise((resolve, reject) => {
   const newProject = new Project();
+  if (project.id)
+    newProject._id = project.id;
   newProject.title = project.title;
   if (project.dueDate && project.dueDate.length > 0) {
     const [day, month, year] = project.dueDate.split('/');
@@ -23,14 +25,19 @@ module.exports.createProject = async project => new Promise((resolve, reject) =>
 
   newProject
     .save()
-    .then(() => resolve({success: true}))
+    .then(() => resolve(true))
     .catch(err => reject(err));
 });
 
-module.exports.updateProject = project => new Promise((resolve, reject) => {
+module.exports.updateProject = (project, userId) => new Promise((resolve, reject) => {
+  if (!mongoose.Types.ObjectId.isValid(project.id) || !mongoose.Types.ObjectId.isValid(userId))
+    return resolve({success: false, error: errorGeneralMessages.modificationNotAllowed});
+
   Project
-    .findById(project.id)
+    .findOne({_id: project.id, projectOwner: userId})
     .then(projectToUpdate => {
+      if (!projectToUpdate) return resolve({success: false, error: errorGeneralMessages.modificationNotAllowed});
+
       projectToUpdate.title = project.title;
       if (project.dueDate && project.dueDate.length > 0) {
         const [day, month, year] = project.dueDate.split('/');
@@ -49,55 +56,114 @@ module.exports.updateProject = project => new Promise((resolve, reject) => {
     .catch(err => reject(err))
 });
 
-module.exports.deleteProject = (projectId, userId) => new Promise((resolve, reject) => {
-  Project
-    .findById(projectId)
-    .then(project => {
-      if (project.contributors.find(contributor => contributor._id.toString() === userId.toString()))
-        return project
-          .delete()
-          .then(() => resolve({success: true}))
-          .catch(err => reject(err));
+module.exports.deleteProject = (projectId, userId) => new Promise(resolve => {
+  if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(userId))
+    return resolve({success: false, errors: {error: errorGeneralMessages.deleteNotAllowed}});
 
-      return resolve({success: false, error: 'Not authorized'});
+  Project
+    .findOne({_id: projectId, projectOwner: userId})
+    .then(project => {
+      if (!project)
+        return resolve({success: false, errors: {error: errorGeneralMessages.deleteNotAllowed}});
+
+      return project.delete();
     })
-    .catch(err => reject(err));
+    .then(() => resolve({success: true}))
+    .catch(err => resolve({success: false, errors: {error: err}}));
 });
 
-module.exports.getProjectById = projectId => new Promise((resolve, reject) => {
-  Project
-    .findById(projectId, 'title description dueDate')
-    .then(project => {
-      const proj = {id: projectId, title: project.title};
+module.exports.getProjectById = (projectId, userId) => new Promise((resolve, reject) => {
+  if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(userId))
+    return resolve(undefined);
 
+  Project
+    .findOne({_id: projectId, 'collaborators._id': userId}, 'title description dueDate')
+    .then(project => {
+      if (!project) return resolve(undefined);
+
+      const proj = {id: projectId, title: project.title};
       if (project.description)
         proj.description = project.description;
       if (project.dueDate)
         proj.dueDate = dateformat(project.dueDate, 'dd/mm/yyyy');
-
-      resolve(proj);
+      return resolve(proj);
     })
     .catch(err => reject(err));
 });
 
 module.exports.getProjectsByContributorId = contributorId => new Promise((resolve, reject) => {
   Project
-    .find({'collaborators._id': contributorId}, 'title description createdAt dueDate collaborators')
+    .find({'collaborators._id': contributorId}, 'title description createdAt dueDate collaborators projectOwner')
     .then(projects => {
       projects = projects.map(project => {
         const newProject = {id: project._id, title: project.title};
         newProject.contributorNb = project.collaborators.length;
         newProject.beginDate = dateformat(project.createdAt, 'dd/mm/yyyy');
-
         if (project.description)
           newProject.description = project.description;
         if (project.dueDate)
           newProject.endDate = dateformat(project.dueDate, 'dd/mm/yyyy');
+        if (project.projectOwner.toString() === contributorId.toString()) {
+          newProject.deleteEdit = true;
+        }
 
         return newProject;
       });
 
       return resolve(projects);
+    })
+    .catch(err => reject(err));
+});
+
+/** ISSUES */
+
+module.exports.getProjectIssues = (projectId, userId) => new Promise((resolve, reject) => {
+  if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(userId))
+    return resolve(undefined);
+
+    Project
+    .findOne({_id: projectId, 'collaborators._id': userId}, 'title issues')
+    .then(project => {
+      if (!project) return resolve(undefined);
+      const proj = {id: projectId, title: project.title, issues: project.issues};
+    return resolve(proj);
+    })
+    .catch(err => reject(err));
+});
+
+module.exports.createIssue = (projectId,issue,userId) => new Promise((resolve, reject) => {
+  return Project.findIfUserIsPoOrPm(projectId,userId)
+  .then(project => {
+    project.issues.push(issue);
+    project.save();
+    return resolve({success: true});
+  })
+});
+
+module.exports.updateIssue = (projectId,issue,userId) => new Promise((resolve, reject) => {
+  const errorMessage = {success: false, error: errorGeneralMessages.modificationNotAllowed};
+  
+  if (!mongoose.Types.ObjectId.isValid(projectId)){
+    return resolve(errorMessage);
+  }
+  
+  const set = {};
+  for(const field in issue){
+    if(field !== '_id'){
+      set[`issues.$.${field}`] = issue[field];
+    }
+  }  
+  return Project.findOneAndUpdate(
+    {
+      _id: projectId,
+      collaborators: { $elemMatch: { _id: userId, userType: { $in: ["po", "pm"] } } },
+      "issues._id": issue._id
+    },
+    { $set: set }
+  )
+    .then(project => {
+      if (!project) return reject(errorMessage);
+      return resolve({ success: true });
     })
     .catch(err => reject(err));
 });
