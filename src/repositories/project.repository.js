@@ -33,7 +33,7 @@ module.exports.updateProject = (project, userId) => new Promise((resolve, reject
   if (!mongoose.Types.ObjectId.isValid(project.id) || !mongoose.Types.ObjectId.isValid(userId))
     return resolve({success: false, error: errorGeneralMessages.modificationNotAllowed});
 
-  Project
+  return Project
     .findOne({_id: project.id, projectOwner: userId})
     .then(projectToUpdate => {
       if (!projectToUpdate) return resolve({success: false, error: errorGeneralMessages.modificationNotAllowed});
@@ -43,12 +43,12 @@ module.exports.updateProject = (project, userId) => new Promise((resolve, reject
         const [day, month, year] = project.dueDate.split('/');
         projectToUpdate.dueDate = new Date(year, month - 1, day);
       } else {
-        projectToUpdate.dueDate = undefined;
+        projectToUpdate.dueDate = null;
       }
       if (project.description && project.description.length > 0)
         projectToUpdate.description = project.description;
       else
-        projectToUpdate.description = undefined;
+        projectToUpdate.description = null;
 
       return projectToUpdate.save()
     })
@@ -60,7 +60,7 @@ module.exports.deleteProject = (projectId, userId) => new Promise(resolve => {
   if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(userId))
     return resolve({success: false, errors: {error: errorGeneralMessages.deleteNotAllowed}});
 
-  Project
+  return Project
     .findOne({_id: projectId, projectOwner: userId})
     .then(project => {
       if (!project)
@@ -76,7 +76,7 @@ module.exports.getProjectById = (projectId, userId) => new Promise((resolve, rej
   if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(userId))
     return resolve(undefined);
 
-  Project
+  return Project
     .findOne({_id: projectId, 'collaborators._id': userId})
     .populate('collaborators._id')
     .populate('collaborators.addedBy')
@@ -103,7 +103,7 @@ module.exports.getProjectById = (projectId, userId) => new Promise((resolve, rej
 });
 
 module.exports.getProjectsByContributorId = contributorId => new Promise((resolve, reject) => {
-  Project
+  return Project
     .find({'collaborators._id': contributorId}, 'title description createdAt dueDate collaborators projectOwner')
     .then(projects => {
       projects = projects.map(project => {
@@ -132,7 +132,7 @@ module.exports.getProjectIssues = (projectId, userId) => new Promise((resolve, r
   if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(userId))
     return resolve(undefined);
 
-  Project
+  return Project
     .findOne({_id: projectId, 'collaborators._id': userId}, 'title issues')
     .then(project => {
       if (!project) return resolve(undefined);
@@ -146,7 +146,7 @@ module.exports.createIssue = (projectId,issue,userId) => new Promise((resolve, r
   if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(userId))
     return resolve({success: false, error: errorGeneralMessages.notAllowed});
 
-  Project.findIfUserIsPoOrPm(projectId,userId)
+  return Project.findIfUserIsPoOrPm(projectId,userId)
   .then(project => {
     if(!project){
       return resolve({success: false, error: errorGeneralMessages.notAllowed});
@@ -164,7 +164,6 @@ module.exports.updateIssue = (projectId, issue, userId) => new Promise((resolve,
   if (!mongoose.Types.ObjectId.isValid(projectId)) {
     return resolve(errorMessage);
   }
-
   const set = {};
   for (const field in issue) {
     if (field !== '_id') {
