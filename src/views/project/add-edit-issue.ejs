@@ -1,0 +1,137 @@
+<%- include('../partials/head.ejs') %>
+<%- include('../project/project-header.ejs') %>
+
+<div class="row">
+    <div class="col s12 m10 offset-m1 l8 offset-l2">
+        <div class="card-panel">
+            <div class="row">
+                <div class="col s12">
+                    <h5 class="center-align"><%= editing ? 'Modifier l\'Issue' : 'Créer une nouvelle Issue' %></h5>
+                </div>
+            </div>
+            <form action="<%= editing ? '/projects/'+projectId+'?_method=PUT' : '/projects/'+projectId+'/issues/add' %>"
+                method="post">
+                <div class="row">
+                    <div class="col s12">
+                        <div class="row">
+                            <div class="input-field col s4">
+                                <% let index = errors.findIndex(error => error.storyId) %>
+                                <i class="material-icons prefix">fingerprint</i>
+                                <input id="storyId" name="storyId" type="text" data-length="20" placeholder="US#01"
+                                    class="validate <%= (index >= 0) ? 'invalid' : (errors.length > 0) ? 'valid' : '' %>"
+                                    value="<%= values ? values.storyId : '' %>">
+                                <label for="storyId">Identifiant</label>
+                                <span class="helper-text"
+                                    data-error="<%= (index >= 0) ? errors[index].storyId : '' %>"></span>
+                            </div>
+                            <div class="input-field col s4">
+                                <% index = errors.findIndex(error => error.cost) %>
+                                <i class="material-icons prefix">functions</i>
+                                <input id="cost" name="cost" type="number" min="1" value="1"
+                                    class="validate <%= (index >= 0) ? 'invalid' : (errors.length > 0) ? 'valid' : '' %>"
+                                    value="<%= values ? values.cost : '' %>">
+                                <label for="storyId">Coût</label>
+                                <span class="helper-text"
+                                    data-error="<%= (index >= 0) ? errors[index].cost : '' %>"></span>
+                            </div>
+                            <div class="input-field col s4">
+                                <% index = errors.findIndex(error => error.priority) %>
+                                <% let priorityVal = 'low' %>
+                                <i class="material-icons prefix">format_list_numbered</i>
+                                <select id="priority" name="priority" value="<%= values ? values.priority : '' %>">
+                                    <option value="" disabled selected>-</option>
+                                    <option value="high">Élevée</option>
+                                    <option value="medium">Moyenne</option>
+                                    <option value="low">Faible</option>
+                                </select>
+                                <label>Priorité</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col s3 m3 l2">
+                                <div class="center">
+                                    <h5 style="margin-top: 25px;"><b>En tant que</b></h5>
+                                </div>
+                            </div>
+                            <div class="input-field col s9 m9 l10">
+                                <% index = errors.findIndex(error => error.userType) %>
+                                <textarea id="userType" name="userType" data-length="1000" required
+                                    class="materialize-textarea validate <%= (index >= 0) ? 'invalid' : (errors.length > 0) ? 'valid' : '' %>"
+                                    value="<%= values ? values.userType : '' %>"></textarea>
+                                <label for="userType">Type d'utilisateur</label>
+                                <span class="helper-text"
+                                    data-error="<%= (index >= 0) ? errors[index].userType : '' %>"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col s3 m3 l2">
+                                <div class="center">
+                                    <h5 style="margin-top: 25px;"><b>Je souhaite</b></h5>
+                                </div>
+                            </div>
+                            <div class="input-field col s9 m9 l10">
+                                <% index = errors.findIndex(error => error.userGoal) %>
+                                <textarea id="userGoal" name="userGoal" data-length="1000" required
+                                    class="materialize-textarea validate <%= (index >= 0) ? 'invalid' : (errors.length > 0) ? 'valid' : '' %>"
+                                    value="<%= values ? values.userGoal : '' %>"></textarea>
+                                <label for="userGoal">Action effectuée par l'utilisateur</label>
+                                <span class="helper-text"
+                                    data-error="<%= (index >= 0) ? errors[index].userGoal : '' %>"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col s3 m3 l2">
+                                <div class="center">
+                                    <h5 style="margin-top: 25px;"><b>Afin de</b></h5>
+                                </div>
+                            </div>
+                            <div class="input-field col s9 m9 l10">
+                                <% index = errors.findIndex(error => error.userReason) %>
+                                <textarea id="userReason" name="userReason" data-length="1000" required
+                                    class="materialize-textarea validate <%= (index >= 0) ? 'invalid' : (errors.length > 0) ? 'valid' : '' %>"
+                                    value="<%= values ? values.userReason : '' %>"></textarea>
+                                <label for="userReason">Objectif de l'utilisateur</label>
+                                <span class="helper-text"
+                                    data-error="<%= (index >= 0) ? errors[index].userReason : '' %>"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="right input-field col s8">
+                                <% index = errors.findIndex(error => error.testLink) %>
+                                <i class="material-icons prefix">link</i>
+                                <input id="testLink" name="testLink" type="url" data-length="2000"
+                                    placeholder="https://test-url.com" pattern="https://.*"
+                                    class="validate <%= (index >= 0) ? 'invalid' : (errors.length > 0) ? 'valid' : '' %>"
+                                    value="<%= values ? values.testLink : '' %>">
+                                <label for="testLink">Lien vers un fichier test</label>
+                                <span class="helper-text"
+                                    data-error="<%= (index >= 0) ? errors[index].testLink : '' %>"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col s12 right-align">
+                            <input type="hidden" name="_csrf" value="<%=csrfToken%>">
+                            <a href="<%= editing ? /projects/+values._id : '/' %>"
+                                class="waves-effect waves-green btn-flat red-text">Annuler</a>
+                            <button type="submit" class="waves-effect waves-green btn-flat green-text">
+                                <%= editing ? 'Modifier' : 'Ajouter' %>
+                            </button>
+                        </div>
+                    </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/scripts.ejs') %>
+<%- include('../project/project-header-script.ejs') %>
+
+<script>
+    $(document).ready(() => {
+        $('select').formSelect();
+        $('input#storyId, input#testLink, textarea#userType, textarea#userGoal, textarea#userReason').characterCounter();
+    });
+</script>
+
+<%- include('../partials/foot.ejs') %>
