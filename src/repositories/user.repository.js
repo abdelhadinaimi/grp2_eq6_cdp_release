@@ -45,7 +45,7 @@ module.exports.checkLogin = async user => {
 };
 
 module.exports.generateResetPasswordToken = email => new Promise((resolve, reject) => {
-  User
+  return User
     .findOne({email: email})
     .then(user => {
       if (user) {
@@ -65,7 +65,7 @@ module.exports.generateResetPasswordToken = email => new Promise((resolve, rejec
 });
 
 module.exports.resetPassword = (token, password) => new Promise((resolve, reject) => {
-  User
+  return User
     .findOne({resetToken: token, resetTokenExpiration: {$gt: Date.now()}})
     .then(user => {
       if (!user) {

@@ -1,7 +1,7 @@
 const projectRepo = require("../repositories/project.repository");
 
 module.exports.getProjectIssues = (req, res) => {
-  projectRepo
+  return projectRepo
     .getProjectIssues(req.params.projectId, req.session.user._id)
     .then(project => {
       if (project) {
@@ -39,7 +39,7 @@ module.exports.postIssue = (req, res) => {
       editing: true
     });
   }
-  projectRepo.createIssue(req.params.projectId,issue,req.session.user._id)
+  return projectRepo.createIssue(req.params.projectId,issue,req.session.user._id)
   .then(result => {
     if (!result.success) {
       req.flash("toast", result.error);
@@ -73,7 +73,7 @@ module.exports.putEdit = (req, res) => {
       editing: true
     });
   }
-  projectRepo
+  return projectRepo
     .updateIssue(req.params.projectId,issue,req.session.user._id)
     .then(result => {
       if (!result.success) {
