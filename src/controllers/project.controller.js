@@ -135,7 +135,7 @@ module.exports.deleteProject = (req, res) => {
     .then(result => {
       if (!result.success) {
         req.flash("toast", result.errors.error);
-        return res.status(401).redirect("/");
+        return res.status(403).redirect("/");
       }
       req.flash("toast", "Projet supprimé avec succès !");
       return res.status(200).redirect("/");

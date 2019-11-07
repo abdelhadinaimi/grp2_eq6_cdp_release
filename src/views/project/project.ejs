@@ -3,7 +3,7 @@
 
 <ul id="settings-dropdown" class="dropdown-content light-blue darken-3">
     <li>
-        <a href="/projects/<%= project.projectId %>/edit" class="white-text">
+        <a href="/projects/<%= project.id %>/edit" class="white-text">
             Modifier<span class="hide-on-med-and-down"> les informations</span>
         </a>
     </li>
@@ -86,6 +86,7 @@
 </div>
 
 <%- include('../partials/scripts.ejs') %>
+<%- include('../partials/toast.ejs') %>
 <%- include('delete.ejs') %>
 <%- include('../project/project-header-script.ejs') %>
 

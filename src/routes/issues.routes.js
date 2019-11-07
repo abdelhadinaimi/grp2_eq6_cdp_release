@@ -15,6 +15,6 @@ route.post('/add', isAuth, issueValidations, validate, issueController.postIssue
 
 route.put('/:issueId', isAuth, issueValidations, validate, issueController.putEdit);
 
-// route.delete('/:issueId', isAuth, issueController.deleteProject);
+route.delete('/:issueId', isAuth, issueController.deleteIssue);
 
 module.exports = route;

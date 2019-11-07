@@ -142,20 +142,20 @@ module.exports.getProjectIssues = (projectId, userId) => new Promise((resolve, r
     .catch(err => reject(err));
 });
 
-module.exports.createIssue = (projectId,issue,userId) => new Promise((resolve, reject) => {
+module.exports.createIssue = (projectId, issue, userId) => new Promise((resolve, reject) => {
   if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(userId))
     return resolve({success: false, error: errorGeneralMessages.notAllowed});
 
-  return Project.findIfUserIsPoOrPm(projectId,userId)
-  .then(project => {
-    if(!project){
-      return resolve({success: false, error: errorGeneralMessages.notAllowed});
-    }
-    project.issues.push(issue);
-    project.save();
-    return resolve({success: true});
-  })
-  .catch(err => reject(err));
+  return Project.findIfUserIsPoOrPm(projectId, userId)
+    .then(project => {
+      if (!project) {
+        return resolve({success: false, error: errorGeneralMessages.notAllowed});
+      }
+      project.issues.push(issue);
+      project.save();
+      return resolve({success: true});
+    })
+    .catch(err => reject(err));
 });
 
 module.exports.updateIssue = (projectId, issue, userId) => new Promise((resolve, reject) => {
@@ -171,13 +171,30 @@ module.exports.updateIssue = (projectId, issue, userId) => new Promise((resolve,
     }
   }
   return Project.findOneAndUpdate({
-      _id: projectId,
-      collaborators: { $elemMatch: { _id: userId, userType: { $in: ["po", "pm"]}} },
-      "issues._id": issue._id
-    },{ $set: set })
+    _id: projectId,
+    collaborators: {$elemMatch: {_id: userId, userType: {$in: ["po", "pm"]}}},
+    "issues._id": issue._id
+  }, {$set: set})
     .then(project => {
       if (!project) return reject(errorMessage);
       return resolve({success: true});
+    })
+    .catch(err => reject(err));
+});
+
+module.exports.deleteIssue = (projectId, issueId, userId) => new Promise((resolve, reject) => {
+  if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(issueId) || !mongoose.Types.ObjectId.isValid(userId))
+    return resolve({success: false, errors: {error: errorGeneralMessages.deleteNotAllowed}});
+
+  Project
+    .update({_id: projectId, collaborators: {$elemMatch: {_id: userId, userType: ["po", "pm"]}}},
+      {$pullAll: {'issues._id': issueId}}
+    )
+    .then(res => {
+      console.log(res);
+
+      if (!res)
+        return resolve({success: false, errors: {error: errorGeneralMessages.deleteNotAllowed}});
     })
     .catch(err => reject(err));
 });

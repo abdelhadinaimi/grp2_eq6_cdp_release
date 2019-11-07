@@ -89,3 +89,24 @@ module.exports.putEdit = (req, res) => {
       return res.status(500).redirect("/500");
     });
 };
+
+module.exports.deleteIssue = (req, res) => {
+  const {projectId} = req.params;
+  const {issueId} = req.params;
+  const userId = req.session.user._id;
+
+  projectRepo
+    .deleteIssue(projectId, issueId, userId)
+    .then(result => {
+      if (!result.success) {
+        req.flash("toast", result.errors.error);
+        return res.status(403).redirect("/");
+      }
+      req.flash("toast", "Issue supprimée avec succès !");
+      return res.status(200).redirect("/projects/" + projectId + "/issues");
+    })
+    .catch(err => {
+      console.log(err);
+      return res.status(500).redirect('/500');
+    });
+};
