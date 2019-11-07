@@ -38,5 +38,5 @@
 | T_ISS_DLT_RdC | Créer la route **/project/:projectId/issues/:issueId** dans le fichier **/routes/issues.routes.js**, méthode DELETE. Puis créer la fonction *deleteIssue()* dans le contrôleur “*/controllers/project.controller.js*”, appelle la fonction *deleteIssue(projectId,issueId)* du fichier **/repositories/projects.repository.js**,vérifie si cette utilisateur est le PO/CP du projet, si une erreur se passe, affiche l’erreur dans le formulaire. | - | US#17 | 0.5 | Latappy | TODO |
 | TEST_USR | Créer le fichier de Test qui vérifie l'ajout d'un Utilisateur | - | - | 0.5 | Martin-Vigier | TODO |
 | TEST_PRJ | Créer le fichier de Test qui vérifié l'ajout, la modification et la suppression d'un projet. | - | - | 1 | Latappy | DOING |
-| TEST_ISS | Créer le fichier de Test qui vérifié l'ajout, la modification et la suppression d'une issue. | - | - | 1 | Abdelhadi | TODO |
+| TEST_ISS | Créer le fichier de Test qui vérifié l'ajout, la modification et la suppression d'une issue. | - | - | 1 | Abdelhadi | DOING |
 | Total | | | | 24 Abdelhadi: 8 Latappy: 12 Martin-Vigier: 4 | | |

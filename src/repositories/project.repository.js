@@ -137,6 +137,9 @@ module.exports.createIssue = (projectId,issue,userId) => new Promise((resolve, r
     
   Project.findIfUserIsPoOrPm(projectId,userId)
   .then(project => {
+    if(!project){
+      return resolve({success: false, error: errorGeneralMessages.notAllowed});
+    }
     project.issues.push(issue);
     project.save();
     return resolve({success: true});
