@@ -28,12 +28,30 @@ module.exports.postIssue = (req, res) => {
     userGoal: req.body.userGoal,
     userReason: req.body.userReason,
     storyId: req.body.storyId,
-    priority: "low"
+    priority: req.body.priority,
+    testLink: req.body.testLink
+  }
+  if (!req.validation.success) {
+    return res.status(422).render("project/add-edit-issue", {
+      pageTitle: "Éditer Issue",
+      errors: req.validation.errors,
+      values: issue,
+      editing: true
+    });
   }
   projectRepo.createIssue(req.params.projectId,issue,req.session.user._id)
   .then(result => {
-    console.log(result);
-    res.send("OK");
+    if (!result.success) {
+      req.flash("toast", result.error);
+      return res.status(403).redirect("/projects/" + req.params.projectId);
+    }
+
+    req.flash("toast", "Issue créé avec success !");
+    return res.status(201).redirect("/projects/" + req.params.projectId);
+  })
+  .catch(err => {
+    console.log(err);
+    return res.status(500).redirect("/500");
   });
 }
 
@@ -60,7 +78,7 @@ module.exports.putEdit = (req, res) => {
     .then(result => {
       if (!result.success) {
         req.flash("toast", result.error);
-        return res.status(403).redirect("/");
+        return res.status(403).redirect("/projects/" + req.params.projectId);
       }
 
       req.flash("toast", "Issue mise à jour !");

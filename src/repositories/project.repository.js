@@ -142,13 +142,17 @@ module.exports.getProjectIssues = (projectId, userId) => new Promise((resolve, r
     .catch(err => reject(err));
 });
 
-module.exports.createIssue = (projectId, issue, userId) => new Promise((resolve, reject) => {
-  return Project.findIfUserIsPoOrPm(projectId, userId)
-    .then(project => {
-      project.issues.push(issue);
-      project.save();
-      return resolve({success: true});
-    })
+module.exports.createIssue = (projectId,issue,userId) => new Promise((resolve, reject) => {
+  if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(userId))
+    return resolve({success: false, error: errorGeneralMessages.notAllowed});
+
+  Project.findIfUserIsPoOrPm(projectId,userId)
+  .then(project => {
+    project.issues.push(issue);
+    project.save();
+    return resolve({success: true});
+  })
+  .catch(err => reject(err));
 });
 
 module.exports.updateIssue = (projectId, issue, userId) => new Promise((resolve, reject) => {
@@ -164,14 +168,11 @@ module.exports.updateIssue = (projectId, issue, userId) => new Promise((resolve,
       set[`issues.$.${field}`] = issue[field];
     }
   }
-  return Project.findOneAndUpdate(
-    {
+  return Project.findOneAndUpdate({
       _id: projectId,
-      collaborators: {$elemMatch: {_id: userId, userType: {$in: ["po", "pm"]}}},
+      collaborators: { $elemMatch: { _id: userId, userType: { $in: ["po", "pm"]}} },
       "issues._id": issue._id
-    },
-    {$set: set}
-  )
+    },{ $set: set })
     .then(project => {
       if (!project) return reject(errorMessage);
       return resolve({success: true});
