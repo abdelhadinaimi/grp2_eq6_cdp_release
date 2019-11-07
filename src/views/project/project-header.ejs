@@ -4,7 +4,7 @@
     <li class="divider"></li>
     <li><a href="/logout" class="red-text text-lighten-3">Se Déconnecter</a></li>
 </ul>
-    
+
 <ul id="mobile-demo" class="sidenav">
     <li><a href="/projects">Mes Projets</a></li>
     <li><a href="/account">Mon Compte</a></li>
@@ -29,13 +29,13 @@
     </div>
     <div class="nav-content light-blue darken-2">
         <ul class="tabs tabs-transparent">
-            <li class="tab"><a class="active" href="/projects/<%=projectId%>">Accueil</a></li>
-            <li class="tab"><a href="/projects/<%=projectId%>/issues">Issues</a></li>
-            <li class="tab"><a href="/projects/<%=projectId%>/tasks">Tâches</a></li>
-            <li class="tab"><a href="/projects/<%=projectId%>/sprints">Sprints</a></li>
-            <li class="tab"><a href="/projects/<%=projectId%>/releases">Releases</a></li>
-            <li class="tab"><a href="/projects/<%=projectId%>/tests">Tests</a></li>
-            <li class="tab"><a href="/projects/<%=projectId%>/doc">Documentation</a></li>
+            <li class="tab"><a <%=(url === 'pro') ? 'class=active ' : ''%> href="/projects/<%=project.id%>">Accueil</a></li>
+            <li class="tab"><a <%=(url === 'iss') ? 'class=active ' : ''%> href="/projects/<%=project.id%>/issues">Issues</a></li>
+            <li class="tab"><a <%=(url === 'tas') ? 'class=active ' : ''%> href="/projects/<%=project.id%>/tasks">Tâches</a></li>
+            <li class="tab"><a <%=(url === 'spr') ? 'class=active ' : ''%> href="/projects/<%=project.id%>/sprints">Sprints</a></li>
+            <li class="tab"><a <%=(url === 'rel') ? 'class=active ' : ''%> href="/projects/<%=project.id%>/releases">Releases</a></li>
+            <li class="tab"><a <%=(url === 'tes') ? 'class=active ' : ''%> href="/projects/<%=project.id%>/tests">Tests</a></li>
+            <li class="tab"><a <%=(url === 'doc') ? 'class=active ' : ''%> href="/projects/<%=project.id%>/doc">Documentation</a></li>
         </ul>
     </div>
 </nav>

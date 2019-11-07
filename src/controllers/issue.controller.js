@@ -8,7 +8,7 @@ module.exports.getProjectIssues = (req, res) => {
         return res.render("project/issues", {
           pageTitle: "Issues",
           errors: [],
-          projectId: project._id,
+          url: 'iss',
           project
         });
       } else {

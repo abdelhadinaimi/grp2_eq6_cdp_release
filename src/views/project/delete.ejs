@@ -13,10 +13,14 @@
 </div>
 
 <script>
-  const form = document.querySelector(".deleteForm");
-  const buttons = document.querySelectorAll(".deleteButton");
-  buttons.forEach(button => button.addEventListener("click", () => {
-    const projectId = button.getAttribute("_id");
-    form.setAttribute("action", "/projects/" + projectId + "?_method=DELETE");
-  }));
+  $(document).ready(function () {
+    $('.modal').modal();
+
+    const form = document.querySelector(".deleteForm");
+    const buttons = document.querySelectorAll(".deleteButton");
+    buttons.forEach(button => button.addEventListener("click", () => {
+      const projectId = button.getAttribute("_id");
+      form.setAttribute("action", "/projects/" + projectId + "?_method=DELETE");
+    }));
+  });
 </script>

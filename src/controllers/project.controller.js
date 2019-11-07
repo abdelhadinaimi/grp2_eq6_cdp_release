@@ -1,26 +1,26 @@
 const projectRepo = require("../repositories/project.repository");
 
 module.exports.getProject = (req, res) => {
-  const projectId = req.params;
+  const {projectId} = req.params;
   const userId = req.session.user._id;
 
-  projectRepo.getProjectById(projectId)
-  .then(project => {
-    res.status(200).render('project/project', {
-      pageTitle: project.title,
-      projectId: projectId,
-      title: project.title,
-      description: project.description,
-      owner: project.projectOwner,
-      dueDate: project.dueDate,
-      collaborators: project.collaborators,
-      userId: userId
+  projectRepo.getProjectById(projectId, userId)
+    .then(project => {
+      if (project) {
+        return res.status(200).render('project/project', {
+          pageTitle: project.title,
+          project: project,
+          userId: userId,
+          url: 'pro'
+        });
+      }
+
+      return res.status(500).redirect('/500');
+    })
+    .catch(err => {
+      console.log(err);
+      return res.status(500).redirect('/500');
     });
-  })
-  .catch(err => {
-    console.log(err);
-    res.status(500).redirect('/500');
-  });
 };
 
 module.exports.getAdd = (req, res) => {
@@ -44,7 +44,7 @@ module.exports.postAdd = (req, res) => {
     return res.status(422).render("project/add-edit", {
       pageTitle: "Nouveau Projet",
       errors: req.validation.errors,
-      values: { title: project.title, dueDate: project.dueDate, description: project.description },
+      values: {title: project.title, dueDate: project.dueDate, description: project.description},
       editing: false
     });
   }
@@ -70,7 +70,7 @@ module.exports.getEdit = (req, res) => {
   const {projectId} = req.params;
   const userId = req.session.user._id;
 
-    projectRepo.getProjectById(projectId, userId)
+  projectRepo.getProjectById(projectId, userId)
     .then(project => {
       if (project && project.projectOwner.toString() === userId) {
         return res.render("project/add-edit", {
