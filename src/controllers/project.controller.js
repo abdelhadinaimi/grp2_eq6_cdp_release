@@ -1,7 +1,9 @@
 const projectRepo = require("../repositories/project.repository");
 
 module.exports.getProject = (req, res) => {
-  const projectId = req.params.projectId;
+  const projectId = req.params;
+  const userId = req.session.user._id;
+
   projectRepo.getProjectById(projectId)
   .then(project => {
     res.status(200).render('project/project', {
@@ -11,7 +13,8 @@ module.exports.getProject = (req, res) => {
       description: project.description,
       owner: project.projectOwner,
       dueDate: project.dueDate,
-      collaborators: project.collaborators
+      collaborators: project.collaborators,
+      userId: userId
     });
   })
   .catch(err => {

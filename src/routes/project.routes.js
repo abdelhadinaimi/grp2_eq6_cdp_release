@@ -18,7 +18,7 @@ route.get('/:projectId/edit', [
   .isMongoId()
 ], projectController.getEdit);
 
-route.get("/:projectId", projectController.getProject);
+route.get("/:projectId", [param("projectId").exists().isMongoId()], projectController.getProject);
 
 route.put('/:projectId', projectValidations, validate, projectController.putEdit);
 

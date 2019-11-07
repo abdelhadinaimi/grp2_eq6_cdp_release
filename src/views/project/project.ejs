@@ -2,17 +2,25 @@
 <%- include('../project/project-header.ejs') %>
 
 <ul id="settings-dropdown" class="dropdown-content light-blue darken-3">
-    <li><a href="/projects/<%=projectId%>/edit" class="white-text">Modifier<span class="hide-on-med-and-down"> les
-                informations</span></a></li>
-    <li><a href="/projects/<%=projectId%>/settings" class="white-text">Supprimer<span class="hide-on-med-and-down"> le
-                projet</span></a></li>
+    <li>
+        <a href="/projects/<%=projectId%>/edit" class="white-text">
+            Modifier<span class="hide-on-med-and-down"> les informations</span>
+        </a>
+    </li>
+    <% if (userId == owner.toString) { %>
+    <li>
+        <a href="/projects/<%=projectId%>/settings" class="white-text">
+            Supprimer<span class="hide-on-med-and-down"> le projet</span>
+        </a>
+    </li>
+    <% } %>
 </ul>
 
 <div class="row">
     <div class="col s12">
         <div class="row light-blue darken-1">
             <div class="col s10">
-                <h1 class="left-align" style="color:white; margin-left: 20px;"><%=projectId%></h1>
+                <h1 class="left-align" style="color:white; margin-left: 20px;"><%=title%></h1>
             </div>
             <div class="col s2">
                 <div class="line">
