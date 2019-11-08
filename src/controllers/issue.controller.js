@@ -30,7 +30,8 @@ module.exports.postIssue = (req, res) => {
     storyId: req.body.storyId,
     priority: req.body.priority,
     testLink: req.body.testLink
-  }
+  };
+
   if (!req.validation.success) {
     return res.status(422).render("project/add-edit-issue", {
       pageTitle: "Éditer Issue",
@@ -40,7 +41,7 @@ module.exports.postIssue = (req, res) => {
     });
   }
 
-  projectRepo.createIssue(req.params.projectId, issue, req.session.user._id)
+  return projectRepo.createIssue(req.params.projectId, issue, req.session.user._id)
     .then(result => {
       if (!result.success) {
         req.flash("toast", result.error);
@@ -48,13 +49,13 @@ module.exports.postIssue = (req, res) => {
       }
 
       req.flash("toast", "Issue créée avec succès !");
-      return res.status(201).redirect("/projects/" + req.params.projectId);
+      return res.status(201).redirect("/projects/" + req.params.projectId + "/issues");
     })
     .catch(err => {
       console.log(err);
       return res.status(500).redirect("/500");
     });
-}
+};
 
 module.exports.getAdd = (req, res) => {
   projectRepo
@@ -74,40 +75,6 @@ module.exports.getAdd = (req, res) => {
         req.flash("toast", "Accès non-autorisé");
         return res.status(403).redirect("/");
       }
-    })
-    .catch(err => {
-      console.log(err);
-      return res.status(500).redirect("/500");
-    });
-};
-
-module.exports.postAdd = (req, res) => {
-  const issue = {
-    _id: req.body.title,
-    description: req.body.description,
-    dueDate: req.body.dueDate,
-    projectOwner: req.session.user
-  };
-
-  if (!req.validation.success) {
-    return res.status(422).render("project/add-edit", {
-      pageTitle: "Nouveau Projet",
-      errors: req.validation.errors,
-      values: { title: project.title, dueDate: project.dueDate, description: project.description },
-      editing: false
-    });
-  }
-
-  projectRepo
-    .createProject(project)
-    .then(result => {
-      if (!result) {
-        req.flash("toast", "Projet non créé...");
-        res.status(403).redirect('/');
-      }
-
-      req.flash("toast", "Projet créé avec succès !");
-      return res.status(201).redirect("/");
     })
     .catch(err => {
       console.log(err);
