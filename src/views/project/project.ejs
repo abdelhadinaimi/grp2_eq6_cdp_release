@@ -1,0 +1,93 @@
+<%- include('../partials/head.ejs') %>
+<%- include('../project/project-header.ejs') %>
+
+<ul id="settings-dropdown" class="dropdown-content light-blue darken-3">
+    <li>
+        <a href="/projects/<%= project.id %>/edit" class="white-text">
+            Modifier<span class="hide-on-med-and-down"> les informations</span>
+        </a>
+    </li>
+    <% if (userId.toString() == project.projectOwner.toString()) { %>
+        <li>
+            <a href="#deleteProject" class="white-text modal-trigger deleteButton" _id="<%= project.id %>">
+                Supprimer<span class="hide-on-med-and-down"> le projet</span>
+            </a>
+        </li>
+    <% } %>
+</ul>
+
+<div class="row">
+    <div class="col s12">
+        <div class="row light-blue darken-1 valign-wrapper">
+            <div class="col s12 m7 offset-m1 l8 offset-l1">
+                <h1 class="left-align white-text" style="margin: 15px 0"><%= project.title %></h1>
+            </div>
+            <div class="col s12 m4 l3">
+                <ul class="center-align">
+                    <li>
+                        <a class='dropdown-trigger btn light-blue darken-3' data-target='settings-dropdown'>
+                            <i class="material-icons left">settings</i>
+                            <span class="hide-on-med-and-down">
+                                    Paramètres du projet
+                                    <i class="material-icons right">arrow_drop_down</i>
+                            </span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col s6 center-align">
+                <h6><b>Début du Projet : </b><%= project.createdAt %></h6>
+            </div>
+            <div class="col s6 center-align">
+                <h6><b>Date de rendu : </b><%= project.dueDate %></h6>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col s12 m1O offset-m1">
+                <h4>Description</h4>
+                <blockquote><%= project.description %></blockquote>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col s12 m10 offset-m1">
+                <h4>Contributeurs</h4>
+                <div class="card-panel">
+                    <table class="highlight">
+                        <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Added by</th>
+                            <th>Role</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <% project.collaborators.forEach( collaborator => { %>
+                            <tr>
+                                <td>
+                                    <%= collaborator._id.username %>
+                                </td>
+                                <td>
+                                    <%= collaborator.addedBy.username %>
+                                </td>
+                                <td>
+                                    <%= (collaborator.userType === 'po') ? 'Project Owner' :
+                                            (collaborator.userType === 'pm') ? 'Project Manager' : 'Developer' %>
+                                </td>
+                            </tr>
+                        <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/scripts.ejs') %>
+<%- include('../partials/toast.ejs') %>
+<%- include('delete-project.ejs') %>
+<%- include('../project/project-header-script.ejs') %>
+
+<%- include('../partials/foot.ejs') %>

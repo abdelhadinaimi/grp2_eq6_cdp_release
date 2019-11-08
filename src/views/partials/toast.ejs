@@ -1,0 +1,9 @@
+<% if (toasts.length > 0) { %>
+    <script>
+      $(document).ready(() => {
+          <% toasts.forEach(toast => { %>
+        M.toast({html: '<%=toast%>', displayLength: 5000, classes: 'rounded'});
+          <% }) %>
+      });
+    </script>
+<% } %>

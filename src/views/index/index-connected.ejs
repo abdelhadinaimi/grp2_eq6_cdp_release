@@ -1,0 +1,155 @@
+<%- include('../partials/head.ejs') %>
+
+<%- include('../partials/menu-connected.ejs') %>
+
+<% if (projects.length > 0) { %>
+    <div class="row">
+        <div class="col s12">
+            <div class="row" style="margin: 10px 0 0 0">
+                <div class="col s12 m10 offset-m1 l8 offset-l2">
+                    <div class="row valign-wrapper hide-on-small-only">
+                        <div class="col m4 offset-m4 center-align">
+                            <h5>Mes Projets</h5>
+                        </div>
+                        <div class="col m4 center-align">
+                            <a class="btn green modal-trigger" href="/projects/add">Nouveau Projet</a>
+                        </div>
+                    </div>
+                    <div class="row valign-wrapper hide-on-med-and-up">
+                        <div class="col s6 offset-s3 center-align">
+                            <h5>Mes Projets</h5>
+                        </div>
+                        <div class="col s3 center-align">
+                            <a class="btn-floating green modal-trigger" href="/projects/add"><i class="material-icons">add</i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s12 m10 offset-m1 l8 offset-l2">
+                    <ul class="collapsible popout">
+                        <% projects.forEach( project => { %>
+                            <li>
+                                <div class="collapsible-header center-align" style="display: block">
+                                    <%= project.title %>
+                                </div>
+                                <div class="collapsible-body">
+                                    <div class="row center-align hide-on-med-and-up">
+                                        <div class="col s4">
+                                            <a href="/projects/<%= project.id %>" class="btn-floating blue">
+                                                <i class="material-icons">remove_red_eye</i>
+                                            </a>
+                                        </div>
+                                        <% if (project.deleteEdit) { %>
+                                            <div class="col s4">
+                                                <a href="/projects/<%= project.id %>/edit" class="btn-floating white">
+                                                    <i class="material-icons black-text">edit</i>
+                                                </a>
+                                            </div>
+                                            <div class="col s4">
+                                                <a href="#deleteProject" _id="<%= project.id %>"
+                                                   class="btn-floating red modal-trigger deleteButton">
+                                                    <i class="material-icons">delete</i>
+                                                </a>
+                                            </div>
+                                        <% } %>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col s12 m9 l10">
+                                            <div class="row">
+                                                <div class="row">
+                                                    <div class="col s12 m6 center-align">
+                                                        Début : <%= project.beginDate %>
+                                                    </div>
+                                                    <div class="col s12 m6 center-align">
+                                                        <% if (project.endDate) { %>
+                                                            Date de Rendu : <%= project.endDate %>
+                                                        <% } else { %>
+                                                            Aucune Date de Rendu
+                                                        <% } %>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col s12 m6 center-align">
+                                                        Contributeur(s) : <%= project.contributorNb %>
+                                                    </div>
+                                                    <% if (project.completion) { %>
+                                                        <div class="col s8 offset-s2 m4 offset-m1">
+                                                            <div class="row">
+                                                                <span class="col s10"
+                                                                      style="padding: 0">Avancement</span>
+                                                                <span class="col s2 right-align"><%= project.completion %>%</span>
+                                                                <div class="progress">
+                                                                    <div class="determinate green"
+                                                                         style="width: <%= project.completion %>%"></div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    <% } else { %>
+                                                        <div class="col s12 m6 center-align">
+                                                            Projet non Commencé
+                                                        </div>
+                                                    <% } %>
+                                                </div>
+                                                <div class="col s12 m10 offset-m1">
+                                                    <% if (project.description) { %>
+                                                        Description :<br>
+                                                        <%= project.description %>
+                                                    <% } %>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col s12 m3 l2 center-align hide-on-small-only">
+                                            <div class="row">
+                                                <a href="/projects/<%= project.id %>" class="btn blue"
+                                                   style="width: 100%">Consulter</a>
+                                            </div>
+                                            <% if (project.deleteEdit) { %>
+                                                <div class="row">
+                                                    <a href="/projects/<%= project.id %>/edit"
+                                                       class="btn white black-text"
+                                                       style="width: 100%">Modifier</a>
+                                                </div>
+                                                <div class="row">
+                                                    <a href="#deleteProject" class="btn red modal-trigger deleteButton"
+                                                       _id="<%= project.id %>" style="width: 100%">Supprimer</a>
+                                                </div>
+                                            <% } %>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        <% }) %>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+<% } else { %>
+    <div class="row valign-wrapper" style="margin-top: 10%">
+        <div class="col s12 center-align">
+            <div class="row">
+                <h5>Vous n'êtes contributeur dans aucun des projets...</h5>
+            </div>
+            <div class="row">
+                <h6>Commencez par créer votre tout premier projet !</h6>
+            </div>
+            <div class="row">
+                <a href="/projects/add" class="btn-flat green-text waves-effect">Créer mon premier projet</a>
+            </div>
+        </div>
+    </div>
+<% } %>
+
+<%- include('../partials/scripts.ejs') %>
+<%- include('../partials/toast.ejs') %>
+<%- include('../partials/menu-connected-script.ejs') %>
+<%- include('../project/delete-project.ejs') %>
+
+<script>
+  $(document).ready(function () {
+    $('.collapsible').collapsible();
+  });
+</script>
+
+<%- include('../partials/foot.ejs') %>
