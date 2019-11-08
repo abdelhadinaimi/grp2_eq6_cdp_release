@@ -153,8 +153,9 @@ module.exports.createIssue = (projectId, issue, userId) => new Promise((resolve,
       }
 
       project.issues.push(issue);
-      project.save();
-      return resolve({success: true});
+      return project.save()
+      .then(() => resolve({success: true}))
+      .catch(()=> resolve({success: false, error:"Erreur interne"}));
     })
     .catch(err => reject(err));
 });

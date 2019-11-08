@@ -20,7 +20,7 @@ const indexRoutes = require("./routes/index.routes");
 const userRoutes = require("./routes/user.routes");
 const errorRoutes = require("./routes/error.routes");
 
-const DBNAME = process.env.MONGO_NAME || "cdp2019";
+const DBNAME = process.env.MONGO_NAME || "cdp";
 
 try {
   console.log("Loading variables from .env ...");

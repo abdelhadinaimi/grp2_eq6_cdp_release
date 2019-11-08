@@ -1,6 +1,9 @@
 module.exports.global = {
   app: {
     name: "Nom de l'Application"
+  },
+  viewRoutes: {
+    addEditIssue: "project/add-edit-issue",
   }
 };
 
