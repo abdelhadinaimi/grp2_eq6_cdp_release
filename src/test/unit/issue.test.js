@@ -1,6 +1,5 @@
 const expect = require('chai').expect;
 const mongoose = require('mongoose');
-const dateformat = require('dateformat');
 
 const buildConnection = require('../../config/database.config');
 const projectRepo = require('../../repositories/project.repository');
@@ -11,6 +10,7 @@ const fakeUserId1 = '5dbccabe7d93dd0015eac666';
 const fakeUserId2 = '5dbccabe7d93dd0015eac667';
 const fakeProjectId = '5dbccabe7d93dd0015eac668';
 const fakeIssueId = '5dbccabe7d93dd0015eac669';
+
 const buildUser = user => Object.assign({}, {
   username: 'Unit Tester',
   password: 'password',
@@ -42,7 +42,7 @@ const buildIssue = issue => Object.assign({},{
   testLink: "testLink"
 }, issue);
 
-describe('UT Project Repository', () => {
+describe('UT Issue Repository', () => {
   before((done) => {
     buildConnection('unit-test')
       .then(() => done())
