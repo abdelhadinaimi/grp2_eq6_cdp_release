@@ -1,3 +1,22 @@
+# Utilisation
+Téléchargez le projet puis lancez la commande :
+`` docker-compose up ``
+
+# Tests
+Une fois le projet lancé, il faut se placer dans le dossier *src* et il suffit de faire la commande : `` npm test ``
+
+# Releases
+| Version | Date | Téléchargement |
+| :-: | :-: | :-: |
+| v0.1 | 08/11/2019 | [#1 Release](https://github.com/abdelhadinaimi/grp2_eq6_cdp_release/archive/v0.1.zip) |
+
+# Sprints
+| N° | Date de Début | Date de Fin | Issues | Tasks |
+| :-: | :-: | :-: | -- | -- |
+| 1 | Lundi 21 Octobre 2019 | Vendredi 8 Novembre 2019 | [#1 Issues](https://github.com/Version-Project/grp2_eq6_cdp_dev/blob/master/Sprints/sprint1.md) | [#1 Tasks](https://github.com/Version-Project/grp2_eq6_cdp_dev/blob/master/Sprints/task1.md) |
+| 2 | Mardi 12 Novembre 2019 | Vendredi 22 Novembre 2019 | [#2 Issues](https://github.com/Version-Project/grp2_eq6_cdp_dev/blob/master/Sprints/sprint2.md) | [#2 Tasks](https://github.com/Version-Project/grp2_eq6_cdp_dev/blob/master/Sprints/task2.md) |
+| 3 | Lundi 25 Novembre 2019 | Vendredi 6 Décembre 2019 | [#3 Issues](https://github.com/Version-Project/grp2_eq6_cdp_dev/blob/master/Sprints/sprint3.md) | [#3 Tasks](https://github.com/Version-Project/grp2_eq6_cdp_dev/blob/master/Sprints/task3.md) |
+
 # Backlog
 
 | ID | Descriptif | Priorité | Coût | N° Sprint | État |
