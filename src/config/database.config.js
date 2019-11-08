@@ -10,6 +10,7 @@ module.exports = dbName => {
     useCreateIndex: true,
     useNewUrlParser: true,
     useUnifiedTopology: true,
+    useFindAndModify: true,
     dbName
   };
 

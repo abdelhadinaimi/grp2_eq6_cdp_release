@@ -1,4 +1,5 @@
 const projectRepo = require("../repositories/project.repository");
+const viewRoutes = require("../util/constants").global.viewRoutes;
 
 module.exports.getProjectIssues = (req, res) => {
   return projectRepo
@@ -33,7 +34,7 @@ module.exports.postIssue = (req, res) => {
   };
 
   if (!req.validation.success) {
-    return res.status(422).render("project/add-edit-issue", {
+    return res.status(422).render(viewRoutes.addEditIssue, {
       pageTitle: "Éditer Issue",
       errors: req.validation.errors,
       values: issue,
@@ -58,11 +59,11 @@ module.exports.postIssue = (req, res) => {
 };
 
 module.exports.getAdd = (req, res) => {
-  projectRepo
+  return projectRepo
     .getProjectIssues(req.params.projectId, req.session.user._id)
     .then(project => {
       if (project) {
-        res.render("project/add-edit-issue", {
+        res.render(viewRoutes.addEditIssue, {
           pageTitle: "Nouvelle Issue",
           errors: [],
           values: undefined,
@@ -93,7 +94,7 @@ module.exports.putEdit = (req, res) => {
     priority: req.body.priority
   }
   if (!req.validation.success) {
-    return res.status(422).render("project/add-edit-issue", {
+    return res.status(422).render(viewRoutes.addEditIssue, {
       pageTitle: "Éditer Issue",
       errors: req.validation.errors,
       values: issue,
