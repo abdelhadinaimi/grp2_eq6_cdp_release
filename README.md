@@ -6,6 +6,8 @@ Téléchargez le projet puis lancez la commande :
 Une fois le projet lancé, il faut se placer dans le dossier *src* et il suffit de faire la commande : `` npm test ``
 
 # Releases
+Lien vers les Releases : [Lien](https://github.com/abdelhadinaimi/grp2_eq6_cdp_release/blob/master/RELEASE.md)
+
 | Version | Date | Téléchargement |
 | :-: | :-: | :-: |
 | v0.1 | 08/11/2019 | [#1 Release](https://github.com/abdelhadinaimi/grp2_eq6_cdp_release/archive/v0.1.zip) |
