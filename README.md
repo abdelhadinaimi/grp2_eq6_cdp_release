@@ -1,6 +1,8 @@
 # Utilisation
-Téléchargez le projet puis lancez la commande :
+Téléchargez le projet, décompressez l'archive, rendez vous dans le nouveau dossier puis lancez la commande :<br>
 `` docker-compose up ``
+
+Une fois installée et démarrée, l'application sera accessible à l'adresse : [localhost:8080](http://localhost:8080)
 
 # Tests
 Une fois le projet lancé, il faut se placer dans le dossier *src* et il suffit de faire la commande : `` npm test ``
