@@ -22,41 +22,6 @@ module.exports.getProjectIssues = (req, res) => {
     });
 };
 
-module.exports.postIssue = (req, res) => {
-  const issue = {
-    userType: req.body.userType,
-    userGoal: req.body.userGoal,
-    userReason: req.body.userReason,
-    storyId: req.body.storyId,
-    priority: req.body.priority,
-    testLink: req.body.testLink
-  };
-
-  if (!req.validation.success) {
-    return res.status(422).render("project/add-edit-issue", {
-      pageTitle: "Éditer Issue",
-      errors: req.validation.errors,
-      values: issue,
-      editing: true
-    });
-  }
-
-  return projectRepo.createIssue(req.params.projectId, issue, req.session.user._id)
-    .then(result => {
-      if (!result.success) {
-        req.flash("toast", result.error);
-        return res.status(403).redirect("/projects/" + req.params.projectId);
-      }
-
-      req.flash("toast", "Issue créée avec succès !");
-      return res.status(201).redirect("/projects/" + req.params.projectId + "/issues");
-    })
-    .catch(err => {
-      console.log(err);
-      return res.status(500).redirect("/500");
-    });
-};
-
 module.exports.getAdd = (req, res) => {
   projectRepo
     .getProjectIssues(req.params.projectId, req.session.user._id)
@@ -82,6 +47,79 @@ module.exports.getAdd = (req, res) => {
     });
 };
 
+module.exports.postIssue = (req, res) => {
+  const issue = {
+    userType: req.body.userType,
+    userGoal: req.body.userGoal,
+    userReason: req.body.userReason,
+    cost: req.body.cost,
+    storyId: req.body.storyId,
+    priority: req.body.priority,
+    testLink: req.body.testLink
+  };
+
+  if (!req.validation.success) {
+    return res.status(422).render("project/add-edit-issue", {
+      pageTitle: "Nouvelle Issue",
+      errors: req.validation.errors,
+      values: issue,
+      projectId: req.params.projectId,
+      project: {id: req.params.projectId},
+      url: 'iss',
+      editing: false
+    });
+  }
+
+  return projectRepo.createIssue(req.params.projectId, issue, req.session.user._id)
+    .then(result => {
+      if (!result.success) {
+        req.flash("toast", result.error);
+        return res.status(403).redirect("/projects/" + req.params.projectId);
+      }
+
+      req.flash("toast", "Issue créée avec succès !");
+      return res.status(201).redirect("/projects/" + req.params.projectId + "/issues");
+    })
+    .catch(err => {
+      console.log(err);
+      return res.status(500).redirect("/500");
+    });
+};
+
+module.exports.getEdit = (req, res) => {
+  const {issueId} = req.params;
+
+  projectRepo
+    .getProjectIssues(req.params.projectId, req.session.user._id)
+    .then(project => {
+      if (!project) {
+        req.flash("toast", "Accès non-autorisé");
+        return res.status(403).redirect("/");
+      }
+
+      const issue = project.issues.find(issue => issue._id.toString() === issueId.toString());
+
+      if (!issue) {
+        req.flash("toast", "Accès non-autorisé");
+        return res.status(403).redirect("/");
+      }
+
+      return res.render("project/add-edit-issue", {
+        pageTitle: "Éditer Issue",
+        errors: [],
+        values: issue,
+        projectId: req.params.projectId,
+        url: 'iss',
+        editing: true,
+        project
+      });
+    })
+    .catch(err => {
+      console.log(err);
+      return res.status(500).redirect("/500");
+    });
+};
+
 module.exports.putEdit = (req, res) => {
   const issue = {
     _id: req.params.issueId,
@@ -90,26 +128,31 @@ module.exports.putEdit = (req, res) => {
     userGoal: req.body.userGoal,
     storyId: req.body.storyId,
     cost: req.body.cost,
-    priority: req.body.priority
-  }
+    priority: req.body.priority,
+    testLink: req.body.testLink
+  };
+
   if (!req.validation.success) {
     return res.status(422).render("project/add-edit-issue", {
       pageTitle: "Éditer Issue",
       errors: req.validation.errors,
       values: issue,
+      projectId: req.params.projectId,
+      project: {id: req.params.projectId},
+      url: 'iss',
       editing: true
     });
   }
   return projectRepo
-    .updateIssue(req.params.projectId,issue,req.session.user._id)
+    .updateIssue(req.params.projectId, issue, req.session.user._id)
     .then(result => {
       if (!result.success) {
         req.flash("toast", result.error);
-        return res.status(403).redirect("/projects/" + req.params.projectId);
+        return res.status(403).redirect("/projects/" + req.params.projectId + "/issues");
       }
 
       req.flash("toast", "Issue mise à jour !");
-      return res.status(201).redirect("/projects/" + req.params.projectId);
+      return res.status(201).redirect("/projects/" + req.params.projectId + "/issues");
     })
     .catch(err => {
       console.log(err);

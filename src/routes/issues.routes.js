@@ -11,9 +11,7 @@ route.get('/add', isAuth, issueController.getAdd);
 
 route.post('/add', isAuth, issueValidations, validate, issueController.postIssue);
 
-// route.get('/:issueId/edit', isAuth, issueController.getEdit);
-
-// route.get("/:issueId", isAuth, issueController.getissue);
+route.get('/:issueId/edit', isAuth, issueController.getEdit);
 
 route.put('/:issueId', isAuth, issueValidations, validate, issueController.putEdit);
 

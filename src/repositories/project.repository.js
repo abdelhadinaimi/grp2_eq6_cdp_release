@@ -151,6 +151,7 @@ module.exports.createIssue = (projectId, issue, userId) => new Promise((resolve,
       if (!project) {
         return resolve({success: false, error: errorGeneralMessages.notAllowed});
       }
+
       project.issues.push(issue);
       project.save();
       return resolve({success: true});
@@ -187,14 +188,15 @@ module.exports.deleteIssue = (projectId, issueId, userId) => new Promise((resolv
     return resolve({success: false, errors: {error: errorGeneralMessages.deleteNotAllowed}});
 
   Project
-    .update({_id: projectId, collaborators: {$elemMatch: {_id: userId, userType: ["po", "pm"]}}},
-      {$pullAll: {'issues._id': issueId}}
-    )
-    .then(res => {
-      console.log(res);
-
-      if (!res)
+    .findOne({_id: projectId, collaborators: {$elemMatch: {_id: userId, userType: ["po", "pm"]}}})
+    .then(project => {
+      if (!project)
         return resolve({success: false, errors: {error: errorGeneralMessages.deleteNotAllowed}});
+
+      project.issues = project.issues.filter(issue => issue._id.toString() !== issueId.toString());
+
+      return project.save();
     })
+    .then(() => resolve({success: true}))
     .catch(err => reject(err));
 });

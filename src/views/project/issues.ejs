@@ -37,30 +37,22 @@
                   <div class="col s8 center"><p class="userstory-header"><b>En tant que</b> <%= issue.userType %> <b>Je souhaite</b> <%= issue.userGoal %>
                     <b>Afin de</b> <%= issue.userReason %></p></div>
                   <div class="col s1 center"><%=issue.priority%></div>
-                  <div class="col s1 center"><%=issue.cost%>1j/h</div>
+                  <div class="col s1 center"><%=issue.cost%> j/h</div>
                   <div class="col s2 center"><%=issue.completion%>20%</div>
               </div>
               <div class="collapsible-body">
                   <div class="row center-align hide-on-med-and-up">
-                      <div class="col s4">
-                        <a href="/projects/<%= project.id %>" class="btn-floating blue">
-                          <i class="material-icons">remove_red_eye</i>
-                        </a>
-                      </div>
                       <% if (!project.deleteEdit) { %>
-                      <div class="col s4">
-                        <a href="/projects/<%= project.id %>/edit" class="btn-floating white">
+                      <div class="col s6">
+                        <a href="issues/<%=issue._id%>/edit" class="btn-floating white">
                           <i class="material-icons black-text">edit</i>
                         </a>
                       </div>
-                      <div class="col s4">
-                        <a
-                          href="#deleteProject"
-                          _id="<%= project.id %>"
-                          class="btn-floating red modal-trigger deleteButton"
-                        >
-                          <i class="material-icons">delete</i>
-                        </a>
+                      <div class="col s6">
+                          <a href="#deleteIssue" class="btn-floating red modal-trigger deleteButton"
+                             _id="<%= issue._id %>">
+                              <i class="material-icons">delete</i>
+                          </a>
                       </div>
                       <% } %>
                     </div>
@@ -84,13 +76,13 @@
                       <div class="col s12 m3 l2 center-align hide-on-small-only">
                           <% if (!project.deleteEdit) { %>
                               <div class="row">
-                                  <a href="issues/<%=issue.storyId%>/edit"
+                                  <a href="issues/<%=issue._id%>/edit"
                                     class="btn white black-text"
                                     style="width: 100%">Modifier</a>
                               </div>
                               <div class="row">
                                   <a href="#deleteIssue" class="btn red modal-trigger deleteButton"
-                                    _id="<%= issue.id %>" style="width: 100%">Supprimer</a>
+                                    _id="<%= issue._id %>" style="width: 100%">Supprimer</a>
                               </div>
                           <% } %>
                       </div>
@@ -104,18 +96,18 @@
   </div>
 </div>
 
-<%- include('../partials/scripts.ejs') %> <%- include('../partials/toast.ejs') %> <%-
-include('../partials/menu-connected-script.ejs') %>
+<%- include('../partials/scripts.ejs') %>
+<%- include('../partials/toast.ejs') %>
+<%- include('delete-issue.ejs') %>
+<%- include('../partials/menu-connected-script.ejs') %>
+
 <script>
   $(document).ready(function() {
-    $('.collapsible').collapsible();    
-      $(".modal").modal();
-    $(".dropdown-trigger").dropdown();
-    $(".sidenav").sidenav();
+    $('.collapsible').collapsible();
   });
 </script>
-<style>
 
+<style>
 .userstory-header {
   white-space: nowrap;
   width: 300px;
@@ -123,5 +115,4 @@ include('../partials/menu-connected-script.ejs') %>
   text-overflow: ellipsis;
   margin: auto;
 }
-
 </style>

@@ -9,7 +9,7 @@ const issueSchema = new Schema(
     userGoal: { type: String, maxlength: 1000, required: true },
     userReason: { type: String, maxlength: 1000, required: true },
     storyId: { type: String, maxlength: 20, sparse: true },
-    priority: { type: String, enum: ["high", "normal", "low"] },
+    priority: { type: String, enum: ["high", "medium", "low"] },
     cost: { type: Number, min: 1 },
     testLink: String,
     createdBy: { type: Schema.Types.ObjectId, ref: User.name }
