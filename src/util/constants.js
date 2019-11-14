@@ -8,6 +8,7 @@ module.exports.global = {
 };
 
 module.exports.errorGeneralMessages = {
+  accessNotAuthorized: "Accès non-autorisé",
   notAllowed: "Vous n'êtes pas authorisés",
   modificationNotAllowed: "Modification non Autorisée !",
   deleteNotAllowed: "Suppression non Autorisée !",

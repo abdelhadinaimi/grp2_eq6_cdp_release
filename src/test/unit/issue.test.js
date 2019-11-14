@@ -68,12 +68,10 @@ describe('UT Issue Repository', () => {
     it('should raise an error if a new issue is created without a required field', async () => {
       let result1 = await projectRepo.createIssue(fakeProjectId,buildIssue({userType:null}),fakeUserId1);
       expect(result1.success).to.be.false;
-      
       let result2 = await projectRepo.createIssue(fakeProjectId,buildIssue({userReason:null}),fakeUserId1);
       expect(result2.success).to.be.false;
     });
   });
-
 
   describe('Issue Update', () => {
     it('should update a new issue', async () => {
@@ -113,7 +111,6 @@ describe('UT Issue Repository', () => {
       .then( result => { throw new Error('should not succeed')})
       .catch( err => expect(err.success).to.be.false);
     });
-
   });
 
   after(done => {

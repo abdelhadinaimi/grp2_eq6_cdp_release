@@ -156,7 +156,6 @@ module.exports.postResetPassword = (req, res) => {
 
   userRepo
     .resetPassword(token, password)
-
     .then(result => {
       if (!result.success) {
         return res.redirect('/');

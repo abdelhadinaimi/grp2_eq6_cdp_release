@@ -3,6 +3,8 @@ const Project = mongoose.model('Project');
 const {errorGeneralMessages} = require('../util/constants');
 const dateformat = require('dateformat');
 
+const dateFormatString = 'dd/mm/yyyy';
+
 module.exports.createProject = project => new Promise((resolve, reject) => {
   const newProject = new Project();
   if (project.id)
@@ -93,9 +95,9 @@ module.exports.getProjectById = (projectId, userId) => new Promise((resolve, rej
       if (project.description)
         proj.description = project.description;
       if (project.createdAt)
-        proj.createdAt = dateformat(project.createdAt, 'dd/mm/yyyy');
+        proj.createdAt = dateformat(project.createdAt, dateFormatString);
       if (project.dueDate)
-        proj.dueDate = dateformat(project.dueDate, 'dd/mm/yyyy');
+        proj.dueDate = dateformat(project.dueDate, dateFormatString);
 
       return resolve(proj);
     })
@@ -109,11 +111,11 @@ module.exports.getProjectsByContributorId = contributorId => new Promise((resolv
       projects = projects.map(project => {
         const newProject = {id: project._id, title: project.title};
         newProject.contributorNb = project.collaborators.length;
-        newProject.beginDate = dateformat(project.createdAt, 'dd/mm/yyyy');
+        newProject.beginDate = dateformat(project.createdAt, dateFormatString);
         if (project.description)
           newProject.description = project.description;
         if (project.dueDate)
-          newProject.endDate = dateformat(project.dueDate, 'dd/mm/yyyy');
+          newProject.endDate = dateformat(project.dueDate, dateFormatString);
         if (project.projectOwner.toString() === contributorId.toString()) {
           newProject.deleteEdit = true;
         }
@@ -188,7 +190,7 @@ module.exports.deleteIssue = (projectId, issueId, userId) => new Promise((resolv
   if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(issueId) || !mongoose.Types.ObjectId.isValid(userId))
     return resolve({success: false, errors: {error: errorGeneralMessages.deleteNotAllowed}});
 
-  Project
+  return Project
     .findOne({_id: projectId, collaborators: {$elemMatch: {_id: userId, userType: ["po", "pm"]}}})
     .then(project => {
       if (!project)

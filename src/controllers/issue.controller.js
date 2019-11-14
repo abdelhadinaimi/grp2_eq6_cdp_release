@@ -1,5 +1,5 @@
 const projectRepo = require("../repositories/project.repository");
-const viewRoutes = require("../util/constants").global.viewRoutes;
+const {errorGeneralMessages, global:{viewRoutes}} = require("../util/constants");
 
 module.exports.getProjectIssues = (req, res) => {
   return projectRepo
@@ -13,7 +13,7 @@ module.exports.getProjectIssues = (req, res) => {
           project
         });
       } else {
-        req.flash("toast", "Accès non-autorisé");
+        req.flash("toast", errorGeneralMessages.accessNotAuthorized);
         return res.status(403).redirect("/");
       }
     })
@@ -24,7 +24,7 @@ module.exports.getProjectIssues = (req, res) => {
 };
 
 module.exports.getAdd = (req, res) => {
-  projectRepo
+  return projectRepo
     .getProjectIssues(req.params.projectId, req.session.user._id)
     .then(project => {
       if (project) {
@@ -38,7 +38,7 @@ module.exports.getAdd = (req, res) => {
           project
         });
       } else {
-        req.flash("toast", "Accès non-autorisé");
+        req.flash("toast", errorGeneralMessages.accessNotAuthorized);
         return res.status(403).redirect("/");
       }
     })
@@ -94,14 +94,14 @@ module.exports.getEdit = (req, res) => {
     .getProjectIssues(req.params.projectId, req.session.user._id)
     .then(project => {
       if (!project) {
-        req.flash("toast", "Accès non-autorisé");
+        req.flash("toast", errorGeneralMessages.accessNotAuthorized);
         return res.status(403).redirect("/");
       }
 
       const issue = project.issues.find(issue => issue._id.toString() === issueId.toString());
 
       if (!issue) {
-        req.flash("toast", "Accès non-autorisé");
+        req.flash("toast", errorGeneralMessages.accessNotAuthorized);
         return res.status(403).redirect("/");
       }
 
