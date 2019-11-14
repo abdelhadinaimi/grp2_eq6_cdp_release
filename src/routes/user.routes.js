@@ -22,4 +22,8 @@ route.post('/forgot-password', isNotAuth, userController.postForgotPassword);
 
 route.post('/reset-password/:token', isNotAuth, [userValidations[1], userValidations[2]], validate, userController.postResetPassword);
 
+route.get('/account', isAuth, userController.getAccount);
+
+route.post('/account', isAuth, userValidations, validate, userController.postAccount);
+
 module.exports = route;

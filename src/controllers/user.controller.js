@@ -62,7 +62,7 @@ module.exports.postRegisterUser = (req, res) => {
   }
 
   userRepo
-    .createUser(user)
+    .upsertUser(user)
     .then(result => {
       if (!result.success) {
         return res.status(401).render('user/register', {
@@ -156,11 +156,11 @@ module.exports.postResetPassword = (req, res) => {
 
   userRepo
     .resetPassword(token, password)
+
     .then(result => {
       if (!result.success) {
         return res.redirect('/');
       }
-
       req.flash('toast', 'Mot de Passe Réinitialisé');
       res.redirect('/login');
     })
@@ -168,4 +168,72 @@ module.exports.postResetPassword = (req, res) => {
       console.log(err);
       res.status(500).redirect('/500');
     })
+};
+
+module.exports.getAccount = (req, res) => {
+  return userRepo
+    .getUser(req.session.user._id)
+    .then(result => {
+      if (result.success) {
+        return res.render("user/account", {
+          pageTitle: "Mon compte",
+          errors: [],
+          url: 'iss',
+          values: result.user
+        });
+      } else {
+        req.flash("toast", "Accès non-autorisé");
+        return res.status(403).redirect("/");
+      }
+    })
+    .catch(err => {
+      console.log(err);
+      return res.status(500).redirect("/500");
+    });
+};
+
+module.exports.postAccount = (req, res) => {
+  const user = {
+    _id: req.session.user._id,
+    username: req.body.username,
+    email: req.body.email,
+    password: req.body.password,
+    confirmPassword: req.body.confirmPassword
+  };
+  if (!req.validation.success && (user.password || user.confirmPassword)) {
+    return res.status(422).render('user/account', {
+      pageTitle: 'Mon Compte',
+      errors: req.validation.errors,
+      values: {
+        username: user.username,
+        email: user.email,
+        password: user.password,
+        confirmPassword: user.confirmPassword
+      }
+    });
+  }
+
+  userRepo
+    .upsertUser(user)
+    .then(result => {
+      if (!result.success) {
+        return res.status(401).render('user/account', {
+          pageTitle: 'Mon Compte',
+          errors: result.errors,
+          values: {
+            username: user.username,
+            email: user.email,
+            password: user.password,
+            confirmPassword: user.confirmPassword
+          }
+        });
+      }
+
+      req.flash('toast', 'Compte modifié avec succès !');
+      return res.status(201).redirect('/account');
+    })
+    .catch(error => {
+      console.error(error);
+      res.status(500).redirect('/500');
+    });
 };

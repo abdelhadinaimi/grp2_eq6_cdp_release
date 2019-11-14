@@ -5,14 +5,15 @@ const crypto = require('crypto');
 
 const errorMessages = require("../util/constants").errorUserMessages;
 
-module.exports.createUser = async user => {
-  const newUser = new User();
-  newUser.username = user.username;
-  newUser.email = user.email;
-  newUser.password = newUser.generateHash(user.password);
-
+module.exports.upsertUser = async user => {
+  if(user.password){
+    user.password = User.generateHash(user.password);
+  }else{
+    delete user.password;
+  }
   try {
-    await newUser.save();
+    user._id = user._id || new mongoose.mongo.ObjectID();
+    await User.findOneAndUpdate({_id:user._id},user,{upsert:true}).exec();
     return {success: true};
   } catch (error) {
     const errorMsg = {success: false, errors: []};
@@ -80,3 +81,14 @@ module.exports.resetPassword = (token, password) => new Promise((resolve, reject
     .then(() => resolve({success: true}))
     .catch(err => reject(err));
 });
+
+module.exports.getUser = async (userId) => {
+  const foundUser = await User.findById(userId);
+  if (!foundUser) {
+    return { success: false, errors: { email: errorMessages.user.not_found } };
+  }
+  return {
+    success: true,
+    user: { _id: foundUser._id, username: foundUser.username, email: foundUser.email }
+  };
+};
