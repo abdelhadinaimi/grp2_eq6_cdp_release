@@ -61,7 +61,7 @@ module.exports.postRegisterUser = (req, res) => {
     });
   }
 
-  userRepo
+  return userRepo
     .upsertUser(user)
     .then(result => {
       if (!result.success) {
@@ -92,7 +92,7 @@ module.exports.postLoginUser = (req, res) => {
     password: req.body.password
   };
 
-  userRepo
+  return userRepo
     .checkLogin(user)
     .then(result => {
       if (!result.success) {
@@ -105,11 +105,11 @@ module.exports.postLoginUser = (req, res) => {
 
       req.flash('toast', 'Bienvenue ' + result.user.username + ' !');
       req.session.user = result.user;
-      res.redirect('/');
+      return res.redirect('/');
     })
     .catch(error => {
       console.error(error);
-      res.status(500).redirect('/500');
+      return res.status(500).redirect('/500');
     });
 };
 
@@ -154,18 +154,18 @@ module.exports.postResetPassword = (req, res) => {
     });
   }
 
-  userRepo
+  return userRepo
     .resetPassword(token, password)
     .then(result => {
       if (!result.success) {
         return res.redirect('/');
       }
       req.flash('toast', 'Mot de Passe Réinitialisé');
-      res.redirect('/login');
+      return res.redirect('/login');
     })
     .catch(err => {
       console.log(err);
-      res.status(500).redirect('/500');
+      return res.status(500).redirect('/500');
     })
 };
 
@@ -212,7 +212,7 @@ module.exports.postAccount = (req, res) => {
     });
   }
 
-  userRepo
+  return userRepo
     .upsertUser(user)
     .then(result => {
       if (!result.success) {
@@ -233,6 +233,6 @@ module.exports.postAccount = (req, res) => {
     })
     .catch(error => {
       console.error(error);
-      res.status(500).redirect('/500');
+      return res.status(500).redirect('/500');
     });
 };

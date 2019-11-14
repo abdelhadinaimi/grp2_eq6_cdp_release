@@ -28,7 +28,7 @@ module.exports.getAdd = (req, res) => {
     .getProjectIssues(req.params.projectId, req.session.user._id)
     .then(project => {
       if (project) {
-        res.render("project/add-edit-issue", {
+        return res.render("project/add-edit-issue", {
           pageTitle: "Nouvelle Issue",
           errors: [],
           values: undefined,

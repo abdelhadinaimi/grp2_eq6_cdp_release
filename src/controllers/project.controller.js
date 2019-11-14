@@ -49,12 +49,12 @@ module.exports.postAdd = (req, res) => {
     });
   }
 
-  projectRepo
+  return projectRepo
     .createProject(project)
     .then(result => {
       if (!result) {
         req.flash("toast", "Projet non créé...");
-        res.status(403).redirect('/');
+        return res.status(403).redirect('/');
       }
 
       req.flash("toast", "Projet créé avec succès !");
@@ -70,7 +70,7 @@ module.exports.getEdit = (req, res) => {
   const {projectId} = req.params;
   const userId = req.session.user._id;
 
-  projectRepo.getProjectById(projectId, userId)
+  return projectRepo.getProjectById(projectId, userId)
     .then(project => {
       if (project && project.projectOwner.toString() === userId) {
         return res.render("project/add-edit", {
@@ -112,7 +112,7 @@ module.exports.putEdit = (req, res) => {
     });
   }
 
-  projectRepo
+  return projectRepo
     .updateProject(project, req.session.user._id)
     .then(result => {
       if (!result.success) {
@@ -130,7 +130,7 @@ module.exports.putEdit = (req, res) => {
 };
 
 module.exports.deleteProject = (req, res) => {
-  projectRepo
+  return projectRepo
     .deleteProject(req.params.projectId, req.session.user._id)
     .then(result => {
       if (!result.success) {

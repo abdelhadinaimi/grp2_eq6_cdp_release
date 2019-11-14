@@ -198,7 +198,7 @@ module.exports.deleteIssue = (projectId, issueId, userId) => new Promise((resolv
 
       project.issues = project.issues.filter(issue => issue._id.toString() !== issueId.toString());
 
-      return project.save();
+      return resolve(project.save());
     })
     .then(() => resolve({success: true}))
     .catch(err => reject(err));

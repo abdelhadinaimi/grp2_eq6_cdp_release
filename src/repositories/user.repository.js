@@ -72,9 +72,9 @@ module.exports.resetPassword = (token, password) => new Promise((resolve, reject
       if (!user) {
         resolve({success: false});
       } else {
-        user.password = user.generateHash(password);
-        user.resetToken = undefined;
-        user.resetTokenExpiration = undefined;
+        user.password = User.generateHash(password);
+        delete user.resetToken;
+        delete user.resetTokenExpiration;
         return user.save();
       }
     })

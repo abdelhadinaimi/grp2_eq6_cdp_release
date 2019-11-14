@@ -4,7 +4,7 @@ const issueController = require('../controllers/issue.controller');
 const {issueValidations, validate} = require('../config/validations.config');
 
 const isAuth = require('../config/auth.config').isAuth;
- 
+
 route.get('/', isAuth, issueController.getProjectIssues);
 
 route.get('/add', isAuth, issueController.getAdd);
