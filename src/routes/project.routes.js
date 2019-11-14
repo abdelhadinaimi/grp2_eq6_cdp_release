@@ -1,8 +1,8 @@
 const route = require("express").Router();
-const {body,param,validationResult} = require("express-validator");
+const {param} = require("express-validator");
 
 const projectController = require('../controllers/project.controller');
-const {projectValidations, validate} = require('../config/validations.config');
+const {projectValidations,roleValidation, validate} = require('../config/validations.config');
 
 route.get("/", (req, res) => {
   res.send("all projects");
@@ -23,5 +23,7 @@ route.get("/:projectId", [param("projectId").exists().isMongoId()], projectContr
 route.put('/:projectId', projectValidations, validate, projectController.putEdit);
 
 route.delete('/:projectId', validate,projectController.deleteProject);
+
+route.put('/:projectId/:userId/role', roleValidation, validate, projectController.updateRole);
 
 module.exports = route;
