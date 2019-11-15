@@ -73,8 +73,8 @@ module.exports.errorIssueMessages = {
   storyId: {
     max: "l'identifiant ne doit pas dépasser 20 char."
   },
-  cost: {
-    empty: "Il faut spécifier un côut.",
-    min: "Le côut doit être > 1."
+  difficulty: {
+    empty: "Il faut spécifier une difficulté.",
+    min: "La difficulté doit être > 1."
   },
 };

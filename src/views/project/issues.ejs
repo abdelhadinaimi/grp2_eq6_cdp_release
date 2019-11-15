@@ -27,7 +27,7 @@
                 <div class="col s1 center"><strong>Identifiant</strong></div>
                 <div class="col s8 center"><strong>Description</strong></div>
                 <div class="col s1 center"><strong>Priorité</strong></div>
-                <div class="col s1 center"><strong>Coût</strong></div>
+                <div class="col s1 center"><strong>Difficulté</strong></div>
                 <div class="col s2 center"><strong>Complétion</strong></div>
           </li>
           <% project.issues.forEach( issue => { %>
@@ -37,7 +37,7 @@
                   <div class="col s8 center"><p class="userstory-header"><b>En tant que</b> <%= issue.userType %> <b>Je souhaite</b> <%= issue.userGoal %>
                     <b>Afin de</b> <%= issue.userReason %></p></div>
                   <div class="col s1 center"><%=issue.priority%></div>
-                  <div class="col s1 center"><%=issue.cost%> j/h</div>
+                  <div class="col s1 center"><%=issue.difficulty%> j/h</div>
                   <div class="col s2 center"><%=issue.completion%>20%</div>
               </div>
               <div class="collapsible-body">

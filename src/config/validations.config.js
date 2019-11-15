@@ -69,12 +69,12 @@ module.exports.issueValidations = [
   body("storyId")
     .isLength({max:20})
     .withMessage(errorIssueMessages.storyId.max),
-  body("cost")
+  body("difficulty")
     .not()
     .isEmpty()
-    .withMessage(errorIssueMessages.cost.empty)
+    .withMessage(errorIssueMessages.difficulty.empty)
     .isInt({min:1})
-    .withMessage(errorIssueMessages.cost.min)
+    .withMessage(errorIssueMessages.difficulty.min)
 ];
 
 module.exports.roleValidation = [

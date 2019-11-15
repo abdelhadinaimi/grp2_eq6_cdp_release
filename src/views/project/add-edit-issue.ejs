@@ -25,14 +25,14 @@
                                       data-error="<%= (index >= 0) ? errors[index].storyId : '' %>"></span>
                             </div>
                             <div class="input-field col s4">
-                                <% index = errors.findIndex(error => error.cost) %>
+                                <% index = errors.findIndex(error => error.difficulty) %>
                                 <i class="material-icons prefix">functions</i>
-                                <input id="cost" name="cost" type="number" min="1"
+                                <input id="difficulty" name="difficulty" type="number" min="1"
                                        class="validate <%= (index >= 0) ? 'invalid' : (errors.length > 0) ? 'valid' : '' %>"
-                                       value="<%= values ? values.cost : 1 %>">
-                                <label for="cost">Coût</label>
+                                       value="<%= values ? values.difficulty : 1 %>">
+                                <label for="difficulty">Difficulté</label>
                                 <span class="helper-text"
-                                      data-error="<%= (index >= 0) ? errors[index].cost : '' %>"></span>
+                                      data-error="<%= (index >= 0) ? errors[index].difficulty : '' %>"></span>
                             </div>
                             <div class="input-field col s4">
                                 <% index = errors.findIndex(error => error.priority) %>
