@@ -13,7 +13,7 @@ module.exports.getProject = (req, res) => {
       if (project) {
         const isPo = (project.projectOwner.toString() === userId.toString());
         const isPm = (project.collaborators.findIndex(collaborator =>
-          (collaborator._id.toString() === userId.toString() && collaborator.userType === "pm")));
+          (collaborator._id.toString() === userId.toString() && collaborator.userType === "pm")) >= 0);
 
         return res.status(200).render('project/project', {
           pageTitle: project.title,
@@ -197,7 +197,7 @@ module.exports.postInvite = async (req, res) => {
               return sendMail(userEmail, subject, message);
             })
             .then(() => {
-              req.flash('toast', 'Contributeur ajouté !');
+              req.flash('toast', 'Invitation envoyée !');
               return res.redirect('/projects/' + projectId);
             });
         }
@@ -219,6 +219,24 @@ module.exports.getInvite = (req, res) => {
         return res.redirect('/');
 
       req.flash('toast', 'Invitation Acceptée !');
+      return res.redirect('/projects/' + projectId);
+    })
+    .catch(err => {
+      console.log(err);
+      return res.status(500).redirect("/500");
+    });
+};
+
+module.exports.deleteInvite = (req, res) => {
+  const {projectId} = req.params;
+  const {userId} = req.params;
+
+  projectRepo
+    .removeContributorToProject(projectId, userId, req.session.user._id)
+    .then(result => {
+      if (result)
+        req.flash('toast', 'Contributeur supprimé !');
+
       return res.redirect('/projects/' + projectId);
     })
     .catch(err => {

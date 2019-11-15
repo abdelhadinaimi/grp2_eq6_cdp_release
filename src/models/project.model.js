@@ -40,10 +40,10 @@ const projectSchema = new Schema(
 
 projectSchema.statics.findIfUserIsPo = function(projectId, userId) {
   return  this.findOne({_id: projectId, projectOwner: userId});
-}
+};
 
-projectSchema.statics.findIfUserType = function(projectId,userId,userTypes) {
+projectSchema.statics.findIfUserType = function(projectId, userId, userTypes) {
   return this.findOne({_id: projectId,collaborators:{$elemMatch: {_id: userId,userType:{$in: userTypes}}}});
-}
+};
 
 module.exports = { name: "Project", schema: projectSchema };

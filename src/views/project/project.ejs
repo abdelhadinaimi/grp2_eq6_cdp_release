@@ -83,7 +83,7 @@
                                 </td>
                                 <td>
                                     <% if (collaborator.activated) { %>
-                                        <% if (userId.toString() == project.projectOwner.toString() && collaborator.userType !== 'po') { %>
+                                        <% if (isPo && collaborator.userType !== 'po') { %>
                                             <div class="input-field row">
                                                 <select id="collabType" name="collabType">
                                                     <option value="pm"
@@ -103,7 +103,11 @@
                                 </td>
                                 <% if (isPo || isPm) { %>
                                 <td class="center-align">
-                                    <%- (collaborator.userType === 'po') ? '-' : '<a class="btn-flat red-text">Supprimer</a>' %>
+                                    <%- (collaborator.userType === 'po') ? '-' :
+                                            '<a href="#deleteContributor" '
+                                                + 'class="btn-flat red-text modal-trigger deleteButton" '
+                                                + 'project="' + project.id + '" '
+                                                + 'user="' + collaborator._id._id + '">Supprimer</a>' %>
                                 </td>
                                 <% } %>
                             </tr>
@@ -118,8 +122,13 @@
 
 <%- include('../partials/scripts.ejs') %>
 <%- include('../partials/toast.ejs') %>
+<% if (isPo) { %>
 <%- include('delete-project.ejs') %>
+<% } %>
+<% if (isPo || isPm) { %>
+<%- include('delete-contributor.ejs') %>
 <%- include('invite.ejs') %>
+<% } %>
 <%- include('../project/project-header-script.ejs') %>
 
 <script>

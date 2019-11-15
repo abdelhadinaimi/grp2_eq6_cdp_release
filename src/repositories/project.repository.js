@@ -149,16 +149,30 @@ module.exports.isContributorFromProject = (projectId, contributorId) => new Prom
 
 module.exports.addContributorToProject = (projectId, contributorId, addId) => new Promise((resolve, reject) => {
   Project
-    .findById(projectId)
+    .findIfUserType(projectId, addId, ['po', 'pm'])
     .then(project => {
       if (!project)
-        resolve(false);
+        return resolve(false);
 
       project.collaborators.push({
         _id: contributorId,
         userType: 'user',
         addedBy: addId
       });
+      return project.save();
+    })
+    .then(() => resolve(true))
+    .catch(err => reject(err));
+});
+
+module.exports.removeContributorToProject = (projectId, userId, remId) => new Promise((resolve, reject) => {
+  Project
+    .findIfUserType(projectId, remId, ['po', 'pm'])
+    .then(project => {
+      if (!project)
+        return resolve(false);
+
+      project.collaborators = project.collaborators.filter(collaborator => collaborator._id.toString() !== userId.toString());
       return project.save();
     })
     .then(() => resolve(true))
