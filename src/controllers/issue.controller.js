@@ -53,7 +53,7 @@ module.exports.postIssue = (req, res) => {
     userType: req.body.userType,
     userGoal: req.body.userGoal,
     userReason: req.body.userReason,
-    cost: req.body.cost,
+    difficulty: req.body.difficulty,
     storyId: req.body.storyId,
     priority: req.body.priority,
     testLink: req.body.testLink
@@ -128,7 +128,7 @@ module.exports.putEdit = (req, res) => {
     userType: req.body.userType,
     userGoal: req.body.userGoal,
     storyId: req.body.storyId,
-    cost: req.body.cost,
+    difficulty: req.body.difficulty,
     priority: req.body.priority,
     testLink: req.body.testLink
   };

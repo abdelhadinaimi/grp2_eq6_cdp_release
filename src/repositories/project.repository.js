@@ -240,18 +240,19 @@ module.exports.updateIssue = (projectId, issue, userId) => new Promise((resolve,
 });
 
 module.exports.deleteIssue = (projectId, issueId, userId) => new Promise((resolve, reject) => {
+  const errorMessage = {success: false, errors: {error: errorGeneralMessages.deleteNotAllowed}};
   if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(issueId) || !mongoose.Types.ObjectId.isValid(userId))
-    return resolve({success: false, errors: {error: errorGeneralMessages.deleteNotAllowed}});
+    return resolve(errorMessage);
 
   return Project
     .findIfUserType(projectId, userId, ['po', 'pm'])
     .then(project => {
       if (!project)
-        return resolve({success: false, errors: {error: errorGeneralMessages.deleteNotAllowed}});
+        return resolve(errorMessage);
 
       project.issues = project.issues.filter(issue => issue._id.toString() !== issueId.toString());
 
-      return resolve(project.save());
+      return project.save();
     })
     .then(() => resolve({success: true}))
     .catch(err => reject(err));
@@ -272,6 +273,23 @@ module.exports.updateUserRole = (projectId, userId, user) => new Promise((resolv
     .then(project => {
       if (!project) return reject(errorMessage);
       return resolve({success: true});
+    })
+    .catch(err => reject(err));
+});
+
+
+/** TASKS */
+
+module.exports.getProjectTasks = (projectId, userId) => new Promise((resolve, reject) => {
+  if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(userId))
+    return resolve(undefined);
+
+  return Project
+    .findOne({_id: projectId, 'collaborators._id': userId}, 'title tasks')
+    .then(project => {
+      if (!project) return resolve(undefined);
+      const proj = {id: projectId, title: project.title, tasks: project.tasks};
+      return resolve(proj);
     })
     .catch(err => reject(err));
 });

@@ -70,13 +70,12 @@ module.exports.resetPassword = (token, password) => new Promise((resolve, reject
     .findOne({resetToken: token, resetTokenExpiration: {$gt: Date.now()}})
     .then(user => {
       if (!user) {
-        resolve({success: false});
-      } else {
-        user.password = User.generateHash(password);
-        delete user.resetToken;
-        delete user.resetTokenExpiration;
-        return user.save();
+        return resolve({success: false});
       }
+      user.password = User.generateHash(password);
+      delete user.resetToken;
+      delete user.resetTokenExpiration;
+      return user.save();
     })
     .then(() => resolve({success: true}))
     .catch(err => reject(err));

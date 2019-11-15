@@ -8,7 +8,7 @@ const TaskSchema = new Schema(
   {
     description: { type: String, maxlength: 3000, required: true },
     definitionOfDone: { type: String, maxlength: 3000 },
-    duration: { type: Number, min: 0.5, required: true },
+    cost: { type: Number, min: 0.5, required: true },
     testLink: String,
     state: { type: String, enum: ["TODO", "DOING", "DONE", "TOTEST", "TESTING", "TESTED"] },
     assignedContributors: [{ type: Schema.Types.ObjectId, ref: User.name }],

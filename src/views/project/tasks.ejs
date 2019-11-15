@@ -8,7 +8,7 @@
             <h5><%=pageTitle%></h5>
           </div>
           <div class="col m4 center-align">
-            <a class="btn green modal-trigger" href="issues/add">Créer une issue</a>
+            <a class="btn green modal-trigger" href="tasks/add">Créer une tâche</a>
           </div>
         </div>
         <div class="row valign-wrapper hide-on-med-and-up">
@@ -24,33 +24,28 @@
       <div class="row card-content">
         <ul class="collapsible">
             <li class="collapsible-header">
-                <div class="col s1 center"><strong>Identifiant</strong></div>
                 <div class="col s8 center"><strong>Description</strong></div>
-                <div class="col s1 center"><strong>Priorité</strong></div>
-                <div class="col s1 center"><strong>Difficulté</strong></div>
-                <div class="col s2 center"><strong>Complétion</strong></div>
+                <div class="col s1 center"><strong>Coût</strong></div>
+                <div class="col s2 center"><strong>État</strong></div>
           </li>
-          <% project.issues.forEach( issue => { %>
+          <% project.tasks.forEach(task => { %>
           <li>
               <div class="collapsible-header line" tabindex="0">
-                  <div class="col s1 center"><%=issue.storyId%></div>
-                  <div class="col s8 center"><p class="userstory-header"><b>En tant que</b> <%= issue.userType %> <b>Je souhaite</b> <%= issue.userGoal %>
-                    <b>Afin de</b> <%= issue.userReason %></p></div>
-                  <div class="col s1 center"><%=issue.priority%></div>
-                  <div class="col s1 center"><%=issue.difficulty%> j/h</div>
-                  <div class="col s2 center"><%=issue.completion%>20%</div>
+                  <div class="col s8 center"><p class="description-header"></p><%=task.description %></p></div>
+                  <div class="col s1 center"><%=task.cost%> j/h</div>
+                  <div class="col s2 center"><%=task.state%>TODO</div>
               </div>
               <div class="collapsible-body">
                   <div class="row center-align hide-on-med-and-up">
                       <% if (!project.deleteEdit) { %>
                       <div class="col s6">
-                        <a href="issues/<%=issue._id%>/edit" class="btn-floating white">
+                        <a href="tasks/<%=task._id%>/edit" class="btn-floating white">
                           <i class="material-icons black-text">edit</i>
                         </a>
                       </div>
                       <div class="col s6">
-                          <a href="#deleteIssue" class="btn-floating red modal-trigger deleteButton"
-                             _id="<%= issue._id %>">
+                          <a href="#deleteTask" class="btn-floating red modal-trigger deleteButton"
+                             _id="<%= task._id %>">
                               <i class="material-icons">delete</i>
                           </a>
                       </div>
@@ -61,14 +56,16 @@
                         <div class="row">
                           <div class="row">
                               <div class="col s12 m8">
-                                  <b>Story : </b><b>En tant que</b> <%= issue.userType %> <b>Je souhaite</b> <%= issue.userGoal %>
-                    <b>Afin de</b> <%= issue.userReason %>
+                                  <b>Description : </b><%= task.description %>
                               </div>
                               <div class="col s12 m8">
-                                  <b>Sprint : </b>Sprint 5
+                                  <b><i>Definition of Done</i> : </b><%= task.definitionOfDone %>
                               </div>
                               <div class="col s12 m8">
-                                  <b>Taches : </b>Tâche 1,Tâche 3,Tâche 5
+                                  <b>Issues : </b>US#01, US#17...
+                              </div>
+                              <div class="card-panel col s12 m8">
+                                  <b>Test : </b><%= task.testLink%>
                               </div>
                           </div>
                         </div>
@@ -76,13 +73,13 @@
                       <div class="col s12 m3 l2 center-align hide-on-small-only">
                           <% if (!project.deleteEdit) { %>
                               <div class="row">
-                                  <a href="issues/<%=issue._id%>/edit"
+                                  <a href="tasks/<%=task._id%>/edit"
                                     class="btn white black-text"
                                     style="width: 100%">Modifier</a>
                               </div>
                               <div class="row">
-                                  <a href="#deleteIssue" class="btn red modal-trigger deleteButton"
-                                    _id="<%= issue._id %>" style="width: 100%">Supprimer</a>
+                                  <a href="#deleteTask" class="btn red modal-trigger deleteButton"
+                                    _id="<%= task._id %>" style="width: 100%">Supprimer</a>
                               </div>
                           <% } %>
                       </div>
@@ -98,7 +95,6 @@
 
 <%- include('../partials/scripts.ejs') %>
 <%- include('../partials/toast.ejs') %>
-<%- include('delete-issue.ejs') %>
 <%- include('../partials/menu-connected-script.ejs') %>
 
 <script>
@@ -108,7 +104,7 @@
 </script>
 
 <style>
-.userstory-header {
+.description-header {
   white-space: nowrap;
   width: 300px;
   overflow: hidden;

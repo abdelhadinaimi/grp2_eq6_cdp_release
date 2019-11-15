@@ -15,6 +15,7 @@ const global = require("./util/constants").global;
 const isAuth = require("./config/auth.config").isAuth;
 
 const issuesRoutes = require("./routes/issues.routes");
+const tasksRoutes = require("./routes/tasks.routes");
 const projectRoutes = require("./routes/project.routes");
 const indexRoutes = require("./routes/index.routes");
 const userRoutes = require("./routes/user.routes");
@@ -62,6 +63,7 @@ app.use((req, res, next) => {
 });
 
 app.use("/projects/:projectId/issues", issuesRoutes);
+app.use("/projects/:projectId/tasks", tasksRoutes);
 app.use("/projects", isAuth, projectRoutes);
 app.use(indexRoutes, userRoutes, errorRoutes);
 
