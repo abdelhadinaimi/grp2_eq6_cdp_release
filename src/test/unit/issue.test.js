@@ -98,7 +98,7 @@ describe('UT Issue Repository', () => {
 
     it('shoud raise an error if updating a non existing issue', () => {
       projectRepo.updateIssue(fakeProjectId,buildIssue({_id:fakeProjectId}),fakeUserId1)
-      .then( result => { throw new Error('should not succeed')})
+      .then( result => { throw new Error()})
       .catch( err => expect(err.success).to.be.false);
     });
 
@@ -108,7 +108,32 @@ describe('UT Issue Repository', () => {
       await project.save();
 
       projectRepo.updateIssue(fakeProjectId,buildIssue(),fakeUserId2)
-      .then( result => { throw new Error('should not succeed')})
+      .then( result => { throw new Error()})
+      .catch( err => expect(err.success).to.be.false);
+    });
+  });
+
+  describe('Issue Update', () => {
+    it('should delete an issue', async () => {
+      const project = await Project.findById(fakeProjectId);
+      project.issues.push(buildIssue());
+      await project.save();
+
+      const result = await projectRepo.deleteIssue(fakeProjectId,fakeIssueId,fakeUserId1);
+      expect(result.success).to.be.true;
+    });
+    it('should raise an error if deleting a non existing issue', async () => {
+      projectRepo.deleteIssue(fakeProjectId,buildIssue({_id:fakeProjectId}),fakeUserId1)
+      .then( result => { throw new Error()})
+      .catch( err => expect(err.success).to.be.false);
+    });
+    it('shoud raise an error if deleting an issue with unauthorized user', async () => {
+      const project = await Project.findById(fakeProjectId);
+      project.issues.push(buildIssue({_id:fakeIssueId}));
+      await project.save();
+
+      projectRepo.deleteIssue(fakeProjectId,buildIssue(),fakeUserId2)
+      .then( result => { throw new Error()})
       .catch( err => expect(err.success).to.be.false);
     });
   });
