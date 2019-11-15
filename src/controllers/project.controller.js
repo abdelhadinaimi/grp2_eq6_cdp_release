@@ -186,6 +186,7 @@ module.exports.postInvite = async (req, res) => {
         }
       });
   }
+};
 
 module.exports.updateRole = (req, res) => {
   const user = {
