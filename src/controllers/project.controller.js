@@ -186,4 +186,30 @@ module.exports.postInvite = async (req, res) => {
         }
       });
   }
+
+module.exports.updateRole = (req, res) => {
+  const user = {
+    _id: req.params.userId,
+    role: req.body.role
+  };
+  if (!req.validation.success) {
+    req.flash("toast", "Une erreur c'est produite");
+    return res.status(403).redirect("/projects/" + req.params.projectId);
+  }
+
+  return projectRepo
+    .updateUserRole(req.params.projectId, req.session.user._id, user)
+    .then(result => {
+      if (!result.success) {
+        req.flash("toast", result.error);
+        return res.status(403).redirect("/projects/" + req.params.projectId);
+      }
+
+      req.flash("toast", "Role mis à jour !");
+      return res.status(201).redirect("/projects/" + req.params.projectId);
+    })
+    .catch(err => {
+      console.log(err);
+      return res.status(500).redirect("/500");
+    });
 };

@@ -178,7 +178,7 @@ module.exports.createIssue = (projectId, issue, userId) => new Promise((resolve,
   if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(userId))
     return resolve({success: false, error: errorGeneralMessages.notAllowed});
 
-  return Project.findIfUserIsPoOrPm(projectId, userId)
+  return Project.findIfUserType(projectId, userId,['po','pm'])
     .then(project => {
       if (!project) {
         return resolve({success: false, error: errorGeneralMessages.notAllowed});
@@ -221,7 +221,7 @@ module.exports.deleteIssue = (projectId, issueId, userId) => new Promise((resolv
     return resolve({success: false, errors: {error: errorGeneralMessages.deleteNotAllowed}});
 
   return Project
-    .findOne({_id: projectId, collaborators: {$elemMatch: {_id: userId, userType: ["po", "pm"]}}})
+    .findIfUserType(projectId, userId,['po','pm'])
     .then(project => {
       if (!project)
         return resolve({success: false, errors: {error: errorGeneralMessages.deleteNotAllowed}});
@@ -231,5 +231,24 @@ module.exports.deleteIssue = (projectId, issueId, userId) => new Promise((resolv
       return resolve(project.save());
     })
     .then(() => resolve({success: true}))
+    .catch(err => reject(err));
+});
+
+module.exports.updateUserRole = (projectId, userId, user) => new Promise((resolve, reject) => {
+  const errorMessage = {success: false, error: errorGeneralMessages.modificationNotAllowed};
+
+  if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(userId) || userId === user._id){
+    return resolve(errorMessage);
+  }
+
+  return Project.findOneAndUpdate({
+    _id: projectId,
+    collaborators: {$elemMatch: {_id: userId, userType: {$in: ["po"]}}},
+    "collaborators._id": user._id
+  }, {$set: {"collaborators.$.userType":user.role}})
+    .then(project => {
+      if (!project) return reject(errorMessage);
+      return resolve({success: true});
+    })
     .catch(err => reject(err));
 });

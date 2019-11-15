@@ -50,6 +50,10 @@ module.exports.errorProjectMessages = {
   },
   description: {
     max: "La description ne doit pas dépasser 3000 char."
+  },
+  role: {
+    empty: "Il faut spécifier un role",
+    values: "Le role doit être soit user soit PM"
   }
 };
 

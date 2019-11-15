@@ -77,6 +77,12 @@ module.exports.issueValidations = [
     .withMessage(errorIssueMessages.cost.min)
 ];
 
+module.exports.roleValidation = [
+  body("role")
+  .matches(/^(pm|user)$/)
+  .withMessage(errorProjectMessages.role.values)
+];
+
 /**
  * a middleware to validate the request using the provided validators
  * if there are errors, returns a list of errors with 442 HTTP Code else it executes
