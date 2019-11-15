@@ -24,4 +24,6 @@ route.put('/:projectId', projectValidations, validate, projectController.putEdit
 
 route.delete('/:projectId', validate,projectController.deleteProject);
 
+route.post('/:projectId/invite', projectController.postInvite);
+
 module.exports = route;

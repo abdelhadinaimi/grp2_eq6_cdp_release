@@ -92,3 +92,17 @@ module.exports.getUser = async (userId) => {
     user: { _id: foundUser._id, username: foundUser.username, email: foundUser.email }
   };
 };
+
+module.exports.findUserBy = (key, value) => new Promise((resolve, reject) => {
+  let query = {};
+  query[key] = value;
+
+  User
+    .findOne(query)
+    .then(user => {
+      if (user)
+        resolve(user);
+      resolve(null);
+    })
+    .catch(err => reject(err));
+});

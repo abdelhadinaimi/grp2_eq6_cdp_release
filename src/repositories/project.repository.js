@@ -20,6 +20,7 @@ module.exports.createProject = project => new Promise((resolve, reject) => {
   newProject.projectOwner = project.projectOwner;
   newProject.collaborators = [{
     _id: project.projectOwner,
+    activated: true,
     userType: 'po',
     addedBy: project.projectOwner
   }];
@@ -125,6 +126,35 @@ module.exports.getProjectsByContributorId = contributorId => new Promise((resolv
 
       return resolve(projects);
     })
+    .catch(err => reject(err));
+});
+
+module.exports.isContributorFromProject = (projectId, contributorId) => new Promise((resolve, reject) => {
+  Project
+    .findOne({_id: projectId, 'collaborators._id': contributorId})
+    .then(project => {
+      if (project)
+        return resolve(true);
+      return resolve(false);
+    })
+    .catch(err => reject(err));
+});
+
+module.exports.addContributorToProject = (projectId, contributorId, addId) => new Promise((resolve, reject) => {
+  Project
+    .findById(projectId)
+    .then(project => {
+      if (!project)
+        resolve(false);
+
+      project.collaborators.push({
+        _id: contributorId,
+        userType: 'user',
+        addedBy: addId
+      });
+      return project.save();
+    })
+    .then(() => resolve(true))
     .catch(err => reject(err));
 });
 

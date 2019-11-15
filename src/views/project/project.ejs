@@ -54,13 +54,17 @@
             <div class="col s12 m10 offset-m1">
                 <h4>Contributeurs</h4>
                 <div class="card-panel">
-                    <table class="highlight">
+                    <a href="#addContributor" class="btn-floating right green modal-trigger">
+                        <i class="material-icons">add</i>
+                    </a>
+                    <table class="responsive-table striped">
                         <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Added by</th>
-                            <th>Role</th>
-                        </tr>
+                            <tr>
+                                <th>Name</th>
+                                <th>Added by</th>
+                                <th>Role</th>
+                                <th class="center-align">Action</th>
+                            </tr>
                         </thead>
                         <tbody>
                         <% project.collaborators.forEach( collaborator => { %>
@@ -72,8 +76,15 @@
                                     <%= collaborator.addedBy.username %>
                                 </td>
                                 <td>
-                                    <%= (collaborator.userType === 'po') ? 'Project Owner' :
-                                            (collaborator.userType === 'pm') ? 'Project Manager' : 'Developer' %>
+                                    <% if (collaborator.activated) { %>
+                                        <%= (collaborator.userType === 'po') ? 'Project Owner' :
+                                                (collaborator.userType === 'pm') ? 'Project Manager' : 'Developer' %>
+                                    <% } else { %>
+                                        En cours d'Activation
+                                    <% } %>
+                                </td>
+                                <td class="center-align">
+                                    <%- (collaborator.userType === 'po') ? 'Non Disponible' : '<a class="btn-flat red-text">Supprimer</a>' %>
                                 </td>
                             </tr>
                         <% }) %>
@@ -88,6 +99,7 @@
 <%- include('../partials/scripts.ejs') %>
 <%- include('../partials/toast.ejs') %>
 <%- include('delete-project.ejs') %>
+<%- include('invite.ejs') %>
 <%- include('../project/project-header-script.ejs') %>
 
 <%- include('../partials/foot.ejs') %>

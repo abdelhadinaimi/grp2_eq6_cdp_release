@@ -27,6 +27,7 @@ const projectSchema = new Schema(
       {
         _id: { type: Schema.Types.ObjectId, ref: User.name },
         userType: { type: String, enum: ["po", "pm", "user"], required: true },
+        activated: {type: Boolean, default: false},
         addedAt: { type: Date, default: Date.now },
         addedBy: { type: Schema.Types.ObjectId, ref: User.name }
       }

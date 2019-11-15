@@ -1,4 +1,7 @@
 const projectRepo = require("../repositories/project.repository");
+const userRepo = require("../repositories/user.repository");
+
+const {sendMail} = require("../util/mail");
 
 module.exports.getProject = (req, res) => {
   const {projectId} = req.params;
@@ -144,4 +147,43 @@ module.exports.deleteProject = (req, res) => {
       console.log(err);
       return res.status(500).redirect("/500");
     });
+};
+
+module.exports.postInvite = async (req, res) => {
+  const {projectId} = req.params;
+  const {email} = req.body;
+  const {username} = req.body;
+  let userFound = null;
+
+  if (email !== "")
+    userFound = await userRepo.findUserBy('email', email);
+  else if (username !== "")
+    userFound = await userRepo.findUserBy('username', username);
+
+  if (userFound !== null) {
+    projectRepo
+      .isContributorFromProject(projectId, userFound._id)
+      .then(result => {
+        if (result) {
+          req.flash('toast', 'Contributeur déjà ajouté !');
+          return res.redirect('/projects/' + projectId);
+        } else {
+          projectRepo
+            .addContributorToProject(projectId, userFound._id, req.session.user._id)
+            .then(result => {
+              if (!result) {
+                req.flash('toast', 'Contributeur non ajouté...');
+                return res.redirect('/projects/' + projectId);
+              }
+
+              const userEmail = userFound.email;
+              return sendMail(userEmail, 'Nouvelle Invitation', 'Bonjour,');
+            })
+            .then(() => {
+              req.flash('toast', 'Contributeur ajouté !');
+              return res.redirect('/projects/' + projectId);
+            });
+        }
+      });
+  }
 };
