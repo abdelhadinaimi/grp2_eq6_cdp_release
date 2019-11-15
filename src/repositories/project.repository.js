@@ -217,18 +217,19 @@ module.exports.updateIssue = (projectId, issue, userId) => new Promise((resolve,
 });
 
 module.exports.deleteIssue = (projectId, issueId, userId) => new Promise((resolve, reject) => {
+  const errorMessage = {success: false, errors: {error: errorGeneralMessages.deleteNotAllowed}};
   if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(issueId) || !mongoose.Types.ObjectId.isValid(userId))
-    return resolve({success: false, errors: {error: errorGeneralMessages.deleteNotAllowed}});
+    return resolve(errorMessage);
 
   return Project
     .findIfUserType(projectId, userId,['po','pm'])
     .then(project => {
       if (!project)
-        return resolve({success: false, errors: {error: errorGeneralMessages.deleteNotAllowed}});
+        return resolve(errorMessage);
 
       project.issues = project.issues.filter(issue => issue._id.toString() !== issueId.toString());
 
-      return resolve(project.save());
+      return project.save();
     })
     .then(() => resolve({success: true}))
     .catch(err => reject(err));

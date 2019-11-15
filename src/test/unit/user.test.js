@@ -25,7 +25,7 @@ describe('UT User Repository', () => {
       };
 
       userRepo
-        .createUser(user)
+        .upsertUser(user)
         .then(result => {
           expect(result.success).to.be.true;
           done();
@@ -41,7 +41,7 @@ describe('UT User Repository', () => {
       };
 
       userRepo
-        .createUser(user)
+        .upsertUser(user)
         .then(result => {
           expect(result.success).to.be.false;
           expect(result.errors.length).to.equal(1);
