@@ -1,6 +1,7 @@
 const projectRepo = require("../repositories/project.repository");
 const userRepo = require("../repositories/user.repository");
 
+const {global} = require("../util/constants");
 const {sendMail} = require("../util/mail");
 
 module.exports.getProject = (req, res) => {
@@ -10,10 +11,16 @@ module.exports.getProject = (req, res) => {
   projectRepo.getProjectById(projectId, userId)
     .then(project => {
       if (project) {
+        const isPo = (project.projectOwner.toString() === userId.toString());
+        const isPm = (project.collaborators.findIndex(collaborator =>
+          (collaborator._id.toString() === userId.toString() && collaborator.userType === "pm")));
+
         return res.status(200).render('project/project', {
           pageTitle: project.title,
           project: project,
           userId: userId,
+          isPo: isPo,
+          isPm: isPm,
           url: 'pro'
         });
       }
@@ -157,7 +164,7 @@ module.exports.postInvite = async (req, res) => {
 
   if (email !== "")
     userFound = await userRepo.findUserBy('email', email);
-  else if (username !== "")
+  if (userFound === null && username !== "")
     userFound = await userRepo.findUserBy('username', username);
 
   if (userFound !== null) {
@@ -177,7 +184,16 @@ module.exports.postInvite = async (req, res) => {
               }
 
               const userEmail = userFound.email;
-              return sendMail(userEmail, 'Nouvelle Invitation', 'Bonjour,');
+              const subject = global.app.name + ' - Invitation Projet';
+              const message = `
+                <p>
+                    Bonjour,<br>
+                    Vous venez d'être ajouté à un projet.<br>
+                    Pour le rejoindre cliquer sur ce lien : <a href="http://localhost:8080/projects/${projectId}/invite">Accepter</a><br>
+                    Bonne journée !
+                </p>`;
+
+              return sendMail(userEmail, subject, message);
             })
             .then(() => {
               req.flash('toast', 'Contributeur ajouté !');
@@ -185,7 +201,29 @@ module.exports.postInvite = async (req, res) => {
             });
         }
       });
+  } else {
+    req.flash('toast', 'Aucun compte trouvé...');
+    return res.redirect('/projects/' + projectId);
   }
+};
+
+module.exports.getInvite = (req, res) => {
+  const {projectId} = req.params;
+  const userId = req.session.user._id;
+
+  projectRepo
+    .acceptInvitation(projectId, userId)
+    .then(result => {
+      if (!result)
+        return res.redirect('/');
+
+      req.flash('toast', 'Invitation Acceptée !');
+      return res.redirect('/projects/' + projectId);
+    })
+    .catch(err => {
+      console.log(err);
+      return res.status(500).redirect("/500");
+    });
 };
 
 module.exports.updateRole = (req, res) => {

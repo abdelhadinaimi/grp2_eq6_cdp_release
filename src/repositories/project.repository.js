@@ -107,7 +107,14 @@ module.exports.getProjectById = (projectId, userId) => new Promise((resolve, rej
 
 module.exports.getProjectsByContributorId = contributorId => new Promise((resolve, reject) => {
   return Project
-    .find({'collaborators._id': contributorId}, 'title description createdAt dueDate collaborators projectOwner')
+    .find({
+      collaborators: {
+        $elemMatch: {
+          _id: contributorId,
+          activated: true
+        }
+      }
+    }, 'title description createdAt dueDate collaborators projectOwner')
     .then(projects => {
       projects = projects.map(project => {
         const newProject = {id: project._id, title: project.title};
@@ -158,6 +165,22 @@ module.exports.addContributorToProject = (projectId, contributorId, addId) => ne
     .catch(err => reject(err));
 });
 
+module.exports.acceptInvitation = (projectId, contributorId) => new Promise((resolve, reject) => {
+  Project
+    .findOne({_id: projectId, collaborators: {$elemMatch: {_id: contributorId, activated: false}}})
+    .then(project => {
+      if (!project)
+        return resolve(false);
+
+      const user = project.collaborators.find(collaborator => (collaborator._id.toString() === contributorId));
+      user.activated = true;
+
+      return project.save();
+    })
+    .then(() => resolve(true))
+    .catch(err => reject(err));
+});
+
 /** ISSUES */
 
 module.exports.getProjectIssues = (projectId, userId) => new Promise((resolve, reject) => {
@@ -178,7 +201,7 @@ module.exports.createIssue = (projectId, issue, userId) => new Promise((resolve,
   if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(userId))
     return resolve({success: false, error: errorGeneralMessages.notAllowed});
 
-  return Project.findIfUserType(projectId, userId,['po','pm'])
+  return Project.findIfUserType(projectId, userId, ['po', 'pm'])
     .then(project => {
       if (!project) {
         return resolve({success: false, error: errorGeneralMessages.notAllowed});
@@ -186,8 +209,8 @@ module.exports.createIssue = (projectId, issue, userId) => new Promise((resolve,
 
       project.issues.push(issue);
       return project.save()
-      .then(() => resolve({success: true}))
-      .catch(()=> resolve({success: false, error:"Erreur interne"}));
+        .then(() => resolve({success: true}))
+        .catch(() => resolve({success: false, error: "Erreur interne"}));
     })
     .catch(err => reject(err));
 });
@@ -221,7 +244,7 @@ module.exports.deleteIssue = (projectId, issueId, userId) => new Promise((resolv
     return resolve({success: false, errors: {error: errorGeneralMessages.deleteNotAllowed}});
 
   return Project
-    .findIfUserType(projectId, userId,['po','pm'])
+    .findIfUserType(projectId, userId, ['po', 'pm'])
     .then(project => {
       if (!project)
         return resolve({success: false, errors: {error: errorGeneralMessages.deleteNotAllowed}});
@@ -237,7 +260,7 @@ module.exports.deleteIssue = (projectId, issueId, userId) => new Promise((resolv
 module.exports.updateUserRole = (projectId, userId, user) => new Promise((resolve, reject) => {
   const errorMessage = {success: false, error: errorGeneralMessages.modificationNotAllowed};
 
-  if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(userId) || userId === user._id){
+  if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(userId) || userId === user._id) {
     return resolve(errorMessage);
   }
 
@@ -245,7 +268,7 @@ module.exports.updateUserRole = (projectId, userId, user) => new Promise((resolv
     _id: projectId,
     collaborators: {$elemMatch: {_id: userId, userType: {$in: ["po"]}}},
     "collaborators._id": user._id
-  }, {$set: {"collaborators.$.userType":user.role}})
+  }, {$set: {"collaborators.$.userType": user.role}})
     .then(project => {
       if (!project) return reject(errorMessage);
       return resolve({success: true});
