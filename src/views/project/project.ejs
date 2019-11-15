@@ -37,6 +37,16 @@
                 </ul>
             </div>
             <% } %>
+            <% if (!isPo) { %>
+            <div class="col s12 m4 l3">
+                <a href="#quitProject" class="btn red modal-trigger quitButton" _id="<%= project.id %>">
+                    <i class="material-icons left">exit_to_app</i>
+                    <span class="hide-on-med-and-down">
+                        Quitter le projet
+                    </span>
+                </a>
+            </div>
+            <% } %>
         </div>
         <div class="row">
             <div class="col s6 center-align">
@@ -130,6 +140,10 @@
 <%- include('invite.ejs') %>
 <% } %>
 <%- include('../project/project-header-script.ejs') %>
+
+<% if (!isPo) { %>
+    <%- include('../project/quit-project.ejs') %>
+<% } %>
 
 <script>
     $(document).ready(() => {
