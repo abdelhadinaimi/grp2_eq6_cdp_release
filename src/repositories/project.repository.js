@@ -253,3 +253,20 @@ module.exports.updateUserRole = (projectId, userId, user) => new Promise((resolv
     })
     .catch(err => reject(err));
 });
+
+
+/** TASKS */
+
+module.exports.getProjectTasks = (projectId, userId) => new Promise((resolve, reject) => {
+  if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(userId))
+    return resolve(undefined);
+
+  return Project
+    .findOne({_id: projectId, 'collaborators._id': userId}, 'title tasks')
+    .then(project => {
+      if (!project) return resolve(undefined);
+      const proj = {id: projectId, title: project.title, tasks: project.tasks};
+      return resolve(proj);
+    })
+    .catch(err => reject(err));
+});
