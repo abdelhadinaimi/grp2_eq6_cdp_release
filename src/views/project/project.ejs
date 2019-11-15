@@ -8,11 +8,11 @@
         </a>
     </li>
     <% if (userId.toString() == project.projectOwner.toString()) { %>
-        <li>
-            <a href="#deleteProject" class="white-text modal-trigger deleteButton" _id="<%= project.id %>">
-                Supprimer<span class="hide-on-med-and-down"> le projet</span>
-            </a>
-        </li>
+    <li>
+        <a href="#deleteProject" class="white-text modal-trigger deleteButton" _id="<%= project.id %>">
+            Supprimer<span class="hide-on-med-and-down"> le projet</span>
+        </a>
+    </li>
     <% } %>
 </ul>
 
@@ -28,8 +28,8 @@
                         <a class='dropdown-trigger btn light-blue darken-3' data-target='settings-dropdown'>
                             <i class="material-icons left">settings</i>
                             <span class="hide-on-med-and-down">
-                                    Paramètres du projet
-                                    <i class="material-icons right">arrow_drop_down</i>
+                                Paramètres du projet
+                                <i class="material-icons right">arrow_drop_down</i>
                             </span>
                         </a>
                     </li>
@@ -67,7 +67,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                        <% project.collaborators.forEach( collaborator => { %>
+                            <% project.collaborators.forEach( collaborator => { %>
                             <tr>
                                 <td>
                                     <%= collaborator._id.username %>
@@ -77,17 +77,29 @@
                                 </td>
                                 <td>
                                     <% if (collaborator.activated) { %>
-                                        <%= (collaborator.userType === 'po') ? 'Project Owner' :
-                                                (collaborator.userType === 'pm') ? 'Project Manager' : 'Developer' %>
+                                        <% if (userId.toString() == project.projectOwner.toString() && collaborator.userType !== 'po') { %>
+                                            <div class="input-field row">
+                                                <select id="collabType" name="collabType">
+                                                    <option value="pm"
+                                                        <%= values ? (collaborator.userType  ===  "pm" ? "selected" : "") : '' %>>
+                                                        Projet Manager</option>
+                                                    <option value="user"
+                                                        <%= values ? (collaborator.userType  ===  "user" ? "selected" : "") : '' %>>
+                                                        Developer</option>
+                                                </select>
+                                            </div>
+                                        <% } else { %>
+                                            <%= (collaborator.userType === 'po') ? 'Project Owner' : (collaborator.userType === 'pm') ? 'Project Manager' : 'Developer' %>
+                                        <% } %>
                                     <% } else { %>
-                                        En cours d'Activation
+                                        En cours d'activation
                                     <% } %>
                                 </td>
                                 <td class="center-align">
-                                    <%- (collaborator.userType === 'po') ? 'Non Disponible' : '<a class="btn-flat red-text">Supprimer</a>' %>
+                                    <%- (collaborator.userType === 'po') ? '-' : '<a class="btn-flat red-text">Supprimer</a>' %>
                                 </td>
                             </tr>
-                        <% }) %>
+                            <% }) %>
                         </tbody>
                     </table>
                 </div>
@@ -101,5 +113,11 @@
 <%- include('delete-project.ejs') %>
 <%- include('invite.ejs') %>
 <%- include('../project/project-header-script.ejs') %>
+
+<script>
+    $(document).ready(() => {
+        $('select').formSelect();
+    });
+</script>
 
 <%- include('../partials/foot.ejs') %>

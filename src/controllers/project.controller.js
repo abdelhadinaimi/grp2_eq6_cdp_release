@@ -14,6 +14,7 @@ module.exports.getProject = (req, res) => {
           pageTitle: project.title,
           project: project,
           userId: userId,
+          values: undefined,
           url: 'pro'
         });
       }
