@@ -167,7 +167,7 @@ module.exports.addContributorToProject = (projectId, contributorId, addId) => ne
 
 module.exports.removeContributorToProject = (projectId, userId, remId) => new Promise((resolve, reject) => {
   Project
-    .findIfUserType(projectId, remId, ['po', 'pm'])
+    .findIfUserType(projectId, remId, ['po', 'pm', userId === remId ? 'user' : ''])
     .then(project => {
       if (!project)
         return resolve(false);

@@ -20,7 +20,7 @@ $(document).ready(function () {
   const buttons = document.querySelectorAll(".quitButton");
   buttons.forEach(button => button.addEventListener("click", () => {
     const projectId = button.getAttribute("_id");
-    form.setAttribute("action", "/projects/" + projectId + "/user" +"?_method=DELETE");
+    form.setAttribute("action", "/projects/" + projectId + "/quit" +"?_method=POST");
   }));
 });
 </script>

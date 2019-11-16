@@ -3,7 +3,12 @@ module.exports.global = {
     name: "Nom de l'Application"
   },
   viewRoutes: {
-    addEditIssue: "project/add-edit-issue",
+    addEdit: "project/add-edit",
+    addEditIssue: "project/add-edit-issue"
+  },
+  appRoutes: {
+    projectId: _id => "/projects/" + _id,
+    notFound: "/500"
   }
 };
 
@@ -11,7 +16,7 @@ module.exports.errorGeneralMessages = {
   accessNotAuthorized: "Accès non-autorisé",
   notAllowed: "Vous n'êtes pas authorisés",
   modificationNotAllowed: "Modification non Autorisée !",
-  deleteNotAllowed: "Suppression non Autorisée !",
+  deleteNotAllowed: "Suppression non Autorisée !"
 };
 module.exports.errorUserMessages = {
   username: {
@@ -76,5 +81,5 @@ module.exports.errorIssueMessages = {
   difficulty: {
     empty: "Il faut spécifier une difficulté.",
     min: "La difficulté doit être > 1."
-  },
+  }
 };

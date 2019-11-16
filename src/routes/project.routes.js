@@ -30,6 +30,8 @@ route.get('/:projectId/invite', projectController.getInvite);
 
 route.delete('/:projectId/remove/:userId', projectController.deleteInvite);
 
+route.post('/:projectId/quit', projectController.deleteInvite);
+
 route.put('/:projectId/:userId/role', roleValidation, validate, projectController.updateRole);
 
 module.exports = route;
