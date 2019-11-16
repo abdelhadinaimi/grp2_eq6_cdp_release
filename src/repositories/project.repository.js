@@ -59,7 +59,7 @@ module.exports.updateProject = (project, userId) => new Promise((resolve, reject
     .catch(err => reject(err))
 });
 
-module.exports.deleteProject = (projectId, userId) => new Promise(resolve => {
+module.exports.deleteProject = (projectId, userId) => new Promise((resolve, reject) => {
   if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(userId))
     return resolve({success: false, errors: {error: errorGeneralMessages.deleteNotAllowed}});
 
@@ -72,7 +72,7 @@ module.exports.deleteProject = (projectId, userId) => new Promise(resolve => {
       return project.delete();
     })
     .then(() => resolve({success: true}))
-    .catch(err => resolve({success: false, errors: {error: err}}));
+    .catch(err => reject(err));
 });
 
 module.exports.getProjectById = (projectId, userId) => new Promise((resolve, reject) => {
@@ -247,7 +247,7 @@ module.exports.updateIssue = (projectId, issue, userId) => new Promise((resolve,
     "issues._id": issue._id
   }, {$set: set})
     .then(project => {
-      if (!project) return reject(errorMessage);
+      if (!project) return resolve(errorMessage);
       return resolve({success: true});
     })
     .catch(err => reject(err));

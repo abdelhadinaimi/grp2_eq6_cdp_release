@@ -230,6 +230,7 @@ module.exports.postAccount = (req, res) => {
         });
       }
 
+      req.session.user.username = user.username;
       req.flash('toast', 'Compte modifié avec succès !');
       return res.status(201).redirect('/account');
     })
