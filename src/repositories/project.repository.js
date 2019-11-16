@@ -291,7 +291,6 @@ module.exports.updateUserRole = (projectId, userId, user) => new Promise((resolv
     .catch(err => reject(err));
 });
 
-
 /** TASKS */
 
 module.exports.getProjectTasks = (projectId, userId) => new Promise((resolve, reject) => {
@@ -304,6 +303,23 @@ module.exports.getProjectTasks = (projectId, userId) => new Promise((resolve, re
       if (!project) return resolve(undefined);
       const proj = {id: projectId, title: project.title, tasks: project.tasks};
       return resolve(proj);
+    })
+    .catch(err => reject(err));
+});
+
+module.exports.getMyTasks = (projectId, userId) => new Promise((resolve, reject) => {
+  if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(userId))
+    return resolve(null);
+
+  return Project
+    .findOne({_id: projectId, 'collaborators._id': userId}, 'tasks')
+    .then(project => {
+      if (!project) return resolve(null);
+
+      const tasks = project.tasks.filter(task =>
+        task.assignedContributors.findIndex(contr => contr._id.toString() === userId.toString()) >= 0);
+
+      return resolve(tasks);
     })
     .catch(err => reject(err));
 });

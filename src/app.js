@@ -62,8 +62,8 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use("/projects/:projectId/issues", issuesRoutes);
-app.use("/projects/:projectId/tasks", tasksRoutes);
+app.use("/projects/:projectId/issues", isAuth, issuesRoutes);
+app.use("/projects/:projectId/tasks", isAuth, tasksRoutes);
 app.use("/projects", isAuth, projectRoutes);
 app.use(indexRoutes, userRoutes, errorRoutes);
 

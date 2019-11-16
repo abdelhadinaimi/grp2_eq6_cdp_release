@@ -22,3 +22,18 @@ module.exports.getProjectTasks = (req, res) => {
         return res.status(500).redirect("/500");
       });
   };
+
+module.exports.getMyTasks = (req, res) => {
+  const {projectId} = req.params;
+  const userId = req.session.user._id;
+
+  return projectRepo
+    .getMyTasks(projectId, userId)
+    .then(tasks => {
+      return res.send(tasks);
+    })
+    .catch(err => {
+      console.log(err);
+      return res.status(500).redirect("/500");
+    });
+};
