@@ -1,5 +1,10 @@
 const {body, validationResult} = require("express-validator");
-const {errorUserMessages, errorProjectMessages,errorIssueMessages} = require("../util/constants");
+const {
+  errorUserMessages,
+  errorProjectMessages,
+  errorIssueMessages,
+  errorTaskMessages
+} = require("../util/constants");
 
 module.exports.userValidations = [
   body("email")
@@ -81,6 +86,12 @@ module.exports.roleValidation = [
   body("role")
   .matches(/^(pm|user)$/)
   .withMessage(errorProjectMessages.role.values)
+];
+
+module.exports.taskStateValidation = [
+  body("state")
+  .matches(/^(TODO|DOING|DONE|TOTEST|TESTING|TESTED)$/)
+  .withMessage(errorTaskMessages.state.match)
 ];
 
 /**

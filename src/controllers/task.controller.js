@@ -1,5 +1,5 @@
 const projectRepo = require("../repositories/project.repository");
-const {errorGeneralMessages, global:{viewRoutes}} = require("../util/constants");
+const {errorGeneralMessages, global:{appRoutes}} = require("../util/constants");
 
 module.exports.getProjectTasks = (req, res) => {
     return projectRepo
@@ -35,5 +35,34 @@ module.exports.getMyTasks = (req, res) => {
     .catch(err => {
       console.log(err);
       return res.status(500).redirect("/500");
+    });
+};
+
+module.exports.putTaskState = (req, res) => {
+  const projectId = req.params.projectId;
+  const redirectUrl = appRoutes.projectTasks(projectId);
+  const task = {
+    _id: req.params.taskId,
+    state: req.body.state
+  }
+
+  if (!req.validation.success) {
+    req.flash('toast', req.validation.errors[0].state);
+    return res.status(403).redirect(redirectUrl);
+  }
+
+  return projectRepo
+    .updateTaskState(projectId, req.session.user._id, task)
+    .then(result => {
+      if (!result.success) {
+        req.flash('toast', result.error)
+        return res.redirect(redirectUrl);
+      }
+      req.flash('toast', 'Tâche mise à jour !');
+      return res.redirect(redirectUrl);
+    })
+    .catch(err => {
+      console.log(err);
+      return res.status(500).redirect('/500');
     });
 };

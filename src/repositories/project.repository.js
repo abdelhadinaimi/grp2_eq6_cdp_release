@@ -323,3 +323,25 @@ module.exports.getMyTasks = (projectId, userId) => new Promise((resolve, reject)
     })
     .catch(err => reject(err));
 });
+
+
+module.exports.updateTaskState = async (projectId, userId, task) => {
+  const errorMessage = { success: false, error: errorGeneralMessages.modificationNotAllowed };
+  if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(userId)){
+    return errorMessage;
+  }
+
+  const project = await Project.findOneAndUpdate(
+    {
+      _id: projectId,
+      "collaborators._id": userId,
+      "tasks._id": task._id
+    },
+    { $set: { "tasks.$.state": task.state } }
+  );
+
+  if (!project) {
+    return errorMessage;
+  }
+  return { success: true };
+};
