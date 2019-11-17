@@ -1,11 +1,13 @@
-const route = require("express").Router({mergeParams:true});
+const route = require("express").Router({ mergeParams: true });
 
-const taskController = require('../controllers/task.controller');
-const {taskValidations, validate} = require('../config/validations.config');
+const taskController = require("../controllers/task.controller");
+const { taskStateValidation, validate } = require("../config/validations.config");
 
-route.get('/', taskController.getProjectTasks);
+route.get("/", taskController.getProjectTasks);
 
-route.get('/mine', taskController.getMyTasks);
+route.get("/mine", taskController.getMyTasks);
+
+route.put("/:taskId/state", taskStateValidation, validate, taskController.putTaskState);
 
 /*
 route.get('/add', isAuth, taskController.getAdd);

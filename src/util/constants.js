@@ -7,6 +7,8 @@ module.exports.global = {
     addEditIssue: "project/add-edit-issue"
   },
   appRoutes: {
+    projectIssues: _id => `/projects/${_id}/issues`,
+    projectTasks: _id => `/projects/${_id}/tasks`,
     projectId: _id => "/projects/" + _id,
     notFound: "/500"
   }
@@ -83,3 +85,9 @@ module.exports.errorIssueMessages = {
     min: "La difficulté doit être > 1."
   }
 };
+
+module.exports.errorTaskMessages = {
+  state: {
+    match: "If faut spécifier un état valide"
+  }
+}
