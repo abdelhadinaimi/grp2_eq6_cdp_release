@@ -9,11 +9,11 @@ route.get("/mine", taskController.getMyTasks);
 
 route.put("/:taskId/state", taskStateValidation, validate, taskController.putTaskState);
 
+route.get('/add', taskController.getAdd);
+
+route.post('/add', taskStateValidation, validate, taskController.postTask);
+
 /*
-route.get('/add', isAuth, taskController.getAdd);
-
-route.post('/add', isAuth, taskValidations, validate, taskController.postTask);
-
 route.get('/:taskId/edit', isAuth, taskController.getEdit);
 
 route.put('/:taskId', isAuth, taskValidations, validate, taskController.putEdit);

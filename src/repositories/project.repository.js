@@ -195,6 +195,7 @@ module.exports.acceptInvitation = (projectId, contributorId) => new Promise((res
     .catch(err => reject(err));
 });
 
+
 /** ISSUES */
 
 module.exports.getProjectIssues = (projectId, userId) => new Promise((resolve, reject) => {
@@ -291,6 +292,7 @@ module.exports.updateUserRole = (projectId, userId, user) => new Promise((resolv
     .catch(err => reject(err));
 });
 
+
 /** TASKS */
 
 module.exports.getProjectTasks = (projectId, userId) => new Promise((resolve, reject) => {
@@ -303,6 +305,24 @@ module.exports.getProjectTasks = (projectId, userId) => new Promise((resolve, re
       if (!project) return resolve(undefined);
       const proj = {id: projectId, title: project.title, tasks: project.tasks};
       return resolve(proj);
+    })
+    .catch(err => reject(err));
+});
+
+module.exports.createTask = (projectId, task, userId) => new Promise((resolve, reject) => {
+  if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(userId))
+    return resolve({success: false, error: errorGeneralMessages.notAllowed});
+
+  return Project.findIfUserType(projectId, userId, ['po', 'pm'])
+    .then(project => {
+      if (!project) {
+        return resolve({success: false, error: errorGeneralMessages.notAllowed});
+      }
+
+      project.tasks.push(task);
+      return project.save()
+        .then(() => resolve({success: true}))
+        .catch(() => resolve({success: false, error: "Erreur interne"}));
     })
     .catch(err => reject(err));
 });
@@ -345,3 +365,22 @@ module.exports.updateTaskState = async (projectId, userId, task) => {
   }
   return { success: true };
 };
+
+module.exports.deleteTask = (projectId, taskId, userId) => new Promise((resolve, reject) => {
+  const errorMessage = {success: false, errors: {error: errorGeneralMessages.deleteNotAllowed}};
+  if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(issueId) || !mongoose.Types.ObjectId.isValid(userId))
+    return resolve(errorMessage);
+
+  return Project
+    .findIfUserType(projectId, userId, ['po', 'pm'])
+    .then(project => {
+      if (!project)
+        return resolve(errorMessage);
+
+      project.tasks = project.tasks.filter(task => task._id.toString() !== taskId.toString());
+
+      return project.save();
+    })
+    .then(() => resolve({success: true}))
+    .catch(err => reject(err));
+});

@@ -4,7 +4,8 @@ module.exports.global = {
   },
   viewRoutes: {
     addEdit: "project/add-edit",
-    addEditIssue: "project/add-edit-issue"
+    addEditIssue: "project/add-edit-issue",
+    addEditTask: "project/add-edit-task"
   },
   appRoutes: {
     projectIssues: _id => `/projects/${_id}/issues`,
