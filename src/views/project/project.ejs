@@ -1,13 +1,14 @@
 <%- include('../partials/head.ejs') %>
 <%- include('../project/project-header.ejs') %>
 
-<% if (isPo) { %>
+<% if (isPo || isPm) { %>
 <ul id="settings-dropdown" class="dropdown-content light-blue darken-3">
     <li>
         <a href="/projects/<%= project.id %>/edit" class="white-text">
             Modifier<span class="hide-on-med-and-down"> les informations</span>
         </a>
     </li>
+<% } if (isPo) { %>
     <li>
         <a href="#deleteProject" class="white-text modal-trigger deleteButton" _id="<%= project.id %>">
             Supprimer<span class="hide-on-med-and-down"> le projet</span>
@@ -97,10 +98,10 @@
                                             <div class="input-field row">
                                                 <select id="collabType" name="collabType">
                                                     <option value="pm"
-                                                        <%= values ? (collaborator.userType  ===  "pm" ? "selected" : "") : '' %>>
+                                                        <%= collaborator.userType  ===  "pm" ? "selected" : "" %>>
                                                         Projet Manager</option>
                                                     <option value="user"
-                                                        <%= values ? (collaborator.userType  ===  "user" ? "selected" : "") : '' %>>
+                                                        <%= collaborator.userType  ===  "user" ? "selected" : "" %>>
                                                         Developer</option>
                                                 </select>
                                             </div>
