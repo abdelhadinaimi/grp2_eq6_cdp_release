@@ -3,14 +3,22 @@ const { errorGeneralMessages, global: { appRoutes } } = require("../util/constan
 const { viewRoutes } = require("../util/constants").global;
 
 module.exports.getProjectTasks = (req, res) => {
+  const userId = req.session.user._id;
+
   return projectRepo
-    .getProjectTasks(req.params.projectId, req.session.user._id)
+    .getProjectTasks(req.params.projectId, userId)
     .then(project => {
       if (project) {
+        const isPo = (project.projectOwner.toString() === userId.toString());
+        const isPm = (project.collaborators.findIndex(collaborator =>
+          (collaborator._id.toString() === userId.toString() && collaborator.userType === "pm")) >= 0);
+
         return res.render("project/tasks", {
           pageTitle: "Tâches",
           errors: [],
           url: 'tas',
+          isPo: isPo,
+          isPm: isPm,
           project
         });
       } else {

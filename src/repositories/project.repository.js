@@ -203,10 +203,10 @@ module.exports.getProjectIssues = (projectId, userId) => new Promise((resolve, r
     return resolve(undefined);
 
   return Project
-    .findOne({_id: projectId, 'collaborators._id': userId}, 'title issues')
+    .findOne({_id: projectId, 'collaborators._id': userId}, 'title issues projectOwner collaborators')
     .then(project => {
       if (!project) return resolve(undefined);
-      const proj = {id: projectId, title: project.title, issues: project.issues};
+      const proj = {id: projectId, title: project.title, issues: project.issues, projectOwner: project.projectOwner, collaborators: project.collaborators};
       return resolve(proj);
     })
     .catch(err => reject(err));
@@ -300,10 +300,10 @@ module.exports.getProjectTasks = (projectId, userId) => new Promise((resolve, re
     return resolve(undefined);
 
   return Project
-    .findOne({_id: projectId, 'collaborators._id': userId}, 'title tasks')
+    .findOne({_id: projectId, 'collaborators._id': userId}, 'title tasks projectOwner collaborators')
     .then(project => {
       if (!project) return resolve(undefined);
-      const proj = {id: projectId, title: project.title, tasks: project.tasks};
+      const proj = {id: projectId, title: project.title, tasks: project.tasks, projectOwner: project.projectOwner, collaborators: project.collaborators};
       return resolve(proj);
     })
     .catch(err => reject(err));

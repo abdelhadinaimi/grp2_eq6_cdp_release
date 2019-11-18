@@ -2,14 +2,22 @@ const projectRepo = require("../repositories/project.repository");
 const {errorGeneralMessages, global:{viewRoutes}} = require("../util/constants");
 
 module.exports.getProjectIssues = (req, res) => {
+  const userId = req.session.user._id;
   return projectRepo
-    .getProjectIssues(req.params.projectId, req.session.user._id)
+    .getProjectIssues(req.params.projectId, userId)
     .then(project => {
       if (project) {
+        console.log(project);
+        const isPo = (project.projectOwner.toString() === userId.toString());
+        const isPm = (project.collaborators.findIndex(collaborator =>
+          (collaborator._id.toString() === userId.toString() && collaborator.userType === "pm")) >= 0);
+        
         return res.render("project/issues", {
           pageTitle: "Issues",
           errors: [],
           url: 'iss',
+          isPo: isPo,
+          isPm: isPm,
           project
         });
       } else {
