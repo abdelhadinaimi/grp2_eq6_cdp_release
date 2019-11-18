@@ -64,7 +64,7 @@ module.exports.postAdd = (req, res) => {
     .createProject(project)
     .then(result => {
       if (!result) {
-        req.flash("toast", "Projet non créé...");
+        req.flash("toast", "Le projet n'a pas été créé...");
         return res.status(403).redirect('/');
       }
 
@@ -91,7 +91,7 @@ module.exports.getEdit = (req, res) => {
           editing: true
         });
       } else {
-        req.flash("toast", "Accès non Autorisé");
+        req.flash("toast", "Accès non-autorisé !");
         return res.status(403).redirect("/");
       }
     })
@@ -173,14 +173,14 @@ module.exports.postInvite = async (req, res) => {
       .isContributorFromProject(projectId, userFound._id)
       .then(result => {
         if (result) {
-          req.flash('toast', 'Contributeur déjà ajouté !');
+          req.flash('toast', 'Ce contributeur a déjà été ajouté !');
           return res.redirect(appRoutes.projectId(projectId));
         } else {
           projectRepo
             .addContributorToProject(projectId, userFound._id, req.session.user._id)
             .then(result => {
               if (!result) {
-                req.flash('toast', 'Contributeur non ajouté...');
+                req.flash('toast', 'Le contributeur n\'a pas été ajouté...');
                 return res.redirect(appRoutes.projectId(projectId));
               }
 
@@ -234,7 +234,7 @@ module.exports.deleteInvite = (req, res) => {
   projectRepo
     .removeContributorToProject(projectId, userId ? userId : connectedUserId, connectedUserId)
     .then(result => {
-      const redirectUrl = userId ? appRoutes.projectId(projectId) : '/'; 
+      const redirectUrl = userId ? appRoutes.projectId(projectId) : '/';
       if (result && userId){
         req.flash('toast', 'Contributeur supprimé !');
       }
@@ -256,7 +256,7 @@ module.exports.updateRole = (req, res) => {
   };
 
   if (!req.validation.success) {
-    req.flash("toast", "Une erreur s'est produite...");
+    req.flash("toast", "Une erreur s'est produite.");
     return res.status(403).redirect(appRoutes.projectId(req.params.projectId));
   }
 

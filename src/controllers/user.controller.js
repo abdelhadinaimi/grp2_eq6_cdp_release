@@ -162,7 +162,7 @@ module.exports.postResetPassword = (req, res) => {
       if (!result.success) {
         return res.redirect('/');
       }
-      req.flash('toast', 'Mot de Passe Réinitialisé');
+      req.flash('toast', 'Le mot de passe a bien été réinitialisé.');
       return res.redirect('/login');
     })
     .catch(err => {
@@ -183,7 +183,7 @@ module.exports.getAccount = (req, res) => {
           values: result.user
         });
       } else {
-        req.flash("toast", "Accès non-autorisé");
+        req.flash("toast", "Accès non-autorisé !");
         return res.status(403).redirect("/");
       }
     })
@@ -231,7 +231,7 @@ module.exports.postAccount = (req, res) => {
       }
 
       req.session.user.username = user.username;
-      req.flash('toast', 'Compte modifié avec succès !');
+      req.flash('toast', 'Vos modifications ont bien été prises en compte !');
       return res.status(201).redirect('/account');
     })
     .catch(error => {
