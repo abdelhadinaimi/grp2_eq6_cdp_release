@@ -1,9 +1,14 @@
+const issueRepo = require("../repositories/issue.repository");
 const projectRepo = require("../repositories/project.repository");
-const {errorGeneralMessages, global:{viewRoutes}} = require("../util/constants");
+
+const {errorGeneralMessages} = require("../util/constants");
+const titlesIssue = require('../util/constants').global.titles.issue;
+const {routes} = require('../util/constants').global;
+const viewsIssue = require('../util/constants').global.views.issue;
 
 module.exports.getProjectIssues = (req, res) => {
   const userId = req.session.user._id;
-  return projectRepo
+  return issueRepo
     .getProjectIssues(req.params.projectId, userId)
     .then(project => {
       if (project) {
@@ -11,8 +16,8 @@ module.exports.getProjectIssues = (req, res) => {
         const isPm = (project.collaborators.findIndex(collaborator =>
           (collaborator._id.toString() === userId.toString() && collaborator.userType === "pm")) >= 0);
 
-        return res.render("project/issues", {
-          pageTitle: "Issues",
+        return res.render(viewsIssue.issues, {
+          pageTitle: titlesIssue.issues,
           errors: [],
           url: 'iss',
           isPo: isPo,
@@ -21,12 +26,12 @@ module.exports.getProjectIssues = (req, res) => {
         });
       } else {
         req.flash("toast", errorGeneralMessages.accessNotAuthorized);
-        return res.status(403).redirect("/");
+        return res.status(403).redirect(routes.index);
       }
     })
     .catch(err => {
       console.log(err);
-      return res.status(500).redirect("/500");
+      return res.status(500).redirect(routes.error["500"]);
     });
 };
 
@@ -37,8 +42,8 @@ module.exports.getAdd = (req, res) => {
     .hasAuthorizationOnProject(projectId, req.session.user._id, ["po", "pm"])
     .then(result => {
       if (result) {
-        return res.render("project/add-edit-issue", {
-          pageTitle: "Nouvelle Issue",
+        return res.render(viewsIssue.addEdit, {
+          pageTitle: titlesIssue.add,
           errors: [],
           values: undefined,
           projectId: projectId,
@@ -48,12 +53,12 @@ module.exports.getAdd = (req, res) => {
         });
       } else {
         req.flash("toast", errorGeneralMessages.accessNotAuthorized);
-        return res.status(403).redirect("/projects/" + projectId + "/issues");
+        return res.status(403).redirect(routes.issue.issues(projectId));
       }
     })
     .catch(err => {
       console.log(err);
-      return res.status(500).redirect("/500");
+      return res.status(500).redirect(routes.error["500"]);
     });
 };
 
@@ -69,8 +74,8 @@ module.exports.postIssue = (req, res) => {
   };
 
   if (!req.validation.success) {
-    return res.status(422).render(viewRoutes.addEditIssue, {
-      pageTitle: "Nouvelle Issue",
+    return res.status(422).render(viewsIssue.addEdit, {
+      pageTitle: titlesIssue.add,
       errors: req.validation.errors,
       values: issue,
       projectId: req.params.projectId,
@@ -80,42 +85,42 @@ module.exports.postIssue = (req, res) => {
     });
   }
 
-  return projectRepo.createIssue(req.params.projectId, issue, req.session.user._id)
+  return issueRepo.createIssue(req.params.projectId, issue, req.session.user._id)
     .then(result => {
       if (!result.success) {
         req.flash("toast", result.error);
-        return res.status(403).redirect("/projects/" + req.params.projectId);
+        return res.status(403).redirect(routes.project.project(req.params.projectId));
       }
 
       req.flash("toast", "Issue créée avec succès !");
-      return res.status(201).redirect("/projects/" + req.params.projectId + "/issues");
+      return res.status(201).redirect(routes.issue.issues(req.params.projectId));
     })
     .catch(err => {
       console.log(err);
-      return res.status(500).redirect("/500");
+      return res.status(500).redirect(routes.error["500"]);
     });
 };
 
 module.exports.getEdit = (req, res) => {
   const {issueId} = req.params;
 
-  projectRepo
+  issueRepo
     .getProjectIssues(req.params.projectId, req.session.user._id)
     .then(project => {
       if (!project) {
         req.flash("toast", errorGeneralMessages.accessNotAuthorized);
-        return res.status(403).redirect("/");
+        return res.status(403).redirect(routes.index);
       }
 
       const issue = project.issues.find(issue => issue._id.toString() === issueId.toString());
 
       if (!issue) {
         req.flash("toast", errorGeneralMessages.accessNotAuthorized);
-        return res.status(403).redirect("/");
+        return res.status(403).redirect(routes.index);
       }
 
-      return res.render("project/add-edit-issue", {
-        pageTitle: "Éditer Issue",
+      return res.render(viewsIssue.addEdit, {
+        pageTitle: titlesIssue.edit,
         errors: [],
         values: issue,
         projectId: req.params.projectId,
@@ -126,7 +131,7 @@ module.exports.getEdit = (req, res) => {
     })
     .catch(err => {
       console.log(err);
-      return res.status(500).redirect("/500");
+      return res.status(500).redirect(routes.error["500"]);
     });
 };
 
@@ -143,8 +148,8 @@ module.exports.putEdit = (req, res) => {
   };
 
   if (!req.validation.success) {
-    return res.status(422).render(viewRoutes.addEditIssue, {
-      pageTitle: "Éditer Issue",
+    return res.status(422).render(viewsIssue.addEdit, {
+      pageTitle: titlesIssue.edit,
       errors: req.validation.errors,
       values: issue,
       projectId: req.params.projectId,
@@ -153,20 +158,20 @@ module.exports.putEdit = (req, res) => {
       editing: true
     });
   }
-  return projectRepo
+  return issueRepo
     .updateIssue(req.params.projectId, issue, req.session.user._id)
     .then(result => {
       if (!result.success) {
         req.flash("toast", result.error);
-        return res.status(403).redirect("/projects/" + req.params.projectId + "/issues");
+        return res.status(403).redirect(routes.issue.issues(req.params.projectId));
       }
 
       req.flash("toast", "Issue mise à jour !");
-      return res.status(201).redirect("/projects/" + req.params.projectId + "/issues");
+      return res.status(201).redirect(routes.issue.issues(req.params.projectId));
     })
     .catch(err => {
       console.log(err);
-      return res.status(500).redirect("/500");
+      return res.status(500).redirect(routes.error["500"]);
     });
 };
 
@@ -175,18 +180,18 @@ module.exports.deleteIssue = (req, res) => {
   const {issueId} = req.params;
   const userId = req.session.user._id;
 
-  projectRepo
+  issueRepo
     .deleteIssue(projectId, issueId, userId)
     .then(result => {
       if (!result.success) {
         req.flash("toast", result.errors.error);
-        return res.status(403).redirect("/");
+        return res.status(403).redirect(routes.index);
       }
       req.flash("toast", "Issue supprimée avec succès !");
-      return res.status(200).redirect("/projects/" + projectId + "/issues");
+      return res.status(200).redirect(routes.issue.issues(projectId));
     })
     .catch(err => {
       console.log(err);
-      return res.status(500).redirect('/500');
+      return res.status(500).redirect(routes.error["500"]);
     });
 };

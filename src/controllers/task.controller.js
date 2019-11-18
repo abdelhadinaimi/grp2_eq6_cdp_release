@@ -1,11 +1,15 @@
+const taskRepo = require("../repositories/task.repository");
 const projectRepo = require("../repositories/project.repository");
-const { errorGeneralMessages, global: { appRoutes } } = require("../util/constants");
-const { viewRoutes } = require("../util/constants").global;
+
+const {errorGeneralMessages} = require("../util/constants");
+const titlesTask = require('../util/constants').global.titles.task;
+const {routes} = require('../util/constants').global;
+const viewsTask = require('../util/constants').global.views.task;
 
 module.exports.getProjectTasks = (req, res) => {
   const userId = req.session.user._id;
 
-  return projectRepo
+  return taskRepo
     .getProjectTasks(req.params.projectId, userId)
     .then(project => {
       if (project) {
@@ -13,8 +17,8 @@ module.exports.getProjectTasks = (req, res) => {
         const isPm = (project.collaborators.findIndex(collaborator =>
           (collaborator._id.toString() === userId.toString() && collaborator.userType === "pm")) >= 0);
 
-        return res.render("project/tasks", {
-          pageTitle: "Tâches",
+        return res.render(viewsTask.tasks, {
+          pageTitle: titlesTask.tasks,
           errors: [],
           url: 'tas',
           isPo: isPo,
@@ -23,12 +27,12 @@ module.exports.getProjectTasks = (req, res) => {
         });
       } else {
         req.flash("toast", errorGeneralMessages.accessNotAuthorized);
-        return res.status(403).redirect("/");
+        return res.status(403).redirect(routes.index);
       }
     })
     .catch(err => {
       console.log(err);
-      return res.status(500).redirect("/500");
+      return res.status(500).redirect(routes.error["500"]);
     });
 };
 
@@ -39,8 +43,8 @@ module.exports.getAdd = (req, res) => {
     .hasAuthorizationOnProject(projectId, req.session.user._id, ["po", "pm"])
     .then(project => {
       if (project) {
-        return res.render("project/add-edit-task", {
-          pageTitle: "Nouvelle Tâche",
+        return res.render(viewsTask.addEdit, {
+          pageTitle: titlesTask.add,
           errors: [],
           values: undefined,
           projectId: projectId,
@@ -50,12 +54,12 @@ module.exports.getAdd = (req, res) => {
         });
       } else {
         req.flash("toast", errorGeneralMessages.accessNotAuthorized);
-        return res.status(403).redirect("/projects/" + projectId + "/tasks");
+        return res.status(403).redirect(routes.task.tasks(projectId));
       }
     })
     .catch(err => {
       console.log(err);
-      return res.status(500).redirect("/500");
+      return res.status(500).redirect(routes.error["500"]);
     });
 };
 
@@ -68,8 +72,8 @@ module.exports.postTask = (req, res) => {
   };
 
   if (!req.validation.success) {
-    return res.status(422).render(viewRoutes.addEditTask, {
-      pageTitle: "Nouvelle Tâche",
+    return res.status(422).render(viewsTask.addEdit, {
+      pageTitle: titlesTask.add,
       errors: req.validation.errors,
       values: task,
       projectId: req.params.projectId,
@@ -79,19 +83,19 @@ module.exports.postTask = (req, res) => {
     });
   }
 
-  projectRepo.createTask(req.params.projectId, task, req.session.user._id)
+  taskRepo.createTask(req.params.projectId, task, req.session.user._id)
     .then(result => {
       if (!result.success) {
         req.flash("toast", result.error);
-        return res.status(403).redirect("/projects/" + req.params.projectId);
+        return res.status(403).redirect(routes.project(req.params.projectId));
       }
 
       req.flash("toast", "Tâche créée avec succès !");
-      return res.status(201).redirect("/projects/" + req.params.projectId + "/tasks");
+      return res.status(201).redirect(routes.task.tasks(req.params.projectId));
     })
     .catch(err => {
       console.log(err);
-      return res.status(500).redirect("/500");
+      return res.status(500).redirect(routes.error["500"]);
     });
 };
 
@@ -99,20 +103,20 @@ module.exports.getMyTasks = (req, res) => {
   const { projectId } = req.params;
   const userId = req.session.user._id;
 
-  return projectRepo
+  return taskRepo
     .getMyTasks(projectId, userId)
     .then(tasks => {
       return res.send(tasks);
     })
     .catch(err => {
       console.log(err);
-      return res.status(500).redirect("/500");
+      return res.status(500).redirect(routes.error["500"]);
     });
 };
 
 module.exports.putTaskState = (req, res) => {
   const projectId = req.params.projectId;
-  const redirectUrl = appRoutes.projectTasks(projectId);
+  const redirectUrl = routes.task.tasks(projectId);
   const task = {
     _id: req.params.taskId,
     state: req.body.state
@@ -123,7 +127,7 @@ module.exports.putTaskState = (req, res) => {
     return res.status(403).redirect(redirectUrl);
   }
 
-  return projectRepo
+  return taskRepo
     .updateTaskState(projectId, req.session.user._id, task)
     .then(result => {
       if (!result.success) {
@@ -135,7 +139,7 @@ module.exports.putTaskState = (req, res) => {
     })
     .catch(err => {
       console.log(err);
-      return res.status(500).redirect('/500');
+      return res.status(500).redirect(routes.error["500"]);
     });
 };
 
@@ -144,19 +148,18 @@ module.exports.deleteTask = (req, res) => {
   const { taskId } = req.params;
   const userId = req.session.user._id;
 
-  projectRepo
+  taskRepo
     .deleteTask(projectId, taskId, userId)
     .then(result => {
       if (!result.success) {
         req.flash("toast", result.errors.error);
-        return res.status(403).redirect("/");
+        return res.status(403).redirect(routes.index);
       }
       req.flash("toast", "Tâche supprimée avec succès !");
-      return res.status(200).redirect("/projects/" + projectId + "/tasks");
+      return res.status(200).redirect(routes.task.tasks(projectId));
     })
     .catch(err => {
       console.log(err);
-      return res.status(500).redirect('/500');
+      return res.status(500).redirect(routes.error["500"]);
     });
 };
-

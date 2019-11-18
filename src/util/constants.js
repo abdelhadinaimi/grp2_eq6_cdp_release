@@ -2,16 +2,84 @@ module.exports.global = {
   app: {
     name: "Nom de l'Application"
   },
-  viewRoutes: {
-    addEdit: "project/add-edit",
-    addEditIssue: "project/add-edit-issue",
-    addEditTask: "project/add-edit-task"
+  views: {
+    error: {
+      404: "error/404",
+      500: "error/505"
+    },
+    index: {
+      connected: "index/index-connected",
+      nonConnected: "index/index-not-connected"
+    },
+    project: {
+      project: "project/project",
+      addEdit: "project/add-edit"
+    },
+    issue: {
+      issues: "issue/issues",
+      addEdit: "issue/add-edit-issue"
+    },
+    task: {
+      tasks: "task/tasks",
+      addEdit: "task/add-edit-task"
+    },
+    user: {
+      register: "user/register",
+      login: "user/login",
+      forgotPassword: "user/forgot-password",
+      resetPassword: "user/reset-password",
+      account: "user/account"
+    }
   },
-  appRoutes: {
-    projectIssues: _id => `/projects/${_id}/issues`,
-    projectTasks: _id => `/projects/${_id}/tasks`,
-    projectId: _id => "/projects/" + _id,
-    notFound: "/500"
+  titles: {
+    error: {
+      404: "Page Non Trouvée",
+      500: "Erreur Interne"
+    },
+    index: "Accueil",
+    project: {
+      add: "Nouveau Projet",
+      edit: "Éditer Projet"
+    },
+    issue: {
+      issues: "Issues",
+      add: "Nouvelle Issue",
+      edit: "Éditer Issue"
+    },
+    task: {
+      tasks: "Tâches",
+      add: "Nouvelle Tâche",
+      edit: ""
+    },
+    user: {
+      register: "Créer un Compte",
+      login: "Connexion",
+      forgotPassword: "Mot de Passe Oublié",
+      resetPassword: "Réinitialisation Mot de Passe",
+      account: "Mon Compte"
+    }
+  },
+  routes: {
+    error: {
+      404: "/404",
+      500: "/500"
+    },
+    index: "/",
+    project: {
+      project: projectId => "/projects/" + projectId
+    },
+    issue: {
+      issues: projectId => "/projects/" + projectId + "/issues"
+    },
+    task: {
+      tasks: projectId => "/projects/" + projectId + "/tasks"
+    },
+    user: {
+      register: "/register",
+      login: "/login",
+      forgotPassword: "/forgot-password",
+      account: "/account"
+    }
   }
 };
 

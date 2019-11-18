@@ -1,8 +1,10 @@
 const projectRepo = require("../repositories/project.repository");
 const userRepo = require("../repositories/user.repository");
-
-const {viewRoutes,appRoutes, app } = require("../util/constants").global;
 const {sendMail} = require("../util/mail");
+
+const { app, routes } = require("../util/constants").global;
+const titlesProject = require('../util/constants').global.titles.project;
+const viewsProject = require('../util/constants').global.views.project;
 
 module.exports.getProject = (req, res) => {
   const {projectId} = req.params;
@@ -15,7 +17,7 @@ module.exports.getProject = (req, res) => {
         const isPm = (project.collaborators.findIndex(collaborator =>
           (collaborator._id._id.toString() === userId.toString() && collaborator.userType === "pm")) >= 0);
 
-        return res.status(200).render('project/project', {
+        return res.status(200).render(viewsProject.project, {
           pageTitle: project.title,
           project: project,
           userId: userId,
@@ -26,17 +28,17 @@ module.exports.getProject = (req, res) => {
         });
       }
 
-      return res.status(500).redirect(appRoutes.notFound);
+      return res.status(500).redirect(routes.error["500"]);
     })
     .catch(err => {
       console.log(err);
-      return res.status(500).redirect(appRoutes.notFound);
+      return res.status(500).redirect(routes.error["500"]);
     });
 };
 
 module.exports.getAdd = (req, res) => {
-  res.render(viewRoutes.addEdit, {
-    pageTitle: "Nouveau Projet",
+  res.render(viewsProject.addEdit, {
+    pageTitle: titlesProject.add,
     errors: [],
     values: undefined,
     editing: false
@@ -52,8 +54,8 @@ module.exports.postAdd = (req, res) => {
   };
 
   if (!req.validation.success) {
-    return res.status(422).render(viewRoutes.addEdit, {
-      pageTitle: "Nouveau Projet",
+    return res.status(422).render(viewsProject.addEdit, {
+      pageTitle: titlesProject.add,
       errors: req.validation.errors,
       values: {title: project.title, dueDate: project.dueDate, description: project.description},
       editing: false
@@ -65,15 +67,15 @@ module.exports.postAdd = (req, res) => {
     .then(result => {
       if (!result) {
         req.flash("toast", "Le projet n'a pas été créé...");
-        return res.status(403).redirect('/');
+        return res.status(403).redirect(routes.index);
       }
 
       req.flash("toast", "Projet créé avec succès !");
-      return res.status(201).redirect("/");
+      return res.status(201).redirect(routes.index);
     })
     .catch(err => {
       console.log(err);
-      return res.status(500).redirect(appRoutes.notFound);
+      return res.status(500).redirect(routes.error["500"]);
     });
 };
 
@@ -84,20 +86,20 @@ module.exports.getEdit = (req, res) => {
   return projectRepo.getProjectById(projectId, userId)
     .then(project => {
       if (project && project.projectOwner.toString() === userId) {
-        return res.render(viewRoutes.addEdit, {
-          pageTitle: "Éditer Projet",
+        return res.render(viewsProject.addEdit, {
+          pageTitle: titlesProject.edit,
           errors: [],
           values: project,
           editing: true
         });
       } else {
         req.flash("toast", "Accès non-autorisé !");
-        return res.status(403).redirect("/");
+        return res.status(403).redirect(routes.index);
       }
     })
     .catch(err => {
       console.error(err);
-      return res.status(500).redirect(appRoutes.notFound);
+      return res.status(500).redirect(routes.error["500"]);
     });
 };
 
@@ -110,8 +112,8 @@ module.exports.putEdit = (req, res) => {
   };
 
   if (!req.validation.success) {
-    return res.status(422).render(viewRoutes.addEdit, {
-      pageTitle: "Éditer Projet",
+    return res.status(422).render(viewsProject.addEdit, {
+      pageTitle: titlesProject.edit,
       errors: req.validation.errors,
       values: {
         id: project.id,
@@ -128,15 +130,15 @@ module.exports.putEdit = (req, res) => {
     .then(result => {
       if (!result.success) {
         req.flash("toast", result.error);
-        return res.status(403).redirect("/");
+        return res.status(403).redirect(routes.index);
       }
 
       req.flash("toast", "Projet mis à jour !");
-      return res.status(201).redirect("/projects/" + project.id);
+      return res.status(201).redirect(routes.project.project(project.id));
     })
     .catch(err => {
       console.log(err);
-      return res.status(500).redirect(appRoutes.notFound);
+      return res.status(500).redirect(routes.error["500"]);
     });
 };
 
@@ -146,14 +148,14 @@ module.exports.deleteProject = (req, res) => {
     .then(result => {
       if (!result.success) {
         req.flash("toast", result.errors.error);
-        return res.status(403).redirect("/");
+        return res.status(403).redirect(routes.index);
       }
       req.flash("toast", "Projet supprimé avec succès !");
-      return res.status(200).redirect("/");
+      return res.status(200).redirect(routes.index);
     })
     .catch(err => {
       console.log(err);
-      return res.status(500).redirect(appRoutes.notFound);
+      return res.status(500).redirect(routes.error["500"]);
     });
 };
 
@@ -174,14 +176,14 @@ module.exports.postInvite = async (req, res) => {
       .then(result => {
         if (result) {
           req.flash('toast', 'Ce contributeur a déjà été ajouté !');
-          return res.redirect(appRoutes.projectId(projectId));
+          return res.redirect(routes.project.project(projectId));
         } else {
           projectRepo
             .addContributorToProject(projectId, userFound._id, req.session.user._id)
             .then(result => {
               if (!result) {
                 req.flash('toast', 'Le contributeur n\'a pas été ajouté...');
-                return res.redirect(appRoutes.projectId(projectId));
+                return res.redirect(routes.project.project(projectId));
               }
 
               const userEmail = userFound.email;
@@ -198,13 +200,13 @@ module.exports.postInvite = async (req, res) => {
             })
             .then(() => {
               req.flash('toast', 'Invitation envoyée !');
-              return res.redirect(appRoutes.projectId(projectId));
+              return res.redirect(routes.project.project(projectId));
             });
         }
       });
   } else {
     req.flash('toast', 'Aucun compte trouvé...');
-    return res.redirect(appRoutes.projectId(projectId));
+    return res.redirect(routes.project.project(projectId));
   }
 };
 
@@ -216,14 +218,14 @@ module.exports.getInvite = (req, res) => {
     .acceptInvitation(projectId, userId)
     .then(result => {
       if (!result)
-        return res.redirect('/');
+        return res.redirect(routes.index);
 
       req.flash('toast', 'Invitation Acceptée !');
-      return res.redirect(appRoutes.projectId(projectId));
+      return res.redirect(routes.project.project(projectId));
     })
     .catch(err => {
       console.log(err);
-      return res.status(500).redirect(appRoutes.notFound);
+      return res.status(500).redirect(routes.error["500"]);
     });
 };
 
@@ -234,7 +236,7 @@ module.exports.deleteInvite = (req, res) => {
   projectRepo
     .removeContributorToProject(projectId, userId ? userId : connectedUserId, connectedUserId)
     .then(result => {
-      const redirectUrl = userId ? appRoutes.projectId(projectId) : '/';
+      const redirectUrl = userId ? routes.project.project(projectId) : routes.index;
       if (result && userId){
         req.flash('toast', 'Contributeur supprimé !');
       }
@@ -245,7 +247,7 @@ module.exports.deleteInvite = (req, res) => {
     })
     .catch(err => {
       console.log(err);
-      return res.status(500).redirect(appRoutes.notFound);
+      return res.status(500).redirect(routes.error["500"]);
     });
 };
 
@@ -257,13 +259,13 @@ module.exports.updateRole = (req, res) => {
 
   if (!req.validation.success) {
     req.flash("toast", "Une erreur s'est produite.");
-    return res.status(403).redirect(appRoutes.projectId(req.params.projectId));
+    return res.status(403).redirect(routes.project.project(req.params.projectId));
   }
 
   return projectRepo
     .updateUserRole(req.params.projectId, req.session.user._id, user)
     .then(result => {
-      const redirectUrl = appRoutes.projectId(req.params.projectId);
+      const redirectUrl = routes.project.project(req.params.projectId);
       if (!result.success) {
         req.flash("toast", result.error);
         return res.status(403).redirect(redirectUrl);
@@ -274,6 +276,6 @@ module.exports.updateRole = (req, res) => {
     })
     .catch(err => {
       console.log(err);
-      return res.status(500).redirect(appRoutes.notFound);
+      return res.status(500).redirect(routes.error["500"]);
     });
 };

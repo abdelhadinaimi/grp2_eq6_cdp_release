@@ -1,19 +1,21 @@
-const os = require('os');
-
 const userRepo = require("../repositories/user.repository");
 const {sendMail} = require('../util/mail');
 
+const titlesUser = require('../util/constants').global.titles.user;
+const {routes} = require('../util/constants').global;
+const viewsUser = require('../util/constants').global.views.user;
+
 module.exports.getRegisterUser = (req, res) => {
-  res.status(200).render('user/register', {
-    pageTitle: 'Créer un Compte',
+  res.status(200).render(viewsUser.register, {
+    pageTitle: titlesUser.register,
     errors: [],
     values: undefined
   });
 };
 
 module.exports.getLoginUser = (req, res) => {
-  res.status(200).render('user/login', {
-    pageTitle: 'Connexion',
+  res.status(200).render(viewsUser.login, {
+    pageTitle: titlesUser.login,
     errors: [],
     values: undefined
   });
@@ -21,19 +23,19 @@ module.exports.getLoginUser = (req, res) => {
 
 module.exports.getLogoutUser = (req, res) => {
   req.session.destroy();
-  res.status(204).redirect('/');
+  res.status(204).redirect(routes.index);
 };
 
 module.exports.getForgotPassword = (req, res) => {
-  res.render('user/forgot-password', {
-    pageTitle: 'Mot de Passe Oublié',
+  res.render(viewsUser.forgotPassword, {
+    pageTitle: titlesUser.forgotPassword,
     info: req.flash('info')
   })
 };
 
 module.exports.getResetPassword = (req, res) => {
-  res.render('user/reset-password', {
-    pageTitle: 'Réinitialisation Mot de Passe',
+  res.render(viewsUser.resetPassword, {
+    pageTitle: titlesUser.resetPassword,
     token: req.params.token,
     errors: [],
     values: undefined
@@ -49,8 +51,8 @@ module.exports.postRegisterUser = (req, res) => {
   };
 
   if (!req.validation.success) {
-    return res.status(422).render('user/register', {
-      pageTitle: 'Créer un Compte',
+    return res.status(422).render(viewsUser.register, {
+      pageTitle: titlesUser.register,
       errors: req.validation.errors,
       values: {
         username: user.username,
@@ -65,8 +67,8 @@ module.exports.postRegisterUser = (req, res) => {
     .upsertUser(user)
     .then(result => {
       if (!result.success) {
-        return res.status(401).render('user/register', {
-          pageTitle: 'Créer un Compte',
+        return res.status(401).render(viewsUser.register, {
+          pageTitle: titlesUser.register,
           errors: result.errors,
           values: {
             username: user.username,
@@ -78,11 +80,11 @@ module.exports.postRegisterUser = (req, res) => {
       }
 
       req.flash('toast', 'Compte créé avec succès !');
-      return res.status(201).redirect('/login');
+      return res.status(201).redirect(routes.user.login);
     })
     .catch(error => {
       console.error(error);
-      res.status(500).redirect('/500');
+      res.status(500).redirect(routes.error["500"]);
     });
 };
 
@@ -96,8 +98,8 @@ module.exports.postLoginUser = (req, res) => {
     .checkLogin(user)
     .then(result => {
       if (!result.success) {
-        return res.status(401).render('user/login', {
-          pageTitle: 'Connexion',
+        return res.status(401).render(viewsUser.login, {
+          pageTitle: titlesUser.login,
           errors: [result.errors],
           values: {email: user.email, password: user.password}
         });
@@ -105,13 +107,13 @@ module.exports.postLoginUser = (req, res) => {
 
       req.flash('toast', 'Bienvenue ' + result.user.username + ' !');
       req.session.user = result.user;
-      const url = (req.session.url !== undefined) ? req.session.url : '/';
+      const url = (req.session.url !== undefined) ? req.session.url : routes.index;
       req.session.url = undefined;
       return res.redirect(url);
     })
     .catch(error => {
       console.error(error);
-      return res.status(500).redirect('/500');
+      return res.status(500).redirect(routes.error["500"]);
     });
 };
 
@@ -132,11 +134,11 @@ module.exports.postForgotPassword = (req, res) => {
     })
     .catch(err => {
       console.log(err);
-      return res.status(500).redirect('/500');
+      return res.status(500).redirect(routes.error["500"]);
     });
 
   req.flash('info', 'Si votre compte existe bien, un mail vous a été envoyé pour réinitialiser votre mot de passe.');
-  res.redirect('/forgot-password');
+  res.redirect(routes.user.forgotPassword);
 };
 
 module.exports.postResetPassword = (req, res) => {
@@ -145,8 +147,8 @@ module.exports.postResetPassword = (req, res) => {
   const {confirmPassword} = req.body;
 
   if (!req.validation.success) {
-    return res.status(422).render('user/reset-password', {
-      pageTitle: 'Réinitialisation Mot de Passe',
+    return res.status(422).render(viewsUser.resetPassword, {
+      pageTitle: titlesUser.resetPassword,
       token: token,
       errors: req.validation.errors,
       values: {
@@ -160,14 +162,14 @@ module.exports.postResetPassword = (req, res) => {
     .resetPassword(token, password)
     .then(result => {
       if (!result.success) {
-        return res.redirect('/');
+        return res.redirect(routes.index);
       }
       req.flash('toast', 'Le mot de passe a bien été réinitialisé.');
-      return res.redirect('/login');
+      return res.redirect(routes.user.login);
     })
     .catch(err => {
       console.log(err);
-      return res.status(500).redirect('/500');
+      return res.status(500).redirect(routes.error["500"]);
     })
 };
 
@@ -176,20 +178,20 @@ module.exports.getAccount = (req, res) => {
     .getUser(req.session.user._id)
     .then(result => {
       if (result.success) {
-        return res.render("user/account", {
-          pageTitle: "Mon compte",
+        return res.render(viewsUser.account, {
+          pageTitle: titlesUser.account,
           errors: [],
           url: 'iss',
           values: result.user
         });
       } else {
         req.flash("toast", "Accès non-autorisé !");
-        return res.status(403).redirect("/");
+        return res.status(403).redirect(routes.index);
       }
     })
     .catch(err => {
       console.log(err);
-      return res.status(500).redirect("/500");
+      return res.status(500).redirect(routes.error["500"]);
     });
 };
 
@@ -202,8 +204,8 @@ module.exports.postAccount = (req, res) => {
     confirmPassword: req.body.confirmPassword
   };
   if (!req.validation.success && (user.password || user.confirmPassword)) {
-    return res.status(422).render('user/account', {
-      pageTitle: 'Mon Compte',
+    return res.status(422).render(viewsUser.account, {
+      pageTitle: titlesUser.account,
       errors: req.validation.errors,
       values: {
         username: user.username,
@@ -218,8 +220,8 @@ module.exports.postAccount = (req, res) => {
     .upsertUser(user)
     .then(result => {
       if (!result.success) {
-        return res.status(401).render('user/account', {
-          pageTitle: 'Mon Compte',
+        return res.status(401).render(viewsUser.account, {
+          pageTitle: titlesUser.account,
           errors: result.errors,
           values: {
             username: user.username,
@@ -232,10 +234,10 @@ module.exports.postAccount = (req, res) => {
 
       req.session.user.username = user.username;
       req.flash('toast', 'Vos modifications ont bien été prises en compte !');
-      return res.status(201).redirect('/account');
+      return res.status(201).redirect(routes.user.account);
     })
     .catch(error => {
       console.error(error);
-      return res.status(500).redirect('/500');
+      return res.status(500).redirect(routes.error["500"]);
     });
 };
