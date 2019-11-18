@@ -88,6 +88,27 @@ module.exports.roleValidation = [
   .withMessage(errorProjectMessages.role.values)
 ];
 
+module.exports.taskValidations = [
+  body("cost")
+    .not()
+    .isEmpty()
+    .withMessage(errorTaskMessages.cost.empty)
+    .isFloat({min:0.5})
+    .withMessage(errorTaskMessages.cost.min),
+  body("description")
+    .not()
+    .isEmpty()
+    .withMessage(errorTaskMessages.description.empty)
+    .isLength({max:3000})
+    .withMessage(errorTaskMessages.description.max),
+  body("definitionOfDone")
+    .not()
+    .isEmpty()
+    .withMessage(errorTaskMessages.definitionOfDone.empty)
+    .isLength({max:3000})
+    .withMessage(errorTaskMessages.definitionOfDone.max)
+];
+
 module.exports.taskStateValidation = [
   body("state")
   .matches(/^(TODO|DOING|DONE|TOTEST|TESTING|TESTED)$/)

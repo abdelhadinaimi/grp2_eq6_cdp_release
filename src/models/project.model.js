@@ -39,7 +39,7 @@ const projectSchema = new Schema(
 );
 
 projectSchema.statics.findIfUserIsPo = function(projectId, userId) {
-  return  this.findOne({_id: projectId, projectOwner: userId});
+  return this.findOne({_id: projectId, projectOwner: userId});
 };
 
 projectSchema.statics.findIfUserType = function(projectId, userId, userTypes) {

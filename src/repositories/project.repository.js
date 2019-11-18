@@ -147,6 +147,13 @@ module.exports.isContributorFromProject = (projectId, contributorId) => new Prom
     .catch(err => reject(err));
 });
 
+module.exports.hasAuthorizationOnProject = (projectId, contributorId, authorization) => new Promise((resolve, reject) => {
+  Project
+    .findIfUserType(projectId, contributorId, authorization)
+    .then(project => project ? resolve(true) : resolve(false))
+    .catch(err => reject(err));
+});
+
 module.exports.addContributorToProject = (projectId, contributorId, addId) => new Promise((resolve, reject) => {
   Project
     .findIfUserType(projectId, addId, ['po', 'pm'])
@@ -194,7 +201,6 @@ module.exports.acceptInvitation = (projectId, contributorId) => new Promise((res
     .then(() => resolve(true))
     .catch(err => reject(err));
 });
-
 
 /** ISSUES */
 
@@ -292,7 +298,6 @@ module.exports.updateUserRole = (projectId, userId, user) => new Promise((resolv
     .catch(err => reject(err));
 });
 
-
 /** TASKS */
 
 module.exports.getProjectTasks = (projectId, userId) => new Promise((resolve, reject) => {
@@ -343,7 +348,6 @@ module.exports.getMyTasks = (projectId, userId) => new Promise((resolve, reject)
     })
     .catch(err => reject(err));
 });
-
 
 module.exports.updateTaskState = async (projectId, userId, task) => {
   const errorMessage = { success: false, error: errorGeneralMessages.modificationNotAllowed };

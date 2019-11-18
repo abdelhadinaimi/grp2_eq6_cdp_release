@@ -1,14 +1,13 @@
 <%- include('../partials/head.ejs') %>
 <%- include('../project/project-header.ejs') %>
 
-<% if (isPo || isPm) { %>
+<% if (isPo) { %>
 <ul id="settings-dropdown" class="dropdown-content light-blue darken-3">
     <li>
         <a href="/projects/<%= project.id %>/edit" class="white-text">
             Modifier<span class="hide-on-med-and-down"> les informations</span>
         </a>
     </li>
-<% } if (isPo) { %>
     <li>
         <a href="#deleteProject" class="white-text modal-trigger deleteButton" _id="<%= project.id %>">
             Supprimer<span class="hide-on-med-and-down"> le projet</span>
@@ -77,7 +76,7 @@
                         <tr>
                             <th>Name</th>
                             <th>Added by</th>
-                            <th>Role</th>
+                            <th>Rôle</th>
                             <% if (isPo || isPm) { %>
                             <th class="center-align">Action</th>
                             <% } %>
@@ -95,15 +94,16 @@
                                 <td>
                                     <% if (collaborator.activated) { %>
                                         <% if (isPo && collaborator.userType !== 'po') { %>
-                                            <div class="input-field row">
-                                                <select id="collabType" name="collabType">
-                                                    <option value="pm"
-                                                        <%= collaborator.userType  ===  "pm" ? "selected" : "" %>>
-                                                        Projet Manager</option>
-                                                    <option value="user"
-                                                        <%= collaborator.userType  ===  "user" ? "selected" : "" %>>
-                                                        Developer</option>
-                                                </select>
+                                            <div class="input-field">
+                                                <form action="/projects/<%=project.id%>/<%=collaborator._id._id%>/role?_method=PUT" method="post">
+                                                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                                    <select id="role" name="role">
+                                                        <option value="pm"
+                                                                <%= collaborator.userType  ===  "pm" ? "selected" : "" %>>Projet Manager</option>
+                                                        <option value="user"
+                                                                <%= collaborator.userType  ===  "user" ? "selected" : "" %>>Developer</option>
+                                                    </select>
+                                                </form>
                                             </div>
                                         <% } else { %>
                                             <%= (collaborator.userType === 'po') ? 'Project Owner' : (collaborator.userType === 'pm') ? 'Project Manager' : 'Developer' %>
@@ -149,6 +149,10 @@
 <script>
     $(document).ready(() => {
         $('select').formSelect();
+
+        $('select').on('change', (event) => {
+          event.target.closest("form").submit();
+        });
     });
 </script>
 

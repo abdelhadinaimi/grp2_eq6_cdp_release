@@ -13,7 +13,7 @@ module.exports.getProject = (req, res) => {
       if (project) {
         const isPo = (project.projectOwner.toString() === userId.toString());
         const isPm = (project.collaborators.findIndex(collaborator =>
-          (collaborator._id.toString() === userId.toString() && collaborator.userType === "pm")) >= 0);
+          (collaborator._id._id.toString() === userId.toString() && collaborator.userType === "pm")) >= 0);
 
         return res.status(200).render('project/project', {
           pageTitle: project.title,
@@ -254,8 +254,9 @@ module.exports.updateRole = (req, res) => {
     _id: req.params.userId,
     role: req.body.role
   };
+
   if (!req.validation.success) {
-    req.flash("toast", "Une erreur c'est produite");
+    req.flash("toast", "Une erreur s'est produite...");
     return res.status(403).redirect(appRoutes.projectId(req.params.projectId));
   }
 
@@ -268,7 +269,7 @@ module.exports.updateRole = (req, res) => {
         return res.status(403).redirect(redirectUrl);
       }
 
-      req.flash("toast", "Role mis à jour !");
+      req.flash("toast", "Rôle mis à jour !");
       return res.status(201).redirect(redirectUrl);
     })
     .catch(err => {

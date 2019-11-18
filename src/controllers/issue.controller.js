@@ -6,6 +6,7 @@ module.exports.getProjectIssues = (req, res) => {
     .getProjectIssues(req.params.projectId, req.session.user._id)
     .then(project => {
       if (project) {
+
         return res.render("project/issues", {
           pageTitle: "Issues",
           errors: [],
@@ -24,22 +25,24 @@ module.exports.getProjectIssues = (req, res) => {
 };
 
 module.exports.getAdd = (req, res) => {
+  const {projectId} = req.params;
+
   return projectRepo
-    .getProjectIssues(req.params.projectId, req.session.user._id)
-    .then(project => {
-      if (project) {
+    .hasAuthorizationOnProject(projectId, req.session.user._id, ["po", "pm"])
+    .then(result => {
+      if (result) {
         return res.render("project/add-edit-issue", {
           pageTitle: "Nouvelle Issue",
           errors: [],
           values: undefined,
-          projectId: req.params.projectId,
+          projectId: projectId,
           url: 'iss',
           editing: false,
-          project
+          project: {id: projectId}
         });
       } else {
         req.flash("toast", errorGeneralMessages.accessNotAuthorized);
-        return res.status(403).redirect("/");
+        return res.status(403).redirect("/projects/" + projectId + "/issues");
       }
     })
     .catch(err => {

@@ -25,22 +25,24 @@ module.exports.getProjectTasks = (req, res) => {
 };
 
 module.exports.getAdd = (req, res) => {
+  const {projectId} = req.params;
+
   return projectRepo
-    .getProjectIssues(req.params.projectId, req.session.user._id)
+    .hasAuthorizationOnProject(projectId, req.session.user._id, ["po", "pm"])
     .then(project => {
       if (project) {
         return res.render("project/add-edit-task", {
           pageTitle: "Nouvelle Tâche",
           errors: [],
           values: undefined,
-          projectId: req.params.projectId,
+          projectId: projectId,
           url: 'tas',
           editing: false,
-          project
+          project: {id: projectId}
         });
       } else {
         req.flash("toast", errorGeneralMessages.accessNotAuthorized);
-        return res.status(403).redirect("/");
+        return res.status(403).redirect("/projects/" + projectId + "/tasks");
       }
     })
     .catch(err => {
@@ -69,7 +71,7 @@ module.exports.postTask = (req, res) => {
     });
   }
 
-  return projectRepo.createTask(req.params.projectId, task, req.session.user._id)
+  projectRepo.createTask(req.params.projectId, task, req.session.user._id)
     .then(result => {
       if (!result.success) {
         req.flash("toast", result.error);
@@ -106,7 +108,7 @@ module.exports.putTaskState = (req, res) => {
   const task = {
     _id: req.params.taskId,
     state: req.body.state
-  }
+  };
 
   if (!req.validation.success) {
     req.flash('toast', req.validation.errors[0].state);
@@ -117,7 +119,7 @@ module.exports.putTaskState = (req, res) => {
     .updateTaskState(projectId, req.session.user._id, task)
     .then(result => {
       if (!result.success) {
-        req.flash('toast', result.error)
+        req.flash('toast', result.error);
         return res.redirect(redirectUrl);
       }
       req.flash('toast', 'Tâche mise à jour !');

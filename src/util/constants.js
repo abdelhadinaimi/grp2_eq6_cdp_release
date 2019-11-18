@@ -21,6 +21,7 @@ module.exports.errorGeneralMessages = {
   modificationNotAllowed: "Modification non Autorisée !",
   deleteNotAllowed: "Suppression non Autorisée !"
 };
+
 module.exports.errorUserMessages = {
   username: {
     exists: "Le nom d'utilisateur existe déjà.",
@@ -88,7 +89,19 @@ module.exports.errorIssueMessages = {
 };
 
 module.exports.errorTaskMessages = {
+  cost: {
+    empty: "Il faut spécifier un coût.",
+    min: "Le coût doit être supérieur à 0,5."
+  },
+  description: {
+    empty: "Il faut spécifier une description.",
+    max: "La description ne doit pas dépasser 3000 char."
+  },
+  definitionOfDone: {
+    empty: "Il faut spécifier une Definition of Done.",
+    max: "La Definition of Done ne doit pas dépasser 3000 char."
+  },
   state: {
     match: "If faut spécifier un état valide"
   }
-}
+};
