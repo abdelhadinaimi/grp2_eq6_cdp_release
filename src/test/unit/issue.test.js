@@ -2,7 +2,7 @@ const expect = require('chai').expect;
 const mongoose = require('mongoose');
 
 const buildConnection = require('../../config/database.config');
-const projectRepo = require('../../repositories/project.repository');
+const issueRepo = require('../../repositories/issue.repository');
 const Project = mongoose.model('Project');
 const User = mongoose.model('User');
 
@@ -61,14 +61,14 @@ describe('UT Issue Repository', () => {
   describe('Issue Creation', () => {
     it('should create a new issue', async () => {
       const issue = buildIssue();
-      const result = await projectRepo.createIssue(fakeProjectId,issue,fakeUserId1);
+      const result = await issueRepo.createIssue(fakeProjectId,issue,fakeUserId1);
       expect(result.success).to.be.true;
     });
 
     it('should raise an error if a new issue is created without a required field', async () => {
-      let result1 = await projectRepo.createIssue(fakeProjectId,buildIssue({userType:null}),fakeUserId1);
+      let result1 = await issueRepo.createIssue(fakeProjectId,buildIssue({userType:null}),fakeUserId1);
       expect(result1.success).to.be.false;
-      let result2 = await projectRepo.createIssue(fakeProjectId,buildIssue({userReason:null}),fakeUserId1);
+      let result2 = await issueRepo.createIssue(fakeProjectId,buildIssue({userReason:null}),fakeUserId1);
       expect(result2.success).to.be.false;
     });
   });
@@ -87,7 +87,7 @@ describe('UT Issue Repository', () => {
         priority: "high",
         testLink: "testLink2"
       };
-      const result = await projectRepo.updateIssue(
+      const result = await issueRepo.updateIssue(
         fakeProjectId,
         { ...issue, _id: project.issues[0]._id.toString() },
         fakeUserId1
@@ -97,7 +97,7 @@ describe('UT Issue Repository', () => {
     });
 
     it('shoud raise an error if updating a non existing issue', done => {
-      projectRepo.updateIssue(fakeProjectId, buildIssue({_id: fakeProjectId}), fakeUserId1)
+      issueRepo.updateIssue(fakeProjectId, buildIssue({_id: fakeProjectId}), fakeUserId1)
         .then(result => {
           expect(result.success).to.be.false;
           done();
@@ -109,7 +109,7 @@ describe('UT Issue Repository', () => {
       project.issues.push(buildIssue({_id:fakeIssueId}));
       await project.save();
 
-      const result = await projectRepo.updateIssue(fakeProjectId,buildIssue(),fakeUserId2);
+      const result = await issueRepo.updateIssue(fakeProjectId,buildIssue(),fakeUserId2);
       expect(result.success).to.be.false;
     });
   });
@@ -120,12 +120,12 @@ describe('UT Issue Repository', () => {
       project.issues.push(buildIssue());
       await project.save();
 
-      const result = await projectRepo.deleteIssue(fakeProjectId,fakeIssueId,fakeUserId1);
+      const result = await issueRepo.deleteIssue(fakeProjectId,fakeIssueId,fakeUserId1);
       expect(result.success).to.be.true;
     });
 
     it('should raise an error if deleting a non existing issue', done => {
-      projectRepo
+      issueRepo
         .deleteIssue(fakeProjectId, buildIssue({_id: fakeProjectId}), fakeUserId1)
         .then(result => {
           expect(result.success).to.be.false;
@@ -138,7 +138,7 @@ describe('UT Issue Repository', () => {
       project.issues.push(buildIssue({_id: fakeIssueId}));
       await project.save();
 
-      const result = await projectRepo.deleteIssue(fakeProjectId, buildIssue(), fakeUserId2);
+      const result = await issueRepo.deleteIssue(fakeProjectId, buildIssue(), fakeUserId2);
       expect(result.success).to.be.false;
     });
   });

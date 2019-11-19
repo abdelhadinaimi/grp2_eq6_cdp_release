@@ -17,8 +17,6 @@ route.post('/add', taskValidations, validate, taskController.postTask);
 
 route.put('/:taskId', taskValidations, validate, taskController.putEdit);
 
-/*
-route.delete('/:taskId', isAuth, taskController.deleteIssue);
-*/
+route.delete('/:taskId', taskController.deleteTask);
 
 module.exports = route;

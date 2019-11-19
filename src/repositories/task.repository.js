@@ -64,7 +64,7 @@ module.exports.updateTaskState = async (projectId, userId, task) => {
 
 module.exports.deleteTask = (projectId, taskId, userId) => new Promise((resolve, reject) => {
   const errorMessage = {success: false, errors: {error: errorGeneralMessages.deleteNotAllowed}};
-  if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(issueId) || !mongoose.Types.ObjectId.isValid(userId))
+  if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(taskId) || !mongoose.Types.ObjectId.isValid(userId))
     return resolve(errorMessage);
 
   return Project
