@@ -1,3 +1,5 @@
+const projects = "/projects/";
+
 module.exports.global = {
   app: {
     name: "Nom de l'Application"
@@ -67,13 +69,13 @@ module.exports.global = {
     },
     index: "/",
     project: {
-      project: projectId => "/projects/" + projectId
+      project: projectId => projects + projectId
     },
     issue: {
-      issues: projectId => "/projects/" + projectId + "/issues"
+      issues: projectId => projects + projectId + "/issues"
     },
     task: {
-      tasks: projectId => "/projects/" + projectId + "/tasks"
+      tasks: projectId => projects + projectId + "/tasks"
     },
     user: {
       register: "/register",

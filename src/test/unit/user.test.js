@@ -6,8 +6,19 @@ const userRepo = require("../../repositories/user.repository");
 const Project = mongoose.model('Project');
 const User = mongoose.model('User');
 
-const user1Id = '5dbccabe7d93dd0015ea3c20';
-const user2Id = '5dbccabe7d93dd0015ea3c21';
+const user1 = {
+  _id: '5dbccabe7d93dd0015ea3c20',
+  username: "Unit Tester 1",
+  email: "unittester1@test.fr",
+  password: "Password1"
+};
+
+const user2 = {
+  _id: "5dbccabe7d93dd0015ea3c21",
+  username: "Unit Tester 2",
+  email: "unittester2@test.fr",
+  password: "Password2"
+};
 
 describe('UT User Repository', () => {
   before((done) => {
@@ -20,16 +31,8 @@ describe('UT User Repository', () => {
 
   describe('User Account Creation', () => {
     it('Create a new user account without problem', (done) => {
-      const user = {
-        _id: user1Id,
-        username: "Unit Tester 1",
-        email: "unittester1@test.fr",
-        password: "Password1",
-        confirmPassword: "Password1"
-      };
-
       userRepo
-        .upsertUser(user)
+        .upsertUser(user1)
         .then(result => {
           expect(result.success).to.be.true;
           done();
@@ -37,15 +40,14 @@ describe('UT User Repository', () => {
     });
 
     it('Create a new user account but it already exists, should raise an error', (done) => {
-      const user = {
-        username: "Unit Tester 1",
-        email: "unittester1@test.fr",
-        password: "Password1",
-        confirmPassword: "Password1"
+      const sameUser1 = {
+        username: user1.username,
+        email: user1.email,
+        password: user1.password
       };
 
       userRepo
-        .upsertUser(user)
+        .upsertUser(sameUser1)
         .then(result => {
           expect(result.success).to.be.false;
           expect(result.errors.length).to.equal(1);
@@ -54,15 +56,8 @@ describe('UT User Repository', () => {
     });
 
     it('Create a second user account without problem', (done) => {
-      const user = {
-        _id: user2Id,
-        username: "Unit Tester 2",
-        email: "unittester2@test.fr",
-        password: "Password2"
-      };
-
       userRepo
-        .upsertUser(user)
+        .upsertUser(user2)
         .then(result => {
           expect(result.success).to.be.true;
           done();
@@ -72,14 +67,10 @@ describe('UT User Repository', () => {
 
   describe('User Account Update', () => {
     it('Update a user account without problem', (done) => {
-      const user = {
-        _id: user1Id,
-        username: "Unit Tester 1 Edited",
-        email: "unittester1@test.fr"
-      };
+      user1.username = "Unit Tester 1 Edited";
 
       userRepo
-        .upsertUser(user)
+        .upsertUser(user1)
         .then(result => {
           expect(result.success).to.be.true;
           done();
@@ -87,14 +78,10 @@ describe('UT User Repository', () => {
     });
 
     it('Update a user account with an username already used, should be false', (done) => {
-      const user = {
-        _id: user2Id,
-        username: "Unit Tester 1 Edited",
-        email: "unittester2@test.fr"
-      };
+      user2.username = "Unit Tester 1 Edited";
 
       userRepo
-        .upsertUser(user)
+        .upsertUser(user2)
         .then(result => {
           expect(result.success).to.be.false;
           done();

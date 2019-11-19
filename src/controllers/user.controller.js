@@ -107,8 +107,8 @@ module.exports.postLoginUser = (req, res) => {
 
       req.flash('toast', 'Bienvenue ' + result.user.username + ' !');
       req.session.user = result.user;
-      const url = (req.session.url !== undefined) ? req.session.url : routes.index;
-      req.session.url = undefined;
+      const url = (req.session.url) ? req.session.url : routes.index;
+      req.session.url = null;
       return res.redirect(url);
     })
     .catch(error => {

@@ -7,6 +7,8 @@ const buildConnection = require('../../config/database.config');
 const User = mongoose.model('User');
 const Project = mongoose.model('Project');
 
+const url = "http://localhost:8080/";
+
 const user = {
   username: 'selenium',
   email: 'selenium@mail.fr',
@@ -26,15 +28,13 @@ const secondProject = {
 describe('US', function () {
   this.timeout(3000);
   let driver;
-  let vars;
 
   before(async function () {
     driver = await new Builder().forBrowser('chrome').build();
-    vars = {}
   });
 
   it('US#01 Register', done => {
-    driver.get("http://localhost:8080/");
+    driver.get(url);
 
     driver
       .findElement(By.css(".teal")).click()
@@ -52,7 +52,7 @@ describe('US', function () {
   });
 
   it('US#02 Login', done => {
-    driver.get("http://localhost:8080/");
+    driver.get(url);
 
     driver
       .findElement(By.css(".green")).click()
@@ -68,7 +68,7 @@ describe('US', function () {
   });
 
   it('US#06 First Project', done => {
-    driver.get("http://localhost:8080/");
+    driver.get(url);
 
     driver
       .findElement(By.css(".waves-effect")).click()

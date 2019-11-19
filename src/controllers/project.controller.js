@@ -171,14 +171,14 @@ module.exports.postInvite = async (req, res) => {
     userFound = await userRepo.findUserBy('username', username);
 
   if (userFound !== null) {
-    projectRepo
+    return projectRepo
       .isContributorFromProject(projectId, userFound._id)
       .then(result => {
         if (result) {
           req.flash('toast', 'Ce contributeur a déjà été ajouté !');
           return res.redirect(routes.project.project(projectId));
         } else {
-          projectRepo
+          return projectRepo
             .addContributorToProject(projectId, userFound._id, req.session.user._id)
             .then(result => {
               if (!result) {
