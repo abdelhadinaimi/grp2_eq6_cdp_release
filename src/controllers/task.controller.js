@@ -41,8 +41,8 @@ module.exports.getAdd = (req, res) => {
 
   return projectRepo
     .hasAuthorizationOnProject(projectId, req.session.user._id, ["po", "pm"])
-    .then(project => {
-      if (project) {
+    .then(result => {
+      if (result) {
         return res.render(viewsTask.addEdit, {
           pageTitle: titlesTask.add,
           errors: [],
@@ -52,6 +52,43 @@ module.exports.getAdd = (req, res) => {
           editing: false,
           project: {id: projectId}
         });
+      } else {
+        req.flash("toast", errorGeneralMessages.accessNotAuthorized);
+        return res.status(403).redirect(routes.task.tasks(projectId));
+      }
+    })
+    .catch(err => {
+      console.log(err);
+      return res.status(500).redirect(routes.error["500"]);
+    });
+};
+
+module.exports.getEdit = (req, res) => {
+  const {projectId} = req.params;
+  const {taskId} = req.params;
+
+  return projectRepo
+    .hasAuthorizationOnProject(projectId, req.session.user._id, ["po", "pm"])
+    .then(result => {
+      if (result) {
+        taskRepo
+          .getTaskById(projectId, taskId)
+          .then(task => {
+            if (task) {
+              return res.render(viewsTask.addEdit, {
+                pageTitle: titlesTask.edit,
+                errors: [],
+                values: task,
+                projectId: projectId,
+                url: 'tas',
+                editing: true,
+                project: {id: projectId}
+              });
+            } else {
+              req.flash("toast", errorGeneralMessages.accessNotAuthorized);
+              return res.status(403).redirect(routes.task.tasks(projectId));
+            }
+          });
       } else {
         req.flash("toast", errorGeneralMessages.accessNotAuthorized);
         return res.status(403).redirect(routes.task.tasks(projectId));
@@ -99,8 +136,48 @@ module.exports.postTask = (req, res) => {
     });
 };
 
+module.exports.putEdit = (req, res) => {
+  const {projectId} = req.params;
+  const {taskId} = req.params;
+
+  const task = {
+    _id: taskId,
+    description: req.body.description,
+    definitionOfDone: req.body.definitionOfDone,
+    cost: req.body.cost,
+    testLink: req.body.testLink
+  };
+
+  if (!req.validation.success) {
+    return res.status(422).render(viewsTask.addEdit, {
+      pageTitle: titlesTask.edit,
+      errors: req.validation.errors,
+      values: task,
+      projectId: projectId,
+      project: {id: projectId},
+      url: 'tas',
+      editing: true
+    });
+  }
+
+  taskRepo.updateTask(req.params.projectId, task)
+    .then(result => {
+      if (!result.success) {
+        req.flash("toast", result.error);
+        return res.status(403).redirect(routes.task.tasks(req.params.projectId));
+      }
+
+      req.flash("toast", "Tâche modifiée avec succès !");
+      return res.status(201).redirect(routes.task.tasks(req.params.projectId));
+    })
+    .catch(err => {
+      console.log(err);
+      return res.status(500).redirect(routes.error["500"]);
+    });
+};
+
 module.exports.getMyTasks = (req, res) => {
-  const { projectId } = req.params;
+  const {projectId} = req.params;
   const userId = req.session.user._id;
 
   return taskRepo
@@ -144,8 +221,8 @@ module.exports.putTaskState = (req, res) => {
 };
 
 module.exports.deleteTask = (req, res) => {
-  const { projectId } = req.params;
-  const { taskId } = req.params;
+  const {projectId} = req.params;
+  const {taskId} = req.params;
   const userId = req.session.user._id;
 
   taskRepo

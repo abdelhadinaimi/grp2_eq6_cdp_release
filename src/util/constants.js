@@ -5,7 +5,7 @@ module.exports.global = {
   views: {
     error: {
       404: "error/404",
-      500: "error/505"
+      500: "error/500"
     },
     index: {
       connected: "index/index-connected",
@@ -49,7 +49,7 @@ module.exports.global = {
     task: {
       tasks: "Tâches",
       add: "Nouvelle Tâche",
-      edit: ""
+      edit: "Éditer Tâche"
     },
     user: {
       register: "Créer un Compte",

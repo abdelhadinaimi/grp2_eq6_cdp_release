@@ -11,13 +11,13 @@ route.put("/:taskId/state", taskStateValidation, validate, taskController.putTas
 
 route.get('/add', taskController.getAdd);
 
+route.get('/:taskId/edit', taskController.getEdit);
+
 route.post('/add', taskValidations, validate, taskController.postTask);
 
+route.put('/:taskId', taskValidations, validate, taskController.putEdit);
+
 /*
-route.get('/:taskId/edit', isAuth, taskController.getEdit);
-
-route.put('/:taskId', isAuth, taskValidations, validate, taskController.putEdit);
-
 route.delete('/:taskId', isAuth, taskController.deleteIssue);
 */
 
