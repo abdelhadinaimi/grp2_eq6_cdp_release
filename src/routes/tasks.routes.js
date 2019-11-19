@@ -14,11 +14,12 @@ route.get('/add', taskController.getAdd);
 route.post('/add', taskValidations, validate, taskController.postTask);
 
 /*
-route.get('/:taskId/edit', isAuth, taskController.getEdit);
+route.get('/:taskId/edit', taskController.getEdit);
 
-route.put('/:taskId', isAuth, taskValidations, validate, taskController.putEdit);
+route.put('/:taskId', taskValidations, validate, taskController.putEdit);
 
-route.delete('/:taskId', isAuth, taskController.deleteIssue);
 */
+
+route.delete('/:taskId', taskController.deleteTask);
 
 module.exports = route;

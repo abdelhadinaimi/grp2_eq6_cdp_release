@@ -147,6 +147,7 @@ module.exports.deleteTask = (req, res) => {
   const { projectId } = req.params;
   const { taskId } = req.params;
   const userId = req.session.user._id;
+  console.log("deleteTask" + taskId);
 
   taskRepo
     .deleteTask(projectId, taskId, userId)
