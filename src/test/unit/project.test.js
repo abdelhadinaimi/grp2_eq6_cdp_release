@@ -152,7 +152,7 @@ describe('UT Project Repository', () => {
         .updateProject(project, userId)
         .then(result => {
           expect(result.success).to.be.false;
-          expect(result.error).to.equal('Modification non Autorisée !');
+          expect(result.error).to.equal('Modification non-autorisée !');
           done();
         });
     });
@@ -167,7 +167,7 @@ describe('UT Project Repository', () => {
         .updateProject(project, fakeUserId)
         .then(result => {
           expect(result.success).to.be.false;
-          expect(result.error).to.equal('Modification non Autorisée !');
+          expect(result.error).to.equal('Modification non-autorisée !');
           done();
         });
     });
@@ -188,7 +188,7 @@ describe('UT Project Repository', () => {
         .deleteProject(fakeProjectId, userId)
         .then(result => {
           expect(result.success).to.be.false;
-          expect(result.errors.error).to.equal('Suppression non Autorisée !');
+          expect(result.errors.error).to.equal('Suppression non-autorisée !');
           done();
         });
     });
@@ -198,7 +198,7 @@ describe('UT Project Repository', () => {
         .deleteProject(project2Id, fakeUserId)
         .then(result => {
           expect(result.success).to.be.false;
-          expect(result.errors.error).to.equal('Suppression non Autorisée !');
+          expect(result.errors.error).to.equal('Suppression non-autorisée !');
           done();
         });
     });
