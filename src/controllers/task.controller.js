@@ -23,12 +23,44 @@ module.exports.getProjectTasks = (req, res) => {
           url: 'tas',
           isPo: isPo,
           isPm: isPm,
+          mine: false,
           project
         });
       } else {
         req.flash("toast", errorGeneralMessages.accessNotAuthorized);
         return res.status(403).redirect(routes.index);
       }
+    })
+    .catch(err => {
+      console.log(err);
+      return res.status(500).redirect(routes.error["500"]);
+    });
+};
+
+module.exports.getMyTasks = (req, res) => {
+  const {projectId} = req.params;
+  const userId = req.session.user._id;
+
+  return taskRepo
+    .getMyTasks(projectId, userId)
+    .then(project => {
+      if (!project) {
+        req.flash("toast", errorGeneralMessages.accessNotAuthorized);
+        return res.status(403).redirect(routes.task.tasks(projectId));
+      }
+
+      const isPo = (project.projectOwner.toString() === userId.toString());
+      const isPm = (project.collaborators.findIndex(collaborator =>
+        (collaborator._id.toString() === userId.toString() && collaborator.userType === "pm")) >= 0);
+
+      return res.render(viewsTask.tasks, {
+        pageTitle: titlesTask.mine,
+        url: 'tas',
+        isPo: isPo,
+        isPm: isPm,
+        mine: true,
+        project
+      });
     })
     .catch(err => {
       console.log(err);
@@ -71,7 +103,7 @@ module.exports.getEdit = (req, res) => {
     .hasAuthorizationOnProject(projectId, req.session.user._id, ["po", "pm"])
     .then(result => {
       if (result) {
-        taskRepo
+        return taskRepo
           .getTaskById(projectId, taskId)
           .then(task => {
             if (task) {
@@ -120,7 +152,8 @@ module.exports.postTask = (req, res) => {
     });
   }
 
-  taskRepo.createTask(req.params.projectId, task, req.session.user._id)
+  return taskRepo
+    .createTask(req.params.projectId, task, req.session.user._id)
     .then(result => {
       if (!result.success) {
         req.flash("toast", result.error);
@@ -160,7 +193,8 @@ module.exports.putEdit = (req, res) => {
     });
   }
 
-  taskRepo.updateTask(req.params.projectId, task)
+  return taskRepo
+    .updateTask(req.params.projectId, task)
     .then(result => {
       if (!result.success) {
         req.flash("toast", result.error);
@@ -169,21 +203,6 @@ module.exports.putEdit = (req, res) => {
 
       req.flash("toast", "Tâche modifiée avec succès !");
       return res.status(201).redirect(routes.task.tasks(req.params.projectId));
-    })
-    .catch(err => {
-      console.log(err);
-      return res.status(500).redirect(routes.error["500"]);
-    });
-};
-
-module.exports.getMyTasks = (req, res) => {
-  const {projectId} = req.params;
-  const userId = req.session.user._id;
-
-  return taskRepo
-    .getMyTasks(projectId, userId)
-    .then(tasks => {
-      return res.send(tasks);
     })
     .catch(err => {
       console.log(err);
@@ -224,7 +243,6 @@ module.exports.deleteTask = (req, res) => {
   const {projectId} = req.params;
   const {taskId} = req.params;
   const userId = req.session.user._id;
-  console.log("deleteTask" + taskId);
 
   taskRepo
     .deleteTask(projectId, taskId, userId)

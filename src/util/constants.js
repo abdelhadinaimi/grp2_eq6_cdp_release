@@ -49,7 +49,8 @@ module.exports.global = {
     task: {
       tasks: "Tâches",
       add: "Nouvelle Tâche",
-      edit: "Éditer Tâche"
+      edit: "Éditer Tâche",
+      mine: "Mes Tâches"
     },
     user: {
       register: "Créer un Compte",

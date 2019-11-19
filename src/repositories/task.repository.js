@@ -30,7 +30,7 @@ module.exports.updateTask = (projectId, task) => new Promise((resolve, reject) =
     if (field !== '_id')
       set[`tasks.$.${field}`] = task[field];
 
-  Project
+  return Project
     .findOneAndUpdate({_id: projectId, "tasks._id": task._id}, {$set: set})
     .then(project => {
       if (project)
@@ -82,7 +82,7 @@ module.exports.deleteTask = (projectId, taskId, userId) => new Promise((resolve,
 });
 
 module.exports.getTaskById = (projectId, taskId) => new Promise((resolve, reject) => {
-  Project
+  return Project
     .findById(projectId, 'tasks')
     .then(project => {
       if (project) {
@@ -120,14 +120,15 @@ module.exports.getMyTasks = (projectId, userId) => new Promise((resolve, reject)
     return resolve(null);
 
   return Project
-    .findOne({_id: projectId, 'collaborators._id': userId}, 'tasks')
+    .findOne({_id: projectId, 'collaborators._id': userId}, 'tasks projectOwner collaborators')
     .then(project => {
       if (!project) return resolve(null);
 
-      const tasks = project.tasks.filter(task =>
+      project.id = project._id;
+      project.tasks = project.tasks.filter(task =>
         task.assignedContributors.findIndex(contr => contr._id.toString() === userId.toString()) >= 0);
 
-      return resolve(tasks);
+      return resolve(project);
     })
     .catch(err => reject(err));
 });
