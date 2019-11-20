@@ -213,14 +213,14 @@ module.exports.putEdit = (req, res) => {
 module.exports.putTaskState = (req, res) => {
   const projectId = req.params.projectId;
   const redirectUrl = routes.task.tasks(projectId);
+  console.log(req.body);
   const task = {
     _id: req.params.taskId,
     state: req.body.state
   };
 
   if (!req.validation.success) {
-    req.flash('toast', req.validation.errors[0].state);
-    return res.status(403).redirect(redirectUrl);
+    return res.status(403).send(req.validation.errors[0].state);
   }
 
   return taskRepo
@@ -228,14 +228,13 @@ module.exports.putTaskState = (req, res) => {
     .then(result => {
       if (!result.success) {
         req.flash('toast', result.error);
-        return res.redirect(redirectUrl);
+        return res.status(400).send(result.error);
       }
-      req.flash('toast', 'Tâche mise à jour !');
-      return res.redirect(redirectUrl);
+      return res.send('Tâche mise à jour !');
     })
     .catch(err => {
       console.log(err);
-      return res.status(500).redirect(routes.error["500"]);
+      return res.status(500).send(routes.error["500"]);
     });
 };
 

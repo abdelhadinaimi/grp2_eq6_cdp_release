@@ -1,6 +1,6 @@
 <%- include('../partials/head.ejs') %>
 <%- include('../partials/project-header.ejs') %>
-
+<% const states = ["TODO", "DOING", "DONE", "TOTEST", "TESTING", "TESTED"]; %>
 <% if (project.tasks.length > 0) { %>
 <div class="row">
   <div class="col s12">
@@ -42,16 +42,16 @@
           <li class="collapsible-header">
             <div class="col s8 center"><strong>Description</strong></div>
             <div class="col s1 center"><strong>Coût</strong></div>
-            <div class="col s2 center"><strong>État</strong></div>
+            <div class="col s3 center"><strong>État</strong></div>
           </li>
           <% project.tasks.forEach(task => { %>
-          <li>
+          <li id="<%=task._id%>">
             <div class="collapsible-header line" tabindex="0">
               <div class="col s8 center">
                 <p class="description-header"><%=task.description %></p>
               </div>
               <div class="col s1 center"><%=task.cost%> j/h</div>
-              <div class="col s2 center"><%=task.state%>TODO</div>
+              <div class="col s3 center state"><%=task.state%></div>
             </div>
             <div class="collapsible-body">
               <div class="row center-align hide-on-med-and-up">
@@ -97,6 +97,14 @@
                       style="width: 100%">Supprimer</a>
                   </div>
                   <% } %>
+                  <div class="row">
+                      <select _id="<%=task._id%>" class="state-select">
+                          <% for(let state of states) { %>
+                            <%let selected = (state === task.state) ? "selected" : ""%>
+                            <option  value="<%=state%>"<%=selected%>><%=state%></option>
+                          <% } %>
+                        </select>
+                  </div>
                 </div>
               </div>
             </div>
@@ -144,6 +152,27 @@
 <script>
   $(document).ready(function () {
     $('.collapsible').collapsible();
+    $('.state-select').formSelect().change(function (){
+      const taskId = this.getAttribute('_id')
+      const state = this.options[this.selectedIndex].value;
+      fetch('/projects/<%=project.id%>/tasks/' + taskId+'/state', {
+        credentials: 'same-origin',
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'CSRF-Token': '<%=csrfToken%>'
+        },
+        body: JSON.stringify({
+          state: state
+        })
+      })
+      .then(result => {
+        if(result.status === 200){
+          $(`#${taskId} .state`).text(state);
+        }
+      });
+    });
+    
   });
 </script>
 
