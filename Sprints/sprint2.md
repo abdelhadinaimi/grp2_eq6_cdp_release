@@ -15,7 +15,7 @@
 | US#23 | **En tant que** utilisateur, **je souhaite** cliquer sur l’onglet “Tâches” **afin de** afficher la liste de toutes les tâches du projet. | High | 1 | DONE |
 | US#24 | **En tant que** utilisateur, **je souhaite** cliquer sur le bouton “Mes tâches” **afin de** filtrer la liste des tâches et n’afficher que les tâches auxquelles je suis assigné. | Low | 1 | DOING |
 | US#25 | **En tant que** utilisateur, **je souhaite** cliquer sur une tâche **afin de** consulter les informations relatives à cette tâche (cf. champs US#20). | High | 1 | DONE |
-| US#26 | **En tant que** PO ou CP, **je souhaite**, une fois dans la page de modification d’une tâche, cliquer sur le bouton “Lier à une issue” puis choisir une issue de la liste” **afin de** lier l’*issue* à la tâche. | High | 2 | TODO |
+| US#26 | **En tant que** PO ou CP, **je souhaite**, une fois dans la page de modification d’une tâche, cliquer sur le bouton “Lier à une issue” puis choisir une issue de la liste” **afin de** lier l’*issue* à la tâche. | High | 2 | DONE |
 | US#27 | **En tant que** PO ou CP, **je souhaite**, une fois sur la page de modification d’une tâche, cliquer sur le bouton “Assigner” puis choisir un ou plusieurs utilisateur(s) **afin de** assigner ces utilisateurs à cette tâche. | High | 1 | TODO |
 | US#28 | **En tant que** utilisateur, **je souhaite** cliquer sur la liste déroulante apparaissant à côté d’une tâche à laquelle j’étais assigné, puis sur une des entrées de cette liste (*TODO*, *DONE*, *DOING*, *TOTEST*, *TESTING*, *TESTED*), **afin de** changer l’état de cette tâche et mettre à jour le niveau de progression des *issues* et sprint liés. | High | 1 | DOING |
 | **Total** | | | **21** | |

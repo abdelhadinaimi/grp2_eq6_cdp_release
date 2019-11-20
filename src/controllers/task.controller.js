@@ -178,7 +178,8 @@ module.exports.putEdit = (req, res) => {
     description: req.body.description,
     definitionOfDone: req.body.definitionOfDone,
     cost: req.body.cost,
-    testLink: req.body.testLink
+    testLink: req.body.testLink,
+    linkedIssues: req.body.linkedIssues ? req.body.linkedIssues : []
   };
 
   if (!req.validation.success) {
@@ -212,8 +213,6 @@ module.exports.putEdit = (req, res) => {
 
 module.exports.putTaskState = (req, res) => {
   const projectId = req.params.projectId;
-  const redirectUrl = routes.task.tasks(projectId);
-  console.log(req.body);
   const task = {
     _id: req.params.taskId,
     state: req.body.state

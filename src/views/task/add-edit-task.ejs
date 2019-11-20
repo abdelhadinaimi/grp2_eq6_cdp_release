@@ -50,6 +50,20 @@
                                       data-error="<%= (index >= 0) ? errors[index].definitionOfDone : '' %>"></span>
                             </div>
                         </div>
+                        
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <i class="material-icons prefix">done_all</i>
+                                <select id="linkedIssues" name="linkedIssues" multiple>
+                                    <% for(let issue of values.linkedIssues) { %>
+                                        <%let selected = issue.linked ? "selected" : ""%>
+                                        <option <%=selected%> value=<%=issue._id%>><%=issue.storyId%></option>
+                                    <% } %>
+                                </select>
+                                <label>Issues Liées</label>
+                            </div>
+                        </div>
+                       
                         <div class="row">
                             <div class="right input-field col s8">
                                 <% index = errors.findIndex(error => error.testLink) %>
@@ -85,6 +99,7 @@
 <script>
   $(document).ready(() => {
     $('input#testLink, textarea#description, textarea#definitionOfDone').characterCounter();
+    $("#linkedIssues").formSelect();
   });
 </script>
 

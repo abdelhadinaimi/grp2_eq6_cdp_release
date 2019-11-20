@@ -56,7 +56,10 @@ module.exports.deleteIssue = (projectId, issueId, userId) => new Promise((resolv
         return resolve(errorMessage);
 
       project.issues = project.issues.filter(issue => issue._id.toString() !== issueId.toString());
-
+      project.tasks.map(task => {
+        task.linkedIssues = task.linkedIssues.filter(issue => issue.toString() !== issueId.toString());
+        return task;
+      });
       return project.save();
     })
     .then(() => resolve({success: true}))

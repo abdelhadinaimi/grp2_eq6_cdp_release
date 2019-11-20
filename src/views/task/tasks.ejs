@@ -79,7 +79,9 @@
                         <b><i>Definition of Done</i> : </b><%= task.definitionOfDone %>
                       </div>
                       <div class="col s12 m8">
-                        <b>Issues : </b>US#01, US#17...
+                        <b>Issues : </b><% task.linkedIssues.forEach(issue => { %>
+                          <a href="/projects/<%=project.id%>/issues/<%=issue._id%>"><%=issue.storyId%></a>
+                        <%})%>
                       </div>
                       <div class="card-panel col s12 m8">
                         <b>Test : </b><%= task.testLink%>

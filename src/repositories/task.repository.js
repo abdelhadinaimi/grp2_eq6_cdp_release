@@ -83,10 +83,16 @@ module.exports.deleteTask = (projectId, taskId, userId) => new Promise((resolve,
 
 module.exports.getTaskById = (projectId, taskId) => new Promise((resolve, reject) => {
   return Project
-    .findById(projectId, 'tasks')
+    .findById(projectId, 'tasks issues')
     .then(project => {
+      project = project.toJSON();
       if (project) {
         const task = project.tasks.find(task => task._id.toString() === taskId.toString());
+        project.issues.forEach(issue => {
+          let linked = !!task.linkedIssues.find(linkedIssue => linkedIssue.toString() === issue._id.toString());
+          issue.linked = linked;
+        });
+        task.linkedIssues = project.issues;
         if (task)
           return resolve(task);
       }
@@ -100,9 +106,15 @@ module.exports.getProjectTasks = (projectId, userId) => new Promise((resolve, re
     return resolve(undefined);
 
   return Project
-    .findOne({_id: projectId, 'collaborators._id': userId}, 'title tasks projectOwner collaborators')
+    .findOne({_id: projectId, 'collaborators._id': userId}, 'title tasks projectOwner collaborators issues')
     .then(project => {
       if (!project) return resolve(undefined);
+      project = project.toJSON();
+      project.tasks.forEach(task => {
+        task.linkedIssues = task.linkedIssues.map(linkedIssue => {
+          return project.issues.find(issue => issue._id.toString() === linkedIssue.toString());     
+        });
+      });
       const proj = {
         id: projectId,
         title: project.title,
