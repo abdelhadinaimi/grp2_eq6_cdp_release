@@ -2,7 +2,7 @@ const projects = "/projects/";
 
 module.exports.global = {
   app: {
-    name: "Nom de l'Application"
+    name: "SixCess"
   },
   views: {
     error: {
