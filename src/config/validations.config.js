@@ -6,6 +6,8 @@ const {
   errorTaskMessages
 } = require("../util/constants");
 
+const issueRepo = require("../repositories/issue.repository");
+
 module.exports.userValidations = [
   body("email")
     .isEmail()
@@ -72,8 +74,21 @@ module.exports.issueValidations = [
     .isLength({max:1000})
     .withMessage(errorIssueMessages.userReason.max),
   body("storyId")
+    .not()
+    .isEmpty()
+    .withMessage(errorIssueMessages.storyId.empty)
     .isLength({max:20})
-    .withMessage(errorIssueMessages.storyId.max),
+    .withMessage(errorIssueMessages.storyId.max)
+    .custom((value, {req}) => {
+      const {projectId} = req.params;
+      const {issueId} = req.params;
+      return issueRepo
+        .isUniqueStoryId(projectId, issueId, value)
+        .then(result => {
+          if (!result)
+            return Promise.reject(errorIssueMessages.storyId.unique);
+        });
+    }),
   body("difficulty")
     .not()
     .isEmpty()

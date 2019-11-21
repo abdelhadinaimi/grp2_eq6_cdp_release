@@ -8,18 +8,20 @@ const viewsTask = require('../util/constants').global.views.task;
 
 module.exports.getProjectTasks = (req, res) => {
   const userId = req.session.user._id;
+  const {projectId} = req.params;
+  let {taskId} = req.params;
 
   return taskRepo
-    .getProjectTasks(req.params.projectId, userId)
+    .getProjectTasks(projectId, userId)
     .then(project => {
       if (project) {
         const isPo = (project.projectOwner.toString() === userId.toString());
         const isPm = (project.collaborators.findIndex(collaborator =>
-          (collaborator._id.toString() === userId.toString() && collaborator.userType === "pm")) >= 0);
+          (collaborator._id._id.toString() === userId.toString()) && collaborator.userType === "pm") >= 0);
 
         return res.render(viewsTask.tasks, {
           pageTitle: titlesTask.tasks,
-          errors: [],
+          activeTask: taskId,
           url: 'tas',
           isPo: isPo,
           isPm: isPm,
@@ -56,6 +58,7 @@ module.exports.getMyTasks = (req, res) => {
       return res.render(viewsTask.tasks, {
         pageTitle: titlesTask.mine,
         url: 'tas',
+        activeTask: null,
         isPo: isPo,
         isPm: isPm,
         mine: true,
@@ -179,7 +182,8 @@ module.exports.putEdit = (req, res) => {
     definitionOfDone: req.body.definitionOfDone,
     cost: req.body.cost,
     testLink: req.body.testLink,
-    linkedIssues: req.body.linkedIssues ? req.body.linkedIssues : []
+    linkedIssues: req.body.linkedIssues ? req.body.linkedIssues : [],
+    assignedContributors: req.body.assignedContributors ? req.body.assignedContributors : []
   };
 
   if (!req.validation.success) {

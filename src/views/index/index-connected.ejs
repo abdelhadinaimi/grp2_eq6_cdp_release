@@ -94,7 +94,7 @@
                                                 <div class="col s12 m10 offset-m1">
                                                     <% if (project.description) { %>
                                                         <b>Description :</b><br>
-                                                        <%= project.description %>
+                                                        <%- project.description.replace(/\n/g, '<br/>') %>
                                                     <% } %>
                                                 </div>
                                             </div>

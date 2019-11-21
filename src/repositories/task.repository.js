@@ -83,16 +83,24 @@ module.exports.deleteTask = (projectId, taskId, userId) => new Promise((resolve,
 
 module.exports.getTaskById = (projectId, taskId) => new Promise((resolve, reject) => {
   return Project
-    .findById(projectId, 'tasks issues')
+    .findById(projectId, 'tasks issues collaborators')
+    .populate("collaborators._id")
     .then(project => {
       project = project.toJSON();
       if (project) {
         const task = project.tasks.find(task => task._id.toString() === taskId.toString());
+
         project.issues.forEach(issue => {
-          let linked = !!task.linkedIssues.find(linkedIssue => linkedIssue.toString() === issue._id.toString());
-          issue.linked = linked;
+          issue.linked = !!task.linkedIssues.find(linkedIssue => linkedIssue.toString() === issue._id.toString());
         });
+        project.collaborators.forEach(collaborator => {
+          collaborator.linked = !!task.assignedContributors.find(assContr => assContr.toString() === collaborator._id._id.toString());
+        });
+
         task.linkedIssues = project.issues;
+        task.assignedContributors = project.collaborators;
+        console.log(task.assignedContributors);
+
         if (task)
           return resolve(task);
       }
@@ -107,14 +115,23 @@ module.exports.getProjectTasks = (projectId, userId) => new Promise((resolve, re
 
   return Project
     .findOne({_id: projectId, 'collaborators._id': userId}, 'title tasks projectOwner collaborators issues')
+    .populate("collaborators._id")
     .then(project => {
       if (!project) return resolve(undefined);
+
       project = project.toJSON();
+
       project.tasks.forEach(task => {
         task.linkedIssues = task.linkedIssues.map(linkedIssue => {
           return project.issues.find(issue => issue._id.toString() === linkedIssue.toString());     
         });
+
+        task.assignedContributors = task.assignedContributors.map(assContr =>
+          project.collaborators.find(coll => coll._id._id.toString() === assContr._id.toString()));
+
+        task.assigned = !!task.assignedContributors.find(coll => coll._id._id.toString() === userId.toString());
       });
+
       const proj = {
         id: projectId,
         title: project.title,
@@ -128,17 +145,11 @@ module.exports.getProjectTasks = (projectId, userId) => new Promise((resolve, re
 });
 
 module.exports.getMyTasks = (projectId, userId) => new Promise((resolve, reject) => {
-  if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(userId))
-    return resolve(null);
-
-  return Project
-    .findOne({_id: projectId, 'collaborators._id': userId}, 'tasks projectOwner collaborators')
+  return this
+    .getProjectTasks(projectId, userId)
     .then(project => {
-      if (!project) return resolve(null);
-
-      project.id = project._id;
       project.tasks = project.tasks.filter(task =>
-        task.assignedContributors.findIndex(contr => contr._id.toString() === userId.toString()) >= 0);
+        !!task.assignedContributors.find(contr => contr._id._id.toString() === userId.toString()));
 
       return resolve(project);
     })

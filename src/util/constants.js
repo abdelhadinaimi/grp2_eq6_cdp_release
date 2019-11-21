@@ -151,7 +151,9 @@ module.exports.errorIssueMessages = {
     max: "La raison ne doit pas dépasser 1000 caractères."
   },
   storyId: {
-    max: "L'identifiant ne doit pas dépasser 20 caractères."
+    max: "L'identifiant ne doit pas dépasser 20 caractères.",
+    unique: "L'identifiant de l'issue doit être unique.",
+    empty: "Il faut spécifier un identifiant."
   },
   difficulty: {
     empty: "Il faut spécifier une difficulté.",

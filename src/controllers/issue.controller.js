@@ -8,8 +8,11 @@ const viewsIssue = require('../util/constants').global.views.issue;
 
 module.exports.getProjectIssues = (req, res) => {
   const userId = req.session.user._id;
+  const {projectId} = req.params;
+  const {issueId} = req.params;
+
   return issueRepo
-    .getProjectIssues(req.params.projectId, userId)
+    .getProjectIssues(projectId, userId)
     .then(project => {
       if (project) {
         const isPo = (project.projectOwner.toString() === userId.toString());
@@ -18,7 +21,7 @@ module.exports.getProjectIssues = (req, res) => {
 
         return res.render(viewsIssue.issues, {
           pageTitle: titlesIssue.issues,
-          errors: [],
+          activeIssue: issueId,
           url: 'iss',
           isPo: isPo,
           isPm: isPm,

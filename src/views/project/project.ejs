@@ -52,16 +52,20 @@
             <div class="col s6 center-align">
                 <h6><b>Début du Projet : </b><%= project.createdAt %></h6>
             </div>
-            <div class="col s6 center-align">
-                <h6><b>Date de rendu : </b><%= project.dueDate %></h6>
-            </div>
+            <% if (project.dueDate) { %>
+                <div class="col s6 center-align">
+                    <h6><b>Date de rendu : </b><%= project.dueDate %></h6>
+                </div>
+            <% } %>
         </div>
-        <div class="row">
-            <div class="col s12 m1O">
-                <h4>Description</h4>
-                <blockquote><%= project.description %></blockquote>
+        <% if (project.description) { %>
+            <div class="row">
+                <div class="col s12 m1O offset-m1">
+                    <h4>Description</h4>
+                    <blockquote><%- project.description.replace(/\n/g, '<br/>') %></blockquote>
+                </div>
             </div>
-        </div>
+        <% } %>
         <div class="row">
             <div class="col s12 m10 offset-m1">
                 <h4>Contributeurs</h4>

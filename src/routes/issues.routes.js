@@ -3,7 +3,7 @@ const route = require("express").Router({mergeParams:true});
 const issueController = require('../controllers/issue.controller');
 const {issueValidations, validate} = require('../config/validations.config');
 
-route.get('/', issueController.getProjectIssues);
+route.get('/:issueId?', issueController.getProjectIssues);
 
 route.get('/add', issueController.getAdd);
 
