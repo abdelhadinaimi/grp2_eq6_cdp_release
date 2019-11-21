@@ -5,8 +5,6 @@ const { taskStateValidation, taskValidations, validate } = require("../config/va
 
 route.get("/mine", taskController.getMyTasks);
 
-route.get("/:taskId?", taskController.getProjectTasks);
-
 route.put("/:taskId/state", taskStateValidation, validate, taskController.putTaskState);
 
 route.get('/add', taskController.getAdd);
@@ -18,5 +16,7 @@ route.post('/add', taskValidations, validate, taskController.postTask);
 route.put('/:taskId', taskValidations, validate, taskController.putEdit);
 
 route.delete('/:taskId', taskController.deleteTask);
+
+route.get("/:taskId?", taskController.getProjectTasks);
 
 module.exports = route;

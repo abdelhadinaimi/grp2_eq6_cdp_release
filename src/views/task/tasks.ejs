@@ -12,7 +12,7 @@
           </div>
           <% if ((isPo || isPm) && !mine) { %>
           <div class="col m4 center-align">
-            <a class="btn green modal-trigger" href="tasks/add">Créer une tâche</a>
+            <a class="btn green modal-trigger" href="/projects/<%= project.id %>/tasks/add">Créer une tâche</a>
           </div>
           <% } %>
         </div>
