@@ -1,8 +1,10 @@
 const route = require("express").Router();
-const {body,param,validationResult} = require("express-validator");
+const {param} = require("express-validator");
 
 const projectController = require('../controllers/project.controller');
-const {projectValidations, validate} = require('../config/validations.config');
+const {projectValidations,roleValidation, validate} = require('../config/validations.config');
+
+const rootProjectId = "/:projectId";
 
 route.get("/", (req, res) => {
   res.send("all projects");
@@ -12,16 +14,26 @@ route.get('/add', projectController.getAdd);
 
 route.post('/add', projectValidations, validate, projectController.postAdd);
 
-route.get('/:projectId/edit', [
+route.get(rootProjectId + "/edit", [
   param("projectId")
   .exists()
   .isMongoId()
 ], projectController.getEdit);
 
-route.get("/:projectId", [param("projectId").exists().isMongoId()], projectController.getProject);
+route.get(rootProjectId, [param("projectId").exists().isMongoId()], projectController.getProject);
 
-route.put('/:projectId', projectValidations, validate, projectController.putEdit);
+route.put(rootProjectId, projectValidations, validate, projectController.putEdit);
 
-route.delete('/:projectId', validate,projectController.deleteProject);
+route.delete(rootProjectId, validate,projectController.deleteProject);
+
+route.post(rootProjectId + "/invite", projectController.postInvite);
+
+route.get(rootProjectId + "/invite", projectController.getInvite);
+
+route.delete(rootProjectId + "/remove/:userId", projectController.deleteInvite);
+
+route.post(rootProjectId + "/quit", projectController.deleteInvite);
+
+route.put(rootProjectId + "/:userId/role", roleValidation, validate, projectController.updateRole);
 
 module.exports = route;

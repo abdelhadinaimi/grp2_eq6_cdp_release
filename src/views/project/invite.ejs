@@ -1,0 +1,53 @@
+<div id="addContributor" class="modal">
+    <form action="/projects/<%= project.id %>/invite" method="post" id="inviteForm">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <div class="modal-content center-align">
+            <div class="row">
+                <h4>Ajouter un Contributeur</h4>
+                <p>Pour ajouter un contributeur, rentrez son adresse mail ou son nom d'utilisateur s'il a déjà un compte.</p>
+            </div>
+            <div class="row">
+                <div class="input-field col s12 l6">
+                    <i class="material-icons prefix">mail</i>
+                    <input type="email" name="email" id="email" class="validate">
+                    <label for="email">Email</label>
+                    <span class="helper-text"
+                          data-error="Vous devez spécifier un email..."></span>
+                </div>
+                <div class="input-field col s12 l6">
+                    <i class="material-icons prefix">account_circle</i>
+                    <input type="text" name="username" id="username" class="validate">
+                    <label for="username">Nom d'Utilisateur</label>
+                    <span class="helper-text"
+                          data-error="Ou un nom d'utilisateur"></span>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <a id="cancelButton" class="btn-flat red-text">Annuler</a>
+            <a id="inviteButton" class="btn-flat green-text">Ajouter</a>
+        </div>
+    </form>
+</div>
+
+<script>
+  $(document).ready(function () {
+    $('.modal').modal();
+
+    $('#cancelButton').click(() => {
+      $('#email').removeClass('invalid');
+      $('#username').removeClass('invalid');
+      $('#inviteForm').trigger('reset');
+      $('#addContributor').modal('close');
+    });
+
+    $('#inviteButton').click(() => {
+      if ($('#email').val() !== "" || $('#username').val() !== "")
+        $('#inviteForm').submit();
+      else {
+        $('#email').addClass('invalid');
+        $('#username').addClass('invalid');
+      }
+    });
+  });
+</script>

@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const Issue = require("./issue.model");
+const Task = require("./task.model");
 const User = require("./user.model");
 
 const projectSchema = new Schema(
@@ -23,10 +24,12 @@ const projectSchema = new Schema(
       required: true
     },
     issues: [Issue.schema],
+    tasks: [Task.schema],
     collaborators: [
       {
         _id: { type: Schema.Types.ObjectId, ref: User.name },
         userType: { type: String, enum: ["po", "pm", "user"], required: true },
+        activated: {type: Boolean, default: false},
         addedAt: { type: Date, default: Date.now },
         addedBy: { type: Schema.Types.ObjectId, ref: User.name }
       }
@@ -36,11 +39,11 @@ const projectSchema = new Schema(
 );
 
 projectSchema.statics.findIfUserIsPo = function(projectId, userId) {
-  return  this.findOne({_id: projectId, projectOwner: userId});
-}
+  return this.findOne({_id: projectId, projectOwner: userId});
+};
 
-projectSchema.statics.findIfUserIsPoOrPm = function(projectId,userId) {
-  return this.findOne({_id: projectId,collaborators:{$elemMatch: {_id: userId,userType:{$in: ['po','pm']}}}})
-}
+projectSchema.statics.findIfUserType = function(projectId, userId, userTypes) {
+  return this.findOne({_id: projectId,collaborators:{$elemMatch: {_id: userId,userType:{$in: userTypes}}}});
+};
 
 module.exports = { name: "Project", schema: projectSchema };

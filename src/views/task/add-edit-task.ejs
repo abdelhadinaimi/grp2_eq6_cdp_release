@@ -1,0 +1,121 @@
+<%- include('../partials/head.ejs') %>
+<%- include('../partials/project-header.ejs') %>
+
+<div class="row">
+    <div class="col s12 m10 offset-m1 l8 offset-l2">
+        <div class="card-panel">
+            <div class="row">
+                <div class="col s12">
+                    <h5 class="center-align"><%= editing ? 'Modifier la Tâche' : 'Créer une nouvelle Tâche' %></h5>
+                </div>
+            </div>
+            <form action="<%= editing ? '/projects/' + projectId + '/tasks/' + values._id + '?_method=PUT' : '/projects/' + projectId + '/tasks/add' %>"
+                  method="post">
+                <div class="row">
+                    <div class="col s12">
+                        <div class="row">
+                            <div class="input-field col s12 m4 offset-m8">
+                                <% let index = errors.findIndex(error => error.cost) %>
+                                <i class="material-icons prefix">functions</i>
+                                <input id="cost" name="cost" type="number" min="0.5" step="0.5" required
+                                       class="validate <%= (index >= 0) ? 'invalid' : (errors.length > 0) ? 'valid' : '' %>"
+                                       value="<%= values ? values.cost : 0.5 %>">
+                                <label for="cost">Coût (j/h)</label>
+                                <span class="helper-text"
+                                      data-error="<%= (index >= 0) ? errors[index].cost : '' %>"> </span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <% index = errors.findIndex(error => error.description) %>
+                                <i class="material-icons prefix">description</i>
+                                <textarea id="description" name="description" data-length="3000" required
+                                          class="materialize-textarea validate <%= (index >= 0) ? 'invalid' : (errors.length > 0) ? 'valid' : '' %>"
+                                ><%= values ? values.description : '' %></textarea>
+                                <label for="description">Description</label>
+                                <span class="helper-text"
+                                      data-error="<%= (index >= 0) ? errors[index].description : '' %>"> </span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <% index = errors.findIndex(error => error.definitionOfDone) %>
+                                <i class="material-icons prefix">check</i>
+                                <textarea id="definitionOfDone" name="definitionOfDone" data-length="3000" required
+                                          class="materialize-textarea validate <%= (index >= 0) ? 'invalid' : (errors.length > 0) ? 'valid' : '' %>"
+                                ><%= values ? values.definitionOfDone : '' %></textarea>
+                                <label for="definitionOfDone"><i>Definition of Done</i></label>
+                                <span class="helper-text"
+                                      data-error="<%= (index >= 0) ? errors[index].definitionOfDone : '' %>"> </span>
+                            </div>
+                        </div>
+
+                        <% if (editing) { %>
+                            <div class="row">
+                                <div class="input-field col s12 m6">
+                                    <i class="material-icons prefix">done_all</i>
+                                    <select id="linkedIssues" name="linkedIssues" multiple>
+                                        <% for(let issue of values.linkedIssues) { %>
+                                            <% let selected = issue.linked ? "selected" : "" %>
+                                            <option <%= selected %> value="<%= issue._id %>"><%= issue.storyId %></option>
+                                        <% } %>
+                                    </select>
+                                    <label for="linkedIssues">Issues Liées</label>
+                                </div>
+                                <div class="input-field col s12 m6">
+                                    <i class="material-icons prefix">person</i>
+                                    <select id="assignedContributors" name="assignedContributors" multiple>
+                                        <% for(let contr of values.assignedContributors) { %>
+                                            <% let selected = contr.linked ? "selected" : "" %>
+                                            <option <%= selected %> value="<%= contr._id._id %>"><%= contr._id.username %></option>
+                                        <% } %>
+                                    </select>
+                                    <label for="assignedContributors">Développeur</label>
+                                </div>
+                            </div>
+                        <% } %>
+
+                        <div class="row">
+                            <div class="input-field col s12 m8 offset-m4">
+                                <% index = errors.findIndex(error => error.testLink) %>
+                                <i class="material-icons prefix">link</i>
+                                <input id="testLink" name="testLink" type="url" data-length="2000"
+                                       placeholder="https://test-url.com" pattern="https://.*"
+                                       class="validate <%= (index >= 0) ? 'invalid' : (errors.length > 0) ? 'valid' : '' %>"
+                                       value="<%= values ? values.testLink : '' %>">
+                                <label for="testLink">Lien vers un fichier test</label>
+                                <span class="helper-text"
+                                      data-error="<%= (index >= 0) ? errors[index].testLink : '' %>"> </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col s12 right-align">
+                            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                            <a href="/projects/<%= projectId %>/tasks"
+                               class="waves-effect waves-green btn-flat red-text">Annuler</a>
+                            <button type="submit" class="waves-effect waves-green btn-flat green-text">
+                                <%= editing ? 'Modifier' : 'Ajouter' %>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/scripts.ejs') %>
+<%- include('../partials/project-header-script.ejs') %>
+
+<script>
+  $(document).ready(() => {
+    $('input#testLink, textarea#description, textarea#definitionOfDone').characterCounter();
+    $("#linkedIssues").formSelect();
+    $("#assignedContributors").formSelect();
+  });
+</script>
+
+<%- include('../partials/foot.ejs') %>

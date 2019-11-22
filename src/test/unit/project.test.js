@@ -129,10 +129,7 @@ describe('UT Project Repository', () => {
 
   describe('Project Update', () => {
     it('Update an existing Project, should be ok', (done) => {
-      const project = {
-        id: project1Id,
-        title: 'Test Project MAJ'
-      };
+      const project = {id: project1Id, title: 'Test Project 1 MAJ'};
 
       projectRepo
         .updateProject(project, userId)
@@ -143,31 +140,25 @@ describe('UT Project Repository', () => {
     });
 
     it('Update a non-existing Project, should be false success', (done) => {
-      const project = {
-        id: fakeProjectId,
-        title: 'Test Project MAJ'
-      };
+      const project = {id: fakeProjectId, title: 'Test Not Project MAJ'};
 
       projectRepo
         .updateProject(project, userId)
         .then(result => {
           expect(result.success).to.be.false;
-          expect(result.error).to.equal('Modification non Autorisée !');
+          expect(result.error).to.equal('Modification non-autorisée !');
           done();
         });
     });
 
     it('Update a Project using not authorized User, should be false success', (done) => {
-      const project = {
-        id: project2Id,
-        title: 'Test Project MAJ'
-      };
+      const project = {id: project2Id, title: 'Test Project 2 MAJ'};
 
       projectRepo
         .updateProject(project, fakeUserId)
         .then(result => {
           expect(result.success).to.be.false;
-          expect(result.error).to.equal('Modification non Autorisée !');
+          expect(result.error).to.equal('Modification non-autorisée !');
           done();
         });
     });
@@ -188,7 +179,7 @@ describe('UT Project Repository', () => {
         .deleteProject(fakeProjectId, userId)
         .then(result => {
           expect(result.success).to.be.false;
-          expect(result.errors.error).to.equal('Suppression non Autorisée !');
+          expect(result.errors.error).to.equal('Suppression non-autorisée !');
           done();
         });
     });
@@ -198,7 +189,7 @@ describe('UT Project Repository', () => {
         .deleteProject(project2Id, fakeUserId)
         .then(result => {
           expect(result.success).to.be.false;
-          expect(result.errors.error).to.equal('Suppression non Autorisée !');
+          expect(result.errors.error).to.equal('Suppression non-autorisée !');
           done();
         });
     });

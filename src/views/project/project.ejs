@@ -1,20 +1,20 @@
 <%- include('../partials/head.ejs') %>
-<%- include('../project/project-header.ejs') %>
+<%- include('../partials/project-header.ejs') %>
 
+<% if (isPo) { %>
 <ul id="settings-dropdown" class="dropdown-content light-blue darken-3">
     <li>
         <a href="/projects/<%= project.id %>/edit" class="white-text">
             Modifier<span class="hide-on-med-and-down"> les informations</span>
         </a>
     </li>
-    <% if (userId.toString() == project.projectOwner.toString()) { %>
-        <li>
-            <a href="#deleteProject" class="white-text modal-trigger deleteButton" _id="<%= project.id %>">
-                Supprimer<span class="hide-on-med-and-down"> le projet</span>
-            </a>
-        </li>
-    <% } %>
+    <li>
+        <a href="#deleteProject" class="white-text modal-trigger deleteButton" _id="<%= project.id %>">
+            Supprimer<span class="hide-on-med-and-down"> le projet</span>
+        </a>
+    </li>
 </ul>
+<% } %>
 
 <div class="row">
     <div class="col s12">
@@ -22,48 +22,72 @@
             <div class="col s12 m7 offset-m1 l8 offset-l1">
                 <h1 class="left-align white-text" style="margin: 15px 0"><%= project.title %></h1>
             </div>
+            <% if (isPo) { %>
             <div class="col s12 m4 l3">
                 <ul class="center-align">
                     <li>
                         <a class='dropdown-trigger btn light-blue darken-3' data-target='settings-dropdown'>
                             <i class="material-icons left">settings</i>
                             <span class="hide-on-med-and-down">
-                                    Paramètres du projet
-                                    <i class="material-icons right">arrow_drop_down</i>
+                                Paramètres du projet
+                                <i class="material-icons right">arrow_drop_down</i>
                             </span>
                         </a>
                     </li>
                 </ul>
             </div>
+            <% } %>
+            <% if (!isPo) { %>
+            <div class="col s12 m4 l3">
+                <a href="#quitProject" class="btn red modal-trigger quitButton" _id="<%= project.id %>">
+                    <i class="material-icons left">exit_to_app</i>
+                    <span class="hide-on-med-and-down">
+                        Quitter le projet
+                    </span>
+                </a>
+            </div>
+            <% } %>
         </div>
         <div class="row">
             <div class="col s6 center-align">
                 <h6><b>Début du Projet : </b><%= project.createdAt %></h6>
             </div>
-            <div class="col s6 center-align">
-                <h6><b>Date de rendu : </b><%= project.dueDate %></h6>
-            </div>
+            <% if (project.dueDate) { %>
+                <div class="col s6 center-align">
+                    <h6><b>Date de rendu : </b><%= project.dueDate %></h6>
+                </div>
+            <% } %>
         </div>
-        <div class="row">
-            <div class="col s12 m1O offset-m1">
-                <h4>Description</h4>
-                <blockquote><%= project.description %></blockquote>
+        <% if (project.description) { %>
+            <div class="row">
+                <div class="col s12 m1O offset-m1">
+                    <h4>Description</h4>
+                    <blockquote><%- project.description.replace(/\n/g, '<br/>') %></blockquote>
+                </div>
             </div>
-        </div>
+        <% } %>
         <div class="row">
             <div class="col s12 m10 offset-m1">
                 <h4>Contributeurs</h4>
                 <div class="card-panel">
-                    <table class="highlight">
+                    <% if (isPo || isPm) { %>
+                    <a href="#addContributor" class="btn-floating right green modal-trigger">
+                        <i class="material-icons">add</i>
+                    </a>
+                    <% } %>
+                    <table class="responsive-table striped">
                         <thead>
                         <tr>
                             <th>Name</th>
                             <th>Added by</th>
-                            <th>Role</th>
+                            <th>Rôle</th>
+                            <% if (isPo || isPm) { %>
+                            <th class="center-align">Action</th>
+                            <% } %>
                         </tr>
                         </thead>
                         <tbody>
-                        <% project.collaborators.forEach( collaborator => { %>
+                            <% project.collaborators.forEach( collaborator => { %>
                             <tr>
                                 <td>
                                     <%= collaborator._id.username %>
@@ -72,11 +96,37 @@
                                     <%= collaborator.addedBy.username %>
                                 </td>
                                 <td>
-                                    <%= (collaborator.userType === 'po') ? 'Project Owner' :
-                                            (collaborator.userType === 'pm') ? 'Project Manager' : 'Developer' %>
+                                    <% if (collaborator.activated) { %>
+                                        <% if (isPo && collaborator.userType !== 'po') { %>
+                                            <div class="input-field">
+                                                <form action="/projects/<%=project.id%>/<%=collaborator._id._id%>/role?_method=PUT" method="post">
+                                                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                                    <select id="role" name="role">
+                                                        <option value="pm"
+                                                                <%= collaborator.userType  ===  "pm" ? "selected" : "" %>>Projet Manager</option>
+                                                        <option value="user"
+                                                                <%= collaborator.userType  ===  "user" ? "selected" : "" %>>Developer</option>
+                                                    </select>
+                                                </form>
+                                            </div>
+                                        <% } else { %>
+                                            <%= (collaborator.userType === 'po') ? 'Project Owner' : (collaborator.userType === 'pm') ? 'Project Manager' : 'Developer' %>
+                                        <% } %>
+                                    <% } else { %>
+                                    En cours d'activation
+                                    <% } %>
                                 </td>
+                                <% if (isPo || isPm) { %>
+                                <td class="center-align">
+                                    <%- (collaborator.userType === 'po') ? '-' :
+                                            '<a href="#deleteContributor" '
+                                                + 'class="btn-flat red-text modal-trigger deleteButton" '
+                                                + 'project="' + project.id + '" '
+                                                + 'user="' + collaborator._id._id + '">Supprimer</a>' %>
+                                </td>
+                                <% } %>
                             </tr>
-                        <% }) %>
+                            <% }) %>
                         </tbody>
                     </table>
                 </div>
@@ -87,7 +137,27 @@
 
 <%- include('../partials/scripts.ejs') %>
 <%- include('../partials/toast.ejs') %>
+<% if (isPo) { %>
 <%- include('delete-project.ejs') %>
-<%- include('../project/project-header-script.ejs') %>
+<% } %>
+<% if (isPo || isPm) { %>
+<%- include('delete-contributor.ejs') %>
+<%- include('invite.ejs') %>
+<% } %>
+<%- include('../partials/project-header-script.ejs') %>
+
+<% if (!isPo) { %>
+<%- include('../project/quit-project.ejs') %>
+<% } %>
+
+<script>
+    $(document).ready(() => {
+        $('select').formSelect();
+
+        $('select').on('change', (event) => {
+          event.target.closest("form").submit();
+        });
+    });
+</script>
 
 <%- include('../partials/foot.ejs') %>

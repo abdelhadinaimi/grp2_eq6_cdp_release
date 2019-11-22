@@ -1,0 +1,87 @@
+<%- include('../partials/head.ejs') %> 
+<%- include('../partials/menu-connected.ejs') %>
+<%-include('../partials/scripts.ejs') %> 
+<%- include('../partials/toast.ejs') %> 
+<%-include('../partials/menu-connected-script.ejs') %>
+
+<div class="row" style="margin-top: 20px">
+  <div class="col s12 center-align">
+    <a href="/" class="btn white black-text">Retour</a>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col s12 m10 offset-m1 l8 offset-l2">
+      <div class="card-panel">
+          <div class="row">
+              <div class="col s12">
+                  <h5 class="center-align">Modifier mon compte</h5>
+              </div>
+          </div>
+          <form action="/account" method="post">
+              <div class="row">
+                  <div class="col s12">
+                      <div class="row">
+                          <div class="input-field col s12 m6">
+                              <% let index = errors.findIndex(error => error.username) %>
+                              <i class="material-icons prefix">account_circle</i>
+                              <input id="username" name="username" type="text" required
+                                     class="validate <%= (index >= 0) ? 'invalid' : (errors.length > 0) ? 'valid' : '' %>"
+                                     value="<%= values ? values.username : '' %>">
+                              <label for="username">Nom d'Utilisateur</label>
+                              <span class="helper-text"
+                                    data-error="<%= (index >= 0) ? errors[index].username : '' %>"></span>
+                          </div>
+                          <div class="input-field col s12 m6">
+                              <% index = errors.findIndex(error => error.email) %>
+                              <i class="material-icons prefix">mail</i>
+                              <input id="email" name="email" type="email" required
+                                     class="validate <%= (index >= 0) ? 'invalid' : (errors.length > 0) ? 'valid' : '' %>"
+                                     value="<%= values ? values.email : '' %>">
+                              <label for="email">Email</label>
+                              <span class="helper-text"
+                                    data-error="<%= (index >= 0) ? errors[index].email : '' %>"></span>
+                          </div>
+                          <div class="input-field col s12 m6">
+                              <% index = errors.findIndex(error => error.password) %>
+                              <i class="material-icons prefix">lock</i>
+                              <input id="password" name="password" type="password"
+                                     class="validate <%= (index >= 0) ? 'invalid' : (errors.length > 0) ? 'valid' : '' %>"
+                                     value="<%= values ? values.password : '' %>">
+                              <label for="password">Nouveau Mot de Passe</label>
+                              <span class="helper-text"
+                                    data-error="<%= (index >= 0) ? errors[index].password : '' %>"></span>
+                          </div>
+                          <div class="input-field col s12 m6">
+                              <% index = errors.findIndex(error => error.confirmPassword) %>
+                              <i class="material-icons prefix">lock</i>
+                              <input id="confirmPassword" name="confirmPassword" type="password"
+                                     class="validate <%= (index >= 0) ? 'invalid' : (errors.length > 0) ? 'valid' : '' %>"
+                                     value="<%= values ? values.confirmPassword : '' %>">
+                              <label for="confirmPassword">Confirmez votre Mot de Passe</label>
+                              <span class="helper-text"
+                                    data-error="<%= (index >= 0) ? errors[index].confirmPassword : '' %>"></span>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <div class="row">
+                  <div class="col s12 right-align">
+                      <input type="hidden" name="_csrf" value="<%=csrfToken%>">
+                      <a href="/" class="waves-effect waves-green btn-flat red-text">Annuler</a>
+                      <button type="submit" class="waves-effect waves-green btn-flat green-text">Enregistrer</button>
+                  </div>
+              </div>
+          </form>
+      </div>
+  </div>
+</div>
+
+
+<script>
+  $(document).ready(function() {
+    $(".collapsible").collapsible();
+  });
+</script>
+
+<%- include('../partials/foot.ejs') %>

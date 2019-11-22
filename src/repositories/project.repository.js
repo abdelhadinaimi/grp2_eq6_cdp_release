@@ -3,6 +3,8 @@ const Project = mongoose.model('Project');
 const {errorGeneralMessages} = require('../util/constants');
 const dateformat = require('dateformat');
 
+const dateFormatString = 'dd/mm/yyyy';
+
 module.exports.createProject = project => new Promise((resolve, reject) => {
   const newProject = new Project();
   if (project.id)
@@ -18,6 +20,7 @@ module.exports.createProject = project => new Promise((resolve, reject) => {
   newProject.projectOwner = project.projectOwner;
   newProject.collaborators = [{
     _id: project.projectOwner,
+    activated: true,
     userType: 'po',
     addedBy: project.projectOwner
   }];
@@ -56,7 +59,7 @@ module.exports.updateProject = (project, userId) => new Promise((resolve, reject
     .catch(err => reject(err))
 });
 
-module.exports.deleteProject = (projectId, userId) => new Promise(resolve => {
+module.exports.deleteProject = (projectId, userId) => new Promise((resolve, reject) => {
   if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(userId))
     return resolve({success: false, errors: {error: errorGeneralMessages.deleteNotAllowed}});
 
@@ -69,7 +72,7 @@ module.exports.deleteProject = (projectId, userId) => new Promise(resolve => {
       return project.delete();
     })
     .then(() => resolve({success: true}))
-    .catch(err => resolve({success: false, errors: {error: err}}));
+    .catch(err => reject(err));
 });
 
 module.exports.getProjectById = (projectId, userId) => new Promise((resolve, reject) => {
@@ -93,9 +96,9 @@ module.exports.getProjectById = (projectId, userId) => new Promise((resolve, rej
       if (project.description)
         proj.description = project.description;
       if (project.createdAt)
-        proj.createdAt = dateformat(project.createdAt, 'dd/mm/yyyy');
+        proj.createdAt = dateformat(project.createdAt, dateFormatString);
       if (project.dueDate)
-        proj.dueDate = dateformat(project.dueDate, 'dd/mm/yyyy');
+        proj.dueDate = dateformat(project.dueDate, dateFormatString);
 
       return resolve(proj);
     })
@@ -104,16 +107,23 @@ module.exports.getProjectById = (projectId, userId) => new Promise((resolve, rej
 
 module.exports.getProjectsByContributorId = contributorId => new Promise((resolve, reject) => {
   return Project
-    .find({'collaborators._id': contributorId}, 'title description createdAt dueDate collaborators projectOwner')
+    .find({
+      collaborators: {
+        $elemMatch: {
+          _id: contributorId,
+          activated: true
+        }
+      }
+    }, 'title description createdAt dueDate collaborators projectOwner')
     .then(projects => {
       projects = projects.map(project => {
         const newProject = {id: project._id, title: project.title};
         newProject.contributorNb = project.collaborators.length;
-        newProject.beginDate = dateformat(project.createdAt, 'dd/mm/yyyy');
+        newProject.beginDate = dateformat(project.createdAt, dateFormatString);
         if (project.description)
           newProject.description = project.description;
         if (project.dueDate)
-          newProject.endDate = dateformat(project.dueDate, 'dd/mm/yyyy');
+          newProject.endDate = dateformat(project.dueDate, dateFormatString);
         if (project.projectOwner.toString() === contributorId.toString()) {
           newProject.deleteEdit = true;
         }
@@ -126,78 +136,87 @@ module.exports.getProjectsByContributorId = contributorId => new Promise((resolv
     .catch(err => reject(err));
 });
 
-/** ISSUES */
-
-module.exports.getProjectIssues = (projectId, userId) => new Promise((resolve, reject) => {
-  if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(userId))
-    return resolve(undefined);
-
-  return Project
-    .findOne({_id: projectId, 'collaborators._id': userId}, 'title issues')
+module.exports.isContributorFromProject = (projectId, contributorId) => new Promise((resolve, reject) => {
+  Project
+    .findOne({_id: projectId, 'collaborators._id': contributorId})
     .then(project => {
-      if (!project) return resolve(undefined);
-      const proj = {id: projectId, title: project.title, issues: project.issues};
-      return resolve(proj);
+      if (project)
+        return resolve(true);
+      return resolve(false);
     })
     .catch(err => reject(err));
 });
 
-module.exports.createIssue = (projectId, issue, userId) => new Promise((resolve, reject) => {
-  if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(userId))
-    return resolve({success: false, error: errorGeneralMessages.notAllowed});
-
-  return Project.findIfUserIsPoOrPm(projectId, userId)
-    .then(project => {
-      if (!project) {
-        return resolve({success: false, error: errorGeneralMessages.notAllowed});
-      }
-
-      project.issues.push(issue);
-      return project.save()
-      .then(() => resolve({success: true}))
-      .catch(()=> resolve({success: false, error:"Erreur interne"}));
-    })
+module.exports.hasAuthorizationOnProject = (projectId, contributorId, authorization) => new Promise((resolve, reject) => {
+  Project
+    .findIfUserType(projectId, contributorId, authorization)
+    .then(project => project ? resolve(true) : resolve(false))
     .catch(err => reject(err));
 });
 
-module.exports.updateIssue = (projectId, issue, userId) => new Promise((resolve, reject) => {
+module.exports.addContributorToProject = (projectId, contributorId, addId) => new Promise((resolve, reject) => {
+  Project
+    .findIfUserType(projectId, addId, ['po', 'pm'])
+    .then(project => {
+      if (!project)
+        return resolve(false);
+
+      project.collaborators.push({
+        _id: contributorId,
+        userType: 'user',
+        addedBy: addId
+      });
+      return project.save();
+    })
+    .then(() => resolve(true))
+    .catch(err => reject(err));
+});
+
+module.exports.removeContributorToProject = (projectId, userId, remId) => new Promise((resolve, reject) => {
+  Project
+    .findIfUserType(projectId, remId, ['po', 'pm', userId === remId ? 'user' : ''])
+    .then(project => {
+      if (!project)
+        return resolve(false);
+
+      project.collaborators = project.collaborators.filter(collaborator => collaborator._id.toString() !== userId.toString());
+      return project.save();
+    })
+    .then(() => resolve(true))
+    .catch(err => reject(err));
+});
+
+module.exports.acceptInvitation = (projectId, contributorId) => new Promise((resolve, reject) => {
+  Project
+    .findOne({_id: projectId, collaborators: {$elemMatch: {_id: contributorId, activated: false}}})
+    .then(project => {
+      if (!project)
+        return resolve(false);
+
+      const user = project.collaborators.find(collaborator => (collaborator._id.toString() === contributorId));
+      user.activated = true;
+
+      return project.save();
+    })
+    .then(() => resolve(true))
+    .catch(err => reject(err));
+});
+
+module.exports.updateUserRole = (projectId, userId, user) => new Promise((resolve, reject) => {
   const errorMessage = {success: false, error: errorGeneralMessages.modificationNotAllowed};
 
-  if (!mongoose.Types.ObjectId.isValid(projectId)) {
+  if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(userId) || userId === user._id) {
     return resolve(errorMessage);
   }
-  const set = {};
-  for (const field in issue) {
-    if (field !== '_id') {
-      set[`issues.$.${field}`] = issue[field];
-    }
-  }
+
   return Project.findOneAndUpdate({
     _id: projectId,
-    collaborators: {$elemMatch: {_id: userId, userType: {$in: ["po", "pm"]}}},
-    "issues._id": issue._id
-  }, {$set: set})
+    collaborators: {$elemMatch: {_id: userId, userType: {$in: ["po"]}}},
+    "collaborators._id": user._id
+  }, {$set: {"collaborators.$.userType": user.role}})
     .then(project => {
       if (!project) return reject(errorMessage);
       return resolve({success: true});
     })
-    .catch(err => reject(err));
-});
-
-module.exports.deleteIssue = (projectId, issueId, userId) => new Promise((resolve, reject) => {
-  if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(issueId) || !mongoose.Types.ObjectId.isValid(userId))
-    return resolve({success: false, errors: {error: errorGeneralMessages.deleteNotAllowed}});
-
-  Project
-    .findOne({_id: projectId, collaborators: {$elemMatch: {_id: userId, userType: ["po", "pm"]}}})
-    .then(project => {
-      if (!project)
-        return resolve({success: false, errors: {error: errorGeneralMessages.deleteNotAllowed}});
-
-      project.issues = project.issues.filter(issue => issue._id.toString() !== issueId.toString());
-
-      return project.save();
-    })
-    .then(() => resolve({success: true}))
     .catch(err => reject(err));
 });

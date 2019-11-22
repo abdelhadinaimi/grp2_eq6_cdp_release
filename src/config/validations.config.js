@@ -1,5 +1,12 @@
 const {body, validationResult} = require("express-validator");
-const {errorUserMessages, errorProjectMessages,errorIssueMessages} = require("../util/constants");
+const {
+  errorUserMessages,
+  errorProjectMessages,
+  errorIssueMessages,
+  errorTaskMessages
+} = require("../util/constants");
+
+const issueRepo = require("../repositories/issue.repository");
 
 module.exports.userValidations = [
   body("email")
@@ -67,14 +74,60 @@ module.exports.issueValidations = [
     .isLength({max:1000})
     .withMessage(errorIssueMessages.userReason.max),
   body("storyId")
+    .not()
+    .isEmpty()
+    .withMessage(errorIssueMessages.storyId.empty)
     .isLength({max:20})
-    .withMessage(errorIssueMessages.storyId.max),
+    .withMessage(errorIssueMessages.storyId.max)
+    .custom((value, {req}) => {
+      const {projectId} = req.params;
+      const {issueId} = req.params;
+      return issueRepo
+        .isUniqueStoryId(projectId, issueId, value)
+        .then(result => {
+          if (!result)
+            return Promise.reject(errorIssueMessages.storyId.unique);
+        });
+    }),
+  body("difficulty")
+    .not()
+    .isEmpty()
+    .withMessage(errorIssueMessages.difficulty.empty)
+    .isInt({min:1})
+    .withMessage(errorIssueMessages.difficulty.min)
+];
+
+module.exports.roleValidation = [
+  body("role")
+  .matches(/^(pm|user)$/)
+  .withMessage(errorProjectMessages.role.values)
+];
+
+module.exports.taskValidations = [
   body("cost")
     .not()
     .isEmpty()
-    .withMessage(errorIssueMessages.cost.empty)
-    .isInt({min:1})
-    .withMessage(errorIssueMessages.cost.min)
+    .withMessage(errorTaskMessages.cost.empty)
+    .isFloat({min:0.5})
+    .withMessage(errorTaskMessages.cost.min),
+  body("description")
+    .not()
+    .isEmpty()
+    .withMessage(errorTaskMessages.description.empty)
+    .isLength({max:3000})
+    .withMessage(errorTaskMessages.description.max),
+  body("definitionOfDone")
+    .not()
+    .isEmpty()
+    .withMessage(errorTaskMessages.definitionOfDone.empty)
+    .isLength({max:3000})
+    .withMessage(errorTaskMessages.definitionOfDone.max)
+];
+
+module.exports.taskStateValidation = [
+  body("state")
+  .matches(/^(TODO|DOING|DONE|TOTEST|TESTING|TESTED)$/)
+  .withMessage(errorTaskMessages.state.match)
 ];
 
 /**

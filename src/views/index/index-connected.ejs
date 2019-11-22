@@ -59,11 +59,11 @@
                                             <div class="row">
                                                 <div class="row">
                                                     <div class="col s12 m6 center-align">
-                                                        Début : <%= project.beginDate %>
+                                                        <b>Début :</b> <%= project.beginDate %>
                                                     </div>
                                                     <div class="col s12 m6 center-align">
                                                         <% if (project.endDate) { %>
-                                                            Date de Rendu : <%= project.endDate %>
+                                                            <b>Date de Rendu :</b> <%= project.endDate %>
                                                         <% } else { %>
                                                             Aucune Date de Rendu
                                                         <% } %>
@@ -71,7 +71,7 @@
                                                 </div>
                                                 <div class="row">
                                                     <div class="col s12 m6 center-align">
-                                                        Contributeur(s) : <%= project.contributorNb %>
+                                                        <b>Contributeur(s) :</b> <%= project.contributorNb %>
                                                     </div>
                                                     <% if (project.completion) { %>
                                                         <div class="col s8 offset-s2 m4 offset-m1">
@@ -93,8 +93,8 @@
                                                 </div>
                                                 <div class="col s12 m10 offset-m1">
                                                     <% if (project.description) { %>
-                                                        Description :<br>
-                                                        <%= project.description %>
+                                                        <b>Description :</b><br>
+                                                        <%- project.description.replace(/\n/g, '<br/>') %>
                                                     <% } %>
                                                 </div>
                                             </div>
