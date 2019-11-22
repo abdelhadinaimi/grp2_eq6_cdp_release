@@ -13,6 +13,7 @@ Lien vers les Releases : [Lien](https://github.com/abdelhadinaimi/grp2_eq6_cdp_r
 | Version | Date | Téléchargement |
 | :-: | :-: | :-: |
 | v0.1 | 08/11/2019 | [#1 Release](https://github.com/abdelhadinaimi/grp2_eq6_cdp_release/archive/v0.1.zip) |
+| v0.2 | 22/11/2019 | [#2 Release](https://github.com/abdelhadinaimi/grp2_eq6_cdp_release/archive/v0.2.zip) |
 
 # Sprints
 | N° | Date de Début | Date de Fin | Issues | Tasks |

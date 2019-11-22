@@ -18,6 +18,12 @@ const user = {
   passwordUpdate: "New Passw0rd"
 };
 
+const user2 = {
+  username: "selenium2",
+  email: "selenium2@mail.fr",
+  password: "Passw0rd2"
+};
+
 const firstProject = {
   id: null,
   title: "Mon Premier Projet",
@@ -40,7 +46,9 @@ const fields = {
   project: {
     title: "title",
     description: "description",
-    dueDate: "dueDate"
+    dueDate: "dueDate",
+    contributor: "email",
+    inviteButton: "inviteButton"
   },
   issue: {
 
@@ -52,7 +60,14 @@ const fields = {
 
 const cssSelectors = {
   greenText: ".green-text",
-  toast: ".toast"
+  toast: ".toast",
+  addContributor: ".btn-floating > .material-icons",
+  helpers : {
+    username: "input#username ~ span.helper-text",
+    email: "input#email ~ span.helper-text",
+    password: "input#password ~ span.helper-text",
+    confirmPassword: "input#confirmPassword ~ span.helper-text"
+  }
 };
 
 const attributes = {
@@ -60,14 +75,16 @@ const attributes = {
   value: "value"
 };
 
-describe("User Stories", function () {
+describe("User Stories",  function () {
   this.timeout(3000);
   let driver;
 
-  before(async function () {
+  before(async () => {
     driver = await new Builder().forBrowser("chrome").build();
-    await driver.manage().setTimeouts({implicit: 5000});
     await driver.manage().window().maximize();
+
+    await buildConnection('cdp');
+    await User.create({username: user2.username, email: user2.email, password: user2.password});
   });
 
   describe("US#01 Register", () => {
@@ -93,7 +110,7 @@ describe("User Stories", function () {
       await driver.findElement(By.id(fields.user.email)).sendKeys(user.email);
       await driver.findElement(By.id(fields.user.password)).sendKeys(user.password);
       await driver.findElement(By.id(fields.user.confirmPassword)).sendKeys(user.password, Key.ENTER);
-      const span = await driver.findElement(By.css("input#username ~ span.helper-text"));
+      const span = await driver.findElement(By.css(cssSelectors.helpers.username));
       const text = await span.getAttribute(attributes.dataError);
 
       assert(text === errorUserMessages.username.exists);
@@ -106,9 +123,9 @@ describe("User Stories", function () {
       await driver.findElement(By.id(fields.user.email)).sendKeys(user.email);
       await driver.findElement(By.id(fields.user.password)).sendKeys("azertyuio");
       await driver.findElement(By.id(fields.user.confirmPassword)).sendKeys(user.password, Key.ENTER);
-      const spanUsername = await driver.findElement(By.css("input#username ~ span.helper-text"));
-      const spanPassword = await driver.findElement(By.css("input#password ~ span.helper-text"));
-      const spanConfirmPassword = await driver.findElement(By.css("input#confirmPassword ~ span.helper-text"));
+      const spanUsername = await driver.findElement(By.css(cssSelectors.helpers.username));
+      const spanPassword = await driver.findElement(By.css(cssSelectors.helpers.password));
+      const spanConfirmPassword = await driver.findElement(By.css(cssSelectors.helpers.confirmPassword));
       const textUsername = await spanUsername.getAttribute(attributes.dataError);
       const textPassword = await spanPassword.getAttribute(attributes.dataError);
       const textConfirmPassword = await spanConfirmPassword.getAttribute(attributes.dataError);
@@ -127,7 +144,7 @@ describe("User Stories", function () {
 
       await driver.findElement(By.id(fields.user.email)).sendKeys("notanemail@sel.fr");
       await driver.findElement(By.id(fields.user.password)).sendKeys(user.password, Key.ENTER);
-      const spanEmail = await driver.findElement(By.css("input#email ~ span.helper-text"));
+      const spanEmail = await driver.findElement(By.css(cssSelectors.helpers.email));
       const textEmail = await spanEmail.getAttribute(attributes.dataError);
 
       assert(textEmail === errorUserMessages.user.not_found);
@@ -138,7 +155,7 @@ describe("User Stories", function () {
 
       await driver.findElement(By.id(fields.user.email)).sendKeys(user.email);
       await driver.findElement(By.id(fields.user.password)).sendKeys("Bad Passw0rd", Key.ENTER);
-      const spanPassword = await driver.findElement(By.css("input#password ~ span.helper-text"));
+      const spanPassword = await driver.findElement(By.css(cssSelectors.helpers.password));
       const textPassword = await spanPassword.getAttribute(attributes.dataError);
 
       assert(textPassword === errorUserMessages.password.incorrect);
@@ -180,8 +197,8 @@ describe("User Stories", function () {
 
       await driver.findElement(By.id(fields.user.password)).sendKeys("azertyuiop");
       await driver.findElement(By.id(fields.user.confirmPassword)).sendKeys("Bad Passw0rd", Key.ENTER);
-      const spanPassword = await driver.findElement(By.css("input#password ~ span.helper-text"));
-      const spanConfirmPassword = await driver.findElement(By.css("input#confirmPassword ~ span.helper-text"));
+      const spanPassword = await driver.findElement(By.css(cssSelectors.helpers.password));
+      const spanConfirmPassword = await driver.findElement(By.css(cssSelectors.helpers.confirmPassword));
       const textPassword = await spanPassword.getAttribute(attributes.dataError);
       const textConfirmPassword = await spanConfirmPassword.getAttribute(attributes.dataError);
 
@@ -222,8 +239,8 @@ describe("User Stories", function () {
   });
 
   describe("US#08 Update Project", () => {
-    it("Update first project", async function () {
-      await driver.get(rootUrl + "/projects/" + firstProject.id + "/edit");
+    it("Update first project", async () => {
+      driver.get(rootUrl + "/projects/" + firstProject.id + "/edit");
 
       await driver.findElement(By.id(fields.project.title)).clear();
       await driver.findElement(By.id(fields.project.title)).sendKeys(firstProject.titleUpdate, Key.ENTER);
@@ -238,10 +255,11 @@ describe("User Stories", function () {
   });
 
   describe("US#09 Delete Project", () => {
-    it("Delete second Project", async function () {
-      await driver.get(rootUrl);
+    it("Delete second Project", async () => {
+      driver.get(rootUrl);
 
       await driver.findElement(By.css("li:nth-child(2) > .collapsible-header")).click();
+      await driver.wait(until.elementIsVisible(driver.findElement(By.css(".active .row:nth-child(3) > .btn"))), 3000);
       await driver.findElement(By.css(".active .row:nth-child(3) > .btn")).click();
       await driver.wait(until.elementIsVisible(driver.findElement(By.css(".btn-flat:nth-child(2)"))), 3000);
       await driver.findElement(By.css(".btn-flat:nth-child(2)")).click();
@@ -253,15 +271,78 @@ describe("User Stories", function () {
   });
 
   describe("US#10 Invite Contributor", () => {
+    const url = (projectId) => rootUrl + "/projects/" + projectId;
 
+    it("Invite an existing contributor", async () => {
+      driver.get(url(firstProject.id));
+
+      await driver.findElement(By.css(cssSelectors.addContributor)).click();
+      await driver.wait(until.elementIsVisible(driver.findElement(By.id(fields.project.contributor))), 3000);
+      await driver.findElement(By.id(fields.project.contributor)).sendKeys(user.email);
+      await driver.findElement(By.id(fields.project.inviteButton)).click();
+      const toast = await driver.findElement(By.css(cssSelectors.toast));
+      const text = await toast.getText();
+
+      assert(text === "Ce contributeur a déjà été ajouté !");
+    });
+
+    it("Invite a non-existing user", async () => {
+      driver.get(url(firstProject.id));
+
+      await driver.findElement(By.css(cssSelectors.addContributor)).click();
+      await driver.wait(until.elementIsVisible(driver.findElement(By.id(fields.project.contributor))), 3000);
+      await driver.findElement(By.id(fields.project.contributor)).sendKeys("nonexistinguser@mail.fr");
+      await driver.findElement(By.id(fields.project.inviteButton)).click();
+      const toast = await driver.findElement(By.css(cssSelectors.toast));
+      const text = await toast.getText();
+
+      assert(text === "Aucun compte trouvé...");
+    });
+
+    it("Invite a new contributor", async () => {
+      driver.get(url(firstProject.id));
+
+      await driver.findElement(By.css(cssSelectors.addContributor)).click();
+      await driver.wait(until.elementIsVisible(driver.findElement(By.id(fields.project.contributor))), 3000);
+      await driver.findElement(By.id(fields.project.contributor)).sendKeys(user2.email);
+      await driver.findElement(By.id(fields.project.inviteButton)).click();
+      const toast = await driver.findElement(By.css(cssSelectors.toast));
+      const text = await toast.getText();
+
+      assert(text === "Invitation envoyée !");
+
+      const project = await Project.findById(firstProject.id);
+      project.collaborators.forEach(col => col.activated = true);
+      await project.save();
+    });
   });
 
   describe("US#11 Role Contributor", () => {
+    it("Assign Project Manager Role", async () => {
+      driver.get(rootUrl + "/projects/" + firstProject.id);
 
+      await driver.findElement(By.css("input.select-dropdown")).click();
+      await driver.wait(until.elementIsVisible(driver.findElement(By.css("li > span"))), 3000);
+      await driver.findElement(By.css("li > span")).click();
+      const toast = await driver.findElement(By.css(cssSelectors.toast));
+      const text = await toast.getText();
+
+      assert(text === "Rôle mis à jour !");
+    });
   });
 
   describe("US#12 Delete Contributor", () => {
+    it("Delete a contributor", async () => {
+      driver.get(rootUrl + "/projects/" + firstProject.id);
 
+      await driver.findElement(By.css("td > .deleteButton")).click();
+      await driver.wait(until.elementIsVisible(driver.findElement(By.css("form.deleteContrForm > div.modal-footer > button.red-text"))), 3000);
+      await driver.findElement(By.css("form.deleteContrForm > div.modal-footer > button.red-text")).click();
+      const toast = await driver.findElement(By.css(cssSelectors.toast));
+      const text = await toast.getText();
+
+      assert(text === "Contributeur supprimé !");
+    });
   });
 
   describe("US#15 Create Issue", () => {
@@ -303,8 +384,8 @@ describe("User Stories", function () {
   after(done => {
     driver
       .quit()
-      .then(() => buildConnection("cdp"))
       .then(() => User.deleteOne({username: user.usernameUpdate}))
+      .then(() => User.deleteOne({username: user2.username}))
       .then(() => Project.deleteOne({title: firstProject.titleUpdate}))
       .then(() => Project.deleteOne({title: secondProject.title}))
       .then(() => mongoose.disconnect())
