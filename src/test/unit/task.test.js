@@ -69,6 +69,36 @@ describe('UT Task Repository', () => {
     });
   });
 
+  describe('Task Update', () => {
+    it('Update a task - should be ok', async () => {
+      const project = await Project.findById(fakeProjectId);
+      project.tasks.push(buildTask());
+      await project.save();
+
+      const task = {
+        description: "description2",
+        definitionOfDone: "definitionOfDone2",
+        cost: 0.5,
+        testLink: "testLink2"
+      };
+      const result = await taskRepo.updateTask(
+        fakeProjectId,
+        { ...task, _id: project.tasks[0]._id.toString() },
+        fakeUserId1
+      );
+      expect(result.success).to.be.true;
+      expect((await Project.findById(fakeProjectId)).tasks[0]).to.contain(task);
+    });
+
+    it('Update a task, but task doesn\'t exist - should raise an error', done => {
+      taskRepo.updateTask(fakeProjectId, buildTask({_id: fakeProjectId}), fakeUserId1)
+        .then(result => {
+          expect(result.success).to.be.false;
+          done();
+        });
+    });
+  });
+
   describe('Task Delete', () => {
     it('Delete a task - should be ok', async () => {
       const project = await Project.findById(fakeProjectId);

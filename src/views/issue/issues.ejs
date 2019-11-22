@@ -40,7 +40,7 @@
                             id="<%=issue._id%>">
                         <div class="collapsible-header line" tabindex="0">
                             <div class="col s1 center"><%= issue.storyId %></div>
-                            <div class="col s8 center truncate"><%= issue.userGoal %></div>
+                            <div class="col s8 center truncate"><b>En tant que</b> <%= issue.userType %>, <b>je souhaite</b> <%= issue.userGoal %> <b>afin de</b> <%= issue.userReason %></div>
                             <div class="col s1 center"><%= issue.priority %></div>
                             <div class="col s1 center"><%= issue.difficulty %></div>
                             <div class="col s2 center"><%= issue.completion ? issue.completion + "%" : "Non commencée"%></div>
