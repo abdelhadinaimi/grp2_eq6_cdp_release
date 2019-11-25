@@ -58,14 +58,17 @@
                 </div>
             <% } %>
         </div>
-        <% if (project.description) { %>
-            <div class="row">
-                <div class="col s12 m1O offset-m1">
-                    <h4>Description</h4>
-                    <blockquote><%- project.description.replace(/\n/g, '<br/>') %></blockquote>
-                </div>
+        <div class="row">
+            <div class="col s12 l5 offset-l1">
+                <% if (project.description) { %>
+                <h4>Description</h4>
+                <blockquote><%- project.description.replace(/\n/g, '<br/>') %></blockquote>
+                <% } %>
             </div>
-        <% } %>
+            <div class="col s12 l5">
+                <canvas id="burnDownChart"></canvas>
+            </div>
+        </div>
         <div class="row">
             <div class="col s12 m10 offset-m1">
                 <h4>Contributeurs</h4>
@@ -136,6 +139,7 @@
 </div>
 
 <%- include('../partials/scripts.ejs') %>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
 <%- include('../partials/toast.ejs') %>
 <% if (isPo) { %>
 <%- include('delete-project.ejs') %>
@@ -156,6 +160,22 @@
 
         $('select').on('change', (event) => {
           event.target.closest("form").submit();
+        });
+
+        var ctx = document.getElementById('burnDownChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: <%- project.burndown%>,
+            options: {
+              bezierCurve : false,
+              title: {
+                display: true,
+                text: 'Burndown Chart'
+              },
+              legend: {
+                'position': 'bottom'
+              }
+            }
         });
     });
 </script>

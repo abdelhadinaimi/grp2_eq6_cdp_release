@@ -53,12 +53,11 @@ module.exports.updateTaskState = async (projectId, userId, task) => {
       "collaborators._id": userId,
       "tasks._id": task._id
     },
-    {$set: {"tasks.$.state": task.state}}
+    {$set: {"tasks.$.state": task.state, "tasks.$.doneAt": (task.state === "DONE") ? new Date() : null}}
   );
 
-  if (!project) {
+  if (!project)
     return errorMessage;
-  }
   return {success: true};
 };
 
