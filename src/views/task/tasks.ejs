@@ -49,7 +49,12 @@
                   id="<%=task._id%>">
             <div class="collapsible-header line" tabindex="0">
               <div class="col s8 center truncate"><%=task.description %></div>
-              <div class="col s1 center"><%=task.cost%> j/h</div>
+              <div class="col s1 center <%=task.cost >= 2 ? 'red-text tooltipped' : '' %>" data-position="bottom"
+                   data-tooltip="
+                   Conseil : Une tâche ne devrait pas avoir un coût si élevé !<br>
+                   Il faut peut-être repenser cette tâche.">
+                <%=task.cost%> j/h
+              </div>
               <div class="col s3 center state"><%=task.state%></div>
             </div>
             <div class="collapsible-body">
@@ -182,6 +187,8 @@
 <script>
   $(document).ready(function () {
     $('.collapsible').collapsible();
+    $('.tooltipped').tooltip();
+
     $('.state-select').formSelect().change(function (){
       const taskId = this.getAttribute('_id')
       const state = this.options[this.selectedIndex].value;
@@ -202,6 +209,5 @@
         }
       });
     });
-    
   });
 </script>
