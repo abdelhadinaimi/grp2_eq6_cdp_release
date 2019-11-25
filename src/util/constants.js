@@ -25,6 +25,11 @@ module.exports.global = {
       tasks: "task/tasks",
       addEdit: "task/add-edit-task"
     },
+    sprint: {
+      sprints: "sprint/index-sprints",
+      sprint: "sprint/sprint",
+      addEdit: "sprint/add-edit-sprint"
+    },
     user: {
       register: "user/register",
       login: "user/login",
@@ -54,6 +59,11 @@ module.exports.global = {
       edit: "Éditer Tâche",
       mine: "Mes Tâches"
     },
+    sprint: {
+      sprints: "Sprints",
+      add: "Nouveau Sprint",
+      edit: "Éditer Sprint"
+    },
     user: {
       register: "Créer un Compte",
       login: "Connexion",
@@ -76,6 +86,9 @@ module.exports.global = {
     },
     task: {
       tasks: projectId => projects + projectId + "/tasks"
+    },
+    sprint: {
+      sprints: projectId => projects + projectId + "/sprints"
     },
     user: {
       register: "/register",
