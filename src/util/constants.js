@@ -30,6 +30,9 @@ module.exports.global = {
       sprint: "sprint/sprint",
       addEdit: "sprint/add-edit-sprint"
     },
+    doc: {
+      doc: "doc/doc"
+    },
     user: {
       register: "user/register",
       login: "user/login",
@@ -63,6 +66,9 @@ module.exports.global = {
       sprints: "Sprints",
       add: "Nouveau Sprint",
       edit: "Éditer Sprint"
+    },
+    doc: {
+      doc: "Documentation"
     },
     user: {
       register: "Créer un Compte",
