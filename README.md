@@ -1,5 +1,4 @@
-[![Build Status](https://travis-ci.com/Version-Project/grp2_eq6_cdp_dev.svg?token=ZzaUCx7qQxoGsRx63zkT&branch=master)](https://travis-ci.com/Version-Project/grp2_eq6_cdp_dev)
-
+<img src=https://github.com/Version-Project/grp2_eq6_cdp_dev/workflows/tests/badge.svg/>
 # Utilisation
 Téléchargez le projet, décompressez l'archive, rendez vous dans le nouveau dossier puis lancez la commande :<br>
 `` docker-compose up ``
