@@ -26,7 +26,7 @@ const projectSchema = new Schema(
     },
     issues: [Issue.schema],
     tasks: [Task.schema],
-    sprint: [Sprint.schema],
+    sprints: [Sprint.schema],
     collaborators: [
       {
         _id: { type: Schema.Types.ObjectId, ref: User.name },

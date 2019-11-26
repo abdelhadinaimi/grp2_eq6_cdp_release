@@ -73,7 +73,6 @@ module.exports.getMyTasks = (req, res) => {
 
 module.exports.getAdd = (req, res) => {
   const {projectId} = req.params;
-  console.log("getAdd access");
 
   return projectRepo
     .hasAuthorizationOnProject(projectId, req.session.user._id, ["po", "pm"])

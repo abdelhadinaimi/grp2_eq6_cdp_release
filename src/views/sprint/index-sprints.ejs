@@ -1,6 +1,7 @@
 <%- include('../partials/head.ejs') %>
 <%- include('../partials/project-header.ejs') %>
 
+<% if (project.sprints.length > 0) { %>
 <div class="row">
     <div class="col s12">
         <div class="row" style="margin: 10px 0 0 0">
@@ -39,6 +40,23 @@
         </div>
     </div>
 </div>
+<% } else { %>
+    <div class="row valign-wrapper" style="margin-top: 10%">
+        <div class="col s12 center-align">
+            <div class="row">
+                <h5>Il n'y a actuellement aucun sprint pour ce projet...</h5>
+            </div>
+            <% if (isPo || isPm) { %>
+                <div class="row">
+                    <h6>Essayez de créer un premier sprint !</h6>
+                </div>
+                <div class="row">
+                    <a href="sprints/add" class="btn-flat green-text waves-effect">Créer un premier sprint</a>
+                </div>
+            <% } %>
+        </div>
+    </div>
+<% } %>
 
 <%- include('../partials/scripts.ejs') %>
 <%- include('../partials/toast.ejs') %>
