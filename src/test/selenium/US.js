@@ -36,6 +36,17 @@ const secondProject = {
   title: "Second Projet"
 };
 
+const firstIssue = {
+  storyId: "US#01",
+  userType: "Utilisateur",
+  userGoal: "Saisir mes identifiants",
+  userReason: "Me connecter"
+};
+
+const secondIssue = {
+
+};
+
 const fields = {
   user: {
     username: "username",
@@ -51,7 +62,10 @@ const fields = {
     inviteButton: "inviteButton"
   },
   issue: {
-
+    storyId: "storyId",
+    userType: "userType",
+    userGoal: "userGoal",
+    userReason: "userReason"
   },
   task: {
 
@@ -173,6 +187,8 @@ describe("User Stories",  function () {
     });
   });
 
+  // US#03 testée après l'US#43
+
   describe("US#04 Update Account", () => {
     const url = rootUrl + "/account";
 
@@ -207,6 +223,8 @@ describe("User Stories",  function () {
     });
   });
 
+  // US#05 testée après l'US#06
+
   describe("US#06 Create Project", () => {
     const url = rootUrl + "/projects/add";
 
@@ -235,6 +253,32 @@ describe("User Stories",  function () {
       const text = await toast.getText();
 
       assert(text === "Projet créé avec succès !");
+    });
+  });
+
+  describe("US#05 Home page", () => {
+    it("See my projects on homepage", async () => {
+      driver.get(rootUrl);
+
+      const div = await driver.findElement(By.css("div.collapsible-header.center-align"));
+      const text = await div.getText();
+
+      assert(text === firstProject.title);
+    });
+  });
+
+  describe("US#07 Consult Project", () => {
+    it("See a project homepage", async () => {
+      driver.get(rootUrl);
+
+      await driver.findElement(By.css("div.collapsible-header.center-align")).click();
+      await driver.wait(until.elementIsVisible(driver.findElement(By.css(".active .row:nth-child(1) > .btn"))), 3000);
+      await driver.findElement(By.css(".active .row:nth-child(1) > .btn")).click();
+      await driver.wait(until.elementIsVisible(driver.findElement(By.css("h1.left-align.white-text"))), 3000);
+      const h1 = await driver.findElement(By.css("h1.left-align.white-text"));
+      const text = await h1.getText();
+
+      assert(text === firstProject.title);
     });
   });
 
@@ -345,8 +389,25 @@ describe("User Stories",  function () {
     });
   });
 
-  describe("US#15 Create Issue", () => {
+  describe("US#13 Accept Invitation", () => {
+    it("Test link received by email", async () => {
+      const todo = true;
+      assert(todo === true);
+    });
+  });
 
+  describe("US#14 Leave Project", () => {
+    it("Leave the project", async () => {
+      const todo = true;
+      assert(todo === true);
+    });
+  });
+
+  describe("US#15 Create Issue", () => {
+    const url = (projectId) => rootUrl + "/projects/" + projectId + "/issues/add";
+
+    it("First issue", async () => {
+    });
   });
 
   describe("US#16 Update Issue", () => {
@@ -354,6 +415,14 @@ describe("User Stories",  function () {
   });
 
   describe("US#17 Delete Issue", () => {
+
+  });
+
+  describe("US#18 View Issues", () => {
+
+  });
+
+  describe("US#19 Consult one Issue", () => {
 
   });
 
