@@ -12,7 +12,7 @@
           </div>
           <% if ((isPo || isPm) && !mine) { %>
           <div class="col m4 center-align">
-            <a class="btn green modal-trigger" href="tasks/add">Créer une tâche</a>
+            <a class="btn green modal-trigger" href="/projects/<%= project.id %>/tasks/add">Créer une tâche</a>
           </div>
           <% } %>
         </div>
@@ -45,12 +45,16 @@
             <div class="col s3 center"><strong>État</strong></div>
           </li>
           <% project.tasks.forEach(task => { %>
-          <li id="<%=task._id%>">
+          <li <%= activeTask ? (activeTask.toString() === task._id.toString() ? "class=active" : "" ) : "" %>
+                  id="<%=task._id%>">
             <div class="collapsible-header line" tabindex="0">
-              <div class="col s8 center">
-                <p class="description-header"><%=task.description %></p>
+              <div class="col s8 center truncate"><%=task.description %></div>
+              <div class="col s1 center <%=task.cost >= 2 ? 'red-text tooltipped' : '' %>" data-position="bottom"
+                   data-tooltip="
+                   Conseil : Une tâche ne devrait pas avoir un coût si élevé !<br>
+                   Il faut peut-être repenser cette tâche.">
+                <%=task.cost%> j/h
               </div>
-              <div class="col s1 center"><%=task.cost%> j/h</div>
               <div class="col s3 center state"><%=task.state%></div>
             </div>
             <div class="collapsible-body">
@@ -68,45 +72,74 @@
                 </div>
                 <% } %>
               </div>
-              <div class="row">
+              <div class="row" style="margin-bottom: 0">
                 <div class="col s12 m9 l10">
                   <div class="row">
-                    <div class="row">
-                      <div class="col s12 m8">
-                        <b>Description : </b><%= task.description %>
+                      <div class="row">
+                        <div class="col s12 offset-m1 m10">
+                          <b>Description :</b><br>
+                          <%= task.description %>
+                        </div>
                       </div>
-                      <div class="col s12 m8">
-                        <b><i>Definition of Done</i> : </b><%= task.definitionOfDone %>
+
+                      <div class="row">
+                        <div class="col s12 offset-m1 m10">
+                          <b>Definition of Done :</b><br>
+                          <%= task.definitionOfDone %>
+                        </div>
                       </div>
-                      <div class="col s12 m8">
-                        <b>Issues : </b><% task.linkedIssues.forEach(issue => { %>
-                          <a href="/projects/<%=project.id%>/issues/<%=issue._id%>"><%=issue.storyId%></a>
-                        <%})%>
-                      </div>
-                      <div class="card-panel col s12 m8">
-                        <b>Test : </b><%= task.testLink%>
+
+                      <div class="row" style="margin-bottom: 0">
+                        <div class="col s12 offset-m1 m10">
+                          <% if (task.linkedIssues.length > 0) { %>
+                            <b>Issues liées : </b>
+                            <% task.linkedIssues.forEach(issue => { %>
+                              <a href="/projects/<%=project.id%>/issues/<%=issue._id%>#<%=issue._id%>"><%=issue.storyId%></a>
+                            <%})%>
+                          <% } else { %>
+                            <b>Non liée</b>
+                          <% } %>
+                        </div>
+                        <div class="col s12 offset-m1 m10">
+                          <% if (task.assignedContributors.length > 0) { %>
+                            <b>Assignée à : </b>
+                            <% task.assignedContributors.forEach(contr => { %>
+                              <span><%=contr._id.username%></span>
+                            <%})%>
+                          <% } else { %>
+                            <b>Non assignée</b>
+                          <% } %>
+                        </div>
+                        <div class="col s12 offset-m1 m10">
+                          <% if (task.testLink) { %>
+                            <b>Test : </b><%= task.testLink%>
+                          <% } else { %>
+                            <b>Non testée</b>
+                          <% } %>
+                        </div>
                       </div>
                     </div>
-                  </div>
                 </div>
-                <div class="col s12 m3 l2 center-align hide-on-small-only">
-                    <% if ((isPo || isPm) && !project.deleteEdit) { %>
+                <div class="col m3 l2 center-align hide-on-small-only">
+                    <% if ((isPo || isPm) && !mine) { %>
                   <div class="row">
-                    <a href="tasks/<%=task._id%>/edit" class="btn white black-text" style="width: 100%">Modifier</a>
+                    <a href="/projects/<%=project.id%>/tasks/<%=task._id%>/edit" class="btn white black-text" style="width: 100%">Modifier</a>
                   </div>
                   <div class="row">
                     <a href="#deleteTask" class="btn red modal-trigger deleteButton" _id="<%= task._id %>"
                       style="width: 100%">Supprimer</a>
                   </div>
                   <% } %>
-                  <div class="row">
-                      <select _id="<%=task._id%>" class="state-select">
-                          <% for(let state of states) { %>
-                            <%let selected = (state === task.state) ? "selected" : ""%>
-                            <option  value="<%=state%>"<%=selected%>><%=state%></option>
-                          <% } %>
+                  <% if (isPo || isPm || task.assigned) { %>
+                    <div class="row">
+                        <select _id="<%=task._id%>" class="state-select">
+                            <% for(let state of states) { %>
+                              <%let selected = (state === task.state) ? "selected" : ""%>
+                              <option  value="<%=state%>"<%=selected%>><%=state%></option>
+                            <% } %>
                         </select>
-                  </div>
+                    </div>
+                  <% } %>
                 </div>
               </div>
             </div>
@@ -154,6 +187,8 @@
 <script>
   $(document).ready(function () {
     $('.collapsible').collapsible();
+    $('.tooltipped').tooltip();
+
     $('.state-select').formSelect().change(function (){
       const taskId = this.getAttribute('_id')
       const state = this.options[this.selectedIndex].value;
@@ -174,16 +209,5 @@
         }
       });
     });
-    
   });
 </script>
-
-<style>
-  .description-header {
-    white-space: nowrap;
-    width: 300px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    margin: auto;
-  }
-</style>

@@ -52,14 +52,21 @@
             <div class="col s6 center-align">
                 <h6><b>Début du Projet : </b><%= project.createdAt %></h6>
             </div>
-            <div class="col s6 center-align">
-                <h6><b>Date de rendu : </b><%= project.dueDate %></h6>
-            </div>
+            <% if (project.dueDate) { %>
+                <div class="col s6 center-align">
+                    <h6><b>Date de rendu : </b><%= project.dueDate %></h6>
+                </div>
+            <% } %>
         </div>
         <div class="row">
-            <div class="col s12 m1O">
+            <div class="col s12 l5 offset-l1">
+                <% if (project.description) { %>
                 <h4>Description</h4>
-                <blockquote><%= project.description %></blockquote>
+                <blockquote><%- project.description.replace(/\n/g, '<br/>') %></blockquote>
+                <% } %>
+            </div>
+            <div class="col s12 l5">
+                <canvas id="burnDownChart"></canvas>
             </div>
         </div>
         <div class="row">
@@ -132,6 +139,7 @@
 </div>
 
 <%- include('../partials/scripts.ejs') %>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
 <%- include('../partials/toast.ejs') %>
 <% if (isPo) { %>
 <%- include('delete-project.ejs') %>
@@ -152,6 +160,26 @@
 
         $('select').on('change', (event) => {
           event.target.closest("form").submit();
+        });
+
+        var ctx = document.getElementById('burnDownChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: <%- project.burndown%>,
+            options: {
+              elements: {
+                line: {
+                  tension: 0
+                }
+              },
+              title: {
+                display: true,
+                text: 'Burndown Chart'
+              },
+              legend: {
+                'position': 'bottom'
+              }
+            }
         });
     });
 </script>

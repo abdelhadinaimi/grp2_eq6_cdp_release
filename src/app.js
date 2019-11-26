@@ -16,6 +16,8 @@ const isAuth = require("./config/auth.config").isAuth;
 
 const issuesRoutes = require("./routes/issues.routes");
 const tasksRoutes = require("./routes/tasks.routes");
+const sprintsRoutes = require("./routes/sprints.routes");
+const docsRoutes = require("./routes/doc.routes");
 const projectRoutes = require("./routes/project.routes");
 const indexRoutes = require("./routes/index.routes");
 const userRoutes = require("./routes/user.routes");
@@ -64,6 +66,8 @@ app.use((req, res, next) => {
 
 app.use("/projects/:projectId/issues", isAuth, issuesRoutes);
 app.use("/projects/:projectId/tasks", isAuth, tasksRoutes);
+app.use("/projects/:projectId/sprints", isAuth, sprintsRoutes);
+app.use("/projects/:projectId/doc", isAuth, docsRoutes);
 app.use("/projects", isAuth, projectRoutes);
 app.use(indexRoutes, userRoutes, errorRoutes);
 

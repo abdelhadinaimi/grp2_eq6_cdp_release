@@ -1,0 +1,51 @@
+<%- include('../partials/head.ejs') %>
+<%- include('../partials/project-header.ejs') %>
+
+<div class="row">
+    <div class="col s12">
+        <div class="row" style="margin: 10px 0 0 0">
+            <div class="col s12 m10 offset-m1 l8 offset-l2">
+                <div class="row valign-wrapper hide-on-small-only">
+                    <div class="col m4 offset-m4 center-align">
+                        <h5><%= pageTitle %></h5>
+                    </div>
+                    <% if (isPo || isPm) { %>
+                    <div class="col m4 center-align">
+                        <a class="btn green modal-trigger" href="/projects/<%= project.id %>/sprints/add">Créer un sprint</a>
+                    </div>
+                    <% } %>
+                </div>
+                <div class="row valign-wrapper hide-on-med-and-up">
+                    <div class="col m4 offset-m4 center-align">
+                        <h5><%= pageTitle %></h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col s12 m10 offset-m1 l8 offset-l2">
+            <div class="row card-content">
+                <ul class="collapsible">
+                    <li class="collapsible-header">
+                        <div class="col s1 center"><strong>Identifiant</strong></div>
+                        <div class="col s8 center"><strong>Description</strong></div>
+                        <div class="col s2 center"><strong>Date de début</strong></div>
+                        <div class="col s2 center"><strong>Date de fin</strong></div>
+                    </li>
+                    <% /* Insert forEach here */ %>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/scripts.ejs') %>
+<%- include('../partials/toast.ejs') %>
+<%- include('../partials/menu-connected-script.ejs') %>
+
+<script>
+    $(document).ready(function () {
+        $('.collapsible').collapsible();
+    });
+</script>

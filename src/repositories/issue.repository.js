@@ -71,11 +71,65 @@ module.exports.getProjectIssues = (projectId, userId) => new Promise((resolve, r
     return resolve(undefined);
 
   return Project
-    .findOne({_id: projectId, 'collaborators._id': userId}, 'title issues projectOwner collaborators')
+    .findOne({_id: projectId, 'collaborators._id': userId}, 'issues tasks projectOwner collaborators')
     .then(project => {
       if (!project) return resolve(undefined);
-      const proj = {id: projectId, title: project.title, issues: project.issues, projectOwner: project.projectOwner, collaborators: project.collaborators};
+
+      project.issues.forEach(issue => {
+        let taskOver = 0;
+        issue.tasks = [];
+
+        project.tasks.forEach((task, index) => {
+          if (task.linkedIssues.find(iss => iss._id.toString() === issue._id.toString())) {
+            task.index = (index + 1);
+            task.color = "red-text";
+            if (task.state === "DONE") {
+              taskOver++;
+              task.color = "green-text";
+            }
+
+            issue.tasks.push(task);
+          }
+        });
+
+        if (issue.tasks.length > 0)
+          issue.completion = Math.floor(taskOver / issue.tasks.length * 100);
+        else
+          issue.completion = null;
+      });
+
+      const proj = {
+          id: projectId,
+          issues: project.issues,
+          projectOwner: project.projectOwner,
+          collaborators: project.collaborators
+      };
+
       return resolve(proj);
     })
     .catch(err => reject(err));
+});
+
+module.exports.isUniqueStoryId = (projectId, issueId, storyId) => new Promise(resolve => {
+  if (!issueId) {
+    return Project
+      .findOne({_id: projectId, 'issues.storyId': storyId})
+      .then(project => {
+        if (project)
+          return resolve(false);
+        return resolve(true);
+      });
+  } else {
+    return Project
+      .findOne({_id: projectId, 'issues.storyId': storyId})
+      .then(project => {
+        if (project) {
+          const issueIndex = project.issues.findIndex(issue => issue._id.toString() === issueId.toString() && issue.storyId === storyId);
+          if (issueIndex < 0)
+            return resolve(false);
+        }
+
+        return resolve(true);
+      });
+  }
 });

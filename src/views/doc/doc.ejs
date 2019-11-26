@@ -1,0 +1,71 @@
+<%- include('../partials/head.ejs') %>
+<%- include('../partials/project-header.ejs') %>
+
+<div class="row">
+    <div class="col s12">
+        <div class="row" style="margin: 10px 0 0 0">
+            <div class="col s12 m10 offset-m1 l8 offset-l2">
+                <div class="row valign-wrapper hide-on-med-and-down">
+                    <div class="col m4 offset-m4 center-align">
+                        <h5><%= pageTitle %></h5>
+                    </div>
+                    <% if (isPo || isPm) { %>
+                        <div class="col m4 center-align">
+                            <a class="btn green modal-trigger" href="#addDocument">Ajouter Documentation</a>
+                        </div>
+                    <% } %>
+                </div>
+                <div class="row valign-wrapper hide-on-large-only">
+                    <div class="col s8 offset-s2 center-align">
+                        <h5><%= pageTitle %></h5>
+                    </div>
+                    <div class="col s1 left-align">
+                        <a class="btn-floating green modal-trigger" href="#addDocument"><i class="material-icons">add</i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col s12 m10 offset-m1 l8 offset-l2">
+            <div class="row card-content">
+                <ul class="collapsible">
+                    <li>
+                        <div class="collapsible-header line">
+                            <div class="col s12 center"><strong>Code</strong></div>
+                        </div>
+                        <div class="collapsible-body">
+                        </div>
+                    </li>
+                    <li>
+                        <div class="collapsible-header line">
+                            <div class="col s12 center"><strong>Utilisateur</strong></div>
+                        </div>
+                        <div class="collapsible-body">
+                        </div>
+                    </li>
+                    <li>
+                        <div class="collapsible-header line">
+                            <div class="col s12 center"><strong>Administrateur</strong></div>
+                        </div>
+                        <div class="collapsible-body">
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/scripts.ejs') %>
+<%- include('../partials/toast.ejs') %>
+<%- include('../partials/menu-connected-script.ejs') %>
+<% if (isPo || isPm) { %>
+<%- include('add.ejs') %>
+<% } %>
+
+<script>
+  $(document).ready(function () {
+    $('.collapsible').collapsible();
+  });
+</script>

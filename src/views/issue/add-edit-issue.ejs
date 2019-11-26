@@ -19,7 +19,7 @@
                                 <i class="material-icons prefix">fingerprint</i>
                                 <input id="storyId" name="storyId" type="text" data-length="20" placeholder="US#01"
                                        class="validate <%= (index >= 0) ? 'invalid' : (errors.length > 0) ? 'valid' : '' %>"
-                                       value="<%= values ? values.storyId : '' %>">
+                                       value="<%= values ? values.storyId : '' %>" required>
                                 <label for="storyId">Identifiant</label>
                                 <span class="helper-text"
                                       data-error="<%= (index >= 0) ? errors[index].storyId : '' %>"></span>

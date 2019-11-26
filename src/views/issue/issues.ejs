@@ -3,119 +3,132 @@
 
 <% if (project.issues.length > 0) { %>
 <div class="row">
-  <div class="col s12">
-    <div class="row" style="margin: 10px 0 0 0">
-      <div class="col s12 m10 offset-m1 l8 offset-l2">
-        <div class="row valign-wrapper hide-on-small-only">
-          <div class="col m4 offset-m4 center-align">
-            <h5><%=pageTitle%></h5>
-          </div>
-          <% if (isPo || isPm) { %>
-          <div class="col m4 center-align">
-            <a class="btn green modal-trigger" href="issues/add">Créer une issue</a>
-          </div>
-          <% } %>
-        </div>
-        <div class="row valign-wrapper hide-on-med-and-up">
-          <div class="col m4 offset-m4 center-align">
-            <h5><%=pageTitle%></h5>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col s12 m10 offset-m1 l8 offset-l2">
-      <div class="row card-content">
-        <ul class="collapsible">
-            <li class="collapsible-header">
-                <div class="col s1 center"><strong>Identifiant</strong></div>
-                <div class="col s8 center"><strong>Description</strong></div>
-                <div class="col s1 center"><strong>Priorité</strong></div>
-                <div class="col s1 center"><strong>Difficulté</strong></div>
-                <div class="col s2 center"><strong>Complétion</strong></div>
-          </li>
-          <% project.issues.forEach( issue => { %>
-          <li>
-              <div class="collapsible-header line" tabindex="0">
-                  <div class="col s1 center"><%=issue.storyId%></div>
-                  <div class="col s8 center"><p class="userstory-header"><%= issue.userGoal %></div>
-                  <div class="col s1 center"><%=issue.priority%></div>
-                  <div class="col s1 center"><%=issue.difficulty%></div>
-                  <div class="col s2 center"><%=issue.completion%>20%</div>
-              </div>
-              <div class="collapsible-body">
-                  <div class="row center-align hide-on-med-and-up">
-                      <% if (!project.deleteEdit) { %>
-                      <div class="col s6">
-                        <a href="issues/<%=issue._id%>/edit" class="btn-floating white">
-                          <i class="material-icons black-text">edit</i>
-                        </a>
-                      </div>
-                      <div class="col s6">
-                          <a href="#deleteIssue" class="btn-floating red modal-trigger deleteButton"
-                             _id="<%= issue._id %>">
-                              <i class="material-icons">delete</i>
-                          </a>
-                      </div>
-                      <% } %>
+    <div class="col s12">
+        <div class="row" style="margin: 10px 0 0 0">
+            <div class="col s12 m10 offset-m1 l8 offset-l2">
+                <div class="row valign-wrapper hide-on-small-only">
+                    <div class="col m4 offset-m4 center-align">
+                        <h5><%= pageTitle %></h5>
                     </div>
-                    <div class="row">
-                      <div class="col s12 m9 l10">
-                        <div class="row">
-                          <div class="row">
-                              <div class="col s12 m8">
-                                  <b>User Story : </b><br /><b>En tant que</b> <%= issue.userType %> <b>Je souhaite</b> <%= issue.userGoal %>
-                    <b>Afin de</b> <%= issue.userReason %>
-                              </div>
-                              <div class="col s12 m8">
-                                  <b>Sprint : </b>Sprint 5
-                              </div>
-                              <div class="col s12 m8">
-                                  <b>Taches : </b>Tâche 1,Tâche 3,Tâche 5
-                              </div>
-                          </div>
+                    <% if (isPo || isPm) { %>
+                        <div class="col m4 center-align">
+                            <a class="btn green modal-trigger" href="/projects/<%= project.id %>/issues/add">Créer une issue</a>
                         </div>
-                      </div>
-                      <div class="col s12 m3 l2 center-align hide-on-small-only">
-                          <% if ((isPo || isPm) && !project.deleteEdit) { %>
-                              <div class="row">
-                                  <a href="issues/<%=issue._id%>/edit"
-                                    class="btn white black-text"
-                                    style="width: 100%">Modifier</a>
-                              </div>
-                              <div class="row">
-                                  <a href="#deleteIssue" class="btn red modal-trigger deleteButton"
-                                    _id="<%= issue._id %>" style="width: 100%">Supprimer</a>
-                              </div>
-                          <% } %>
-                      </div>
+                    <% } %>
+                </div>
+                <div class="row valign-wrapper hide-on-med-and-up">
+                    <div class="col m4 offset-m4 center-align">
+                        <h5><%= pageTitle %></h5>
                     </div>
-              </div>
-          </li>
-          <% }) %>
-        </ul>
+                </div>
+            </div>
+        </div>
     </div>
+    <div class="row">
+        <div class="col s12 m10 offset-m1 l8 offset-l2">
+            <div class="row card-content">
+                <ul class="collapsible">
+                    <li class="collapsible-header">
+                        <div class="col s1 center"><strong>Identifiant</strong></div>
+                        <div class="col s8 center"><strong>Description</strong></div>
+                        <div class="col s1 center"><strong>Priorité</strong></div>
+                        <div class="col s1 center"><strong>Difficulté</strong></div>
+                        <div class="col s2 center"><strong>Complétion</strong></div>
+                    </li>
+                    <% project.issues.forEach( issue => { %>
+                    <li <%= activeIssue ? (activeIssue.toString() === issue._id.toString() ? "class=active" : "" ) : "" %>
+                            id="<%=issue._id%>">
+                        <div class="collapsible-header line" tabindex="0">
+                            <div class="col s1 center"><%= issue.storyId %></div>
+                            <div class="col s8 center truncate"><b>En tant que</b> <%= issue.userType %>, <b>je souhaite</b> <%= issue.userGoal %> <b>afin de</b> <%= issue.userReason %></div>
+                            <div class="col s1 center"><%= issue.priority %></div>
+                            <div class="col s1 center"><%= issue.difficulty %></div>
+                            <div class="col s2 center"><%= issue.completion ? issue.completion + "%" : "Non commencée"%></div>
+                        </div>
+                        <div class="collapsible-body">
+                            <div class="row center-align hide-on-med-and-up">
+                                <% if (!project.deleteEdit) { %>
+                                <div class="col s6">
+                                    <a href="issues/<%= issue._id %>/edit" class="btn-floating white">
+                                        <i class="material-icons black-text">edit</i>
+                                    </a>
+                                </div>
+                                <div class="col s6">
+                                    <a href="#deleteIssue" class="btn-floating red modal-trigger deleteButton"
+                                       _id="<%= issue._id %>">
+                                        <i class="material-icons">delete</i>
+                                    </a>
+                                </div>
+                                <% } %>
+                            </div>
+                            <div class="row">
+                                <div class="col s12 m9 l10">
+                                    <div class="row">
+                                        <div class="row">
+                                            <div class="col s12 offset-m1 m10">
+                                                <b>User Story : </b><br/><b>En tant que</b> <%= issue.userType %> <b>Je
+                                                    souhaite</b> <%= issue.userGoal %>
+                                                <b>Afin de</b> <%= issue.userReason %>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col s12 offset-m1 m10">
+                                                <b>Sprint : </b>Sprint 5
+                                            </div>
+                                            <div class="col s12 offset-m1 m10">
+                                                <% if (issue.tasks.length > 0) { %>
+                                                    <b>Tâches : </b>
+                                                    <% issue.tasks.forEach(task => { %>
+                                                        <a class="<%=task.color%>" href="/projects/<%=project.id%>/tasks/<%=task._id%>#<%=task._id%>">
+                                                            #<%=task.index%>
+                                                        </a>
+                                                    <%})%>
+                                                <% } else { %>
+                                                    <b>Aucune tâche</b>
+                                                <% } %>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col s12 m3 l2 center-align hide-on-small-only">
+                                    <% if ((isPo || isPm) && !project.deleteEdit) { %>
+                                    <div class="row">
+                                        <a href="/projects/<%=project.id%>/issues/<%= issue._id %>/edit"
+                                           class="btn white black-text"
+                                           style="width: 100%">Modifier</a>
+                                    </div>
+                                    <div class="row">
+                                        <a href="#deleteIssue" class="btn red modal-trigger deleteButton"
+                                           _id="<%= issue._id %>" style="width: 100%">Supprimer</a>
+                                    </div>
+                                    <% } %>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <% }) %>
+                </ul>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 <% } else { %>
-  <div class="row valign-wrapper" style="margin-top: 10%">
-    <div class="col s12 center-align">
-      <div class="row">
-        <h5>Il n'y a actuellement aucune issue pour ce projet...</h5>
-      </div>
-      <% if (isPo || isPm) { %>
-      <div class="row">
-        <h6>Essayez de créer une première issue !</h6>
-      </div>
-      <div class="row">
-        <a href="issues/add" class="btn-flat green-text waves-effect">Créer une première issue</a>
-      </div>
-      <% } %>
+    <div class="row valign-wrapper" style="margin-top: 10%">
+        <div class="col s12 center-align">
+            <div class="row">
+                <h5>Il n'y a actuellement aucune issue pour ce projet...</h5>
+            </div>
+            <% if (isPo || isPm) { %>
+                <div class="row">
+                    <h6>Essayez de créer une première issue !</h6>
+                </div>
+                <div class="row">
+                    <a href="issues/add" class="btn-flat green-text waves-effect">Créer une première issue</a>
+                </div>
+            <% } %>
+        </div>
     </div>
-  </div>
-  <% } %>
+<% } %>
 
 <%- include('../partials/scripts.ejs') %>
 <%- include('../partials/toast.ejs') %>
@@ -123,17 +136,7 @@
 <%- include('../partials/menu-connected-script.ejs') %>
 
 <script>
-  $(document).ready(function() {
-    $('.collapsible').collapsible();
-  });
+    $(document).ready(function () {
+        $('.collapsible').collapsible();
+    });
 </script>
-
-<style>
-.userstory-header {
-  white-space: nowrap;
-  width: 300px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  margin: auto;
-}
-</style>

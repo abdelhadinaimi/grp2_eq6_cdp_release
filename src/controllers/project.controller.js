@@ -23,7 +23,6 @@ module.exports.getProject = (req, res) => {
           userId: userId,
           isPo: isPo,
           isPm: isPm,
-          values: undefined,
           url: 'pro'
         });
       }
