@@ -5,6 +5,7 @@ const Issue = require("./issue.model");
 const Task = require("./task.model");
 const User = require("./user.model");
 const Sprint = require("./sprint.model");
+const Doc = require("./doc.model");
 
 const projectSchema = new Schema(
   {
@@ -27,6 +28,7 @@ const projectSchema = new Schema(
     issues: [Issue.schema],
     tasks: [Task.schema],
     sprint: [Sprint.schema],
+    docs: [Doc.schema],
     collaborators: [
       {
         _id: { type: Schema.Types.ObjectId, ref: User.name },

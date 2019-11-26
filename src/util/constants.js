@@ -96,6 +96,9 @@ module.exports.global = {
     sprint: {
       sprints: projectId => projects + projectId + "/sprints"
     },
+    doc: {
+      docs: projectId => projects + projectId + "/doc"
+    },
     user: {
       register: "/register",
       login: "/login",
@@ -196,4 +199,9 @@ module.exports.errorTaskMessages = {
   state: {
     match: "If faut spécifier un état valide."
   }
+};
+
+module.exports.errorDocsMessages = {
+  success: "Documentation ajoutée !",
+  failed: "La documentation n'a pas pu être ajoutée..."
 };

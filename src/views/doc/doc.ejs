@@ -35,6 +35,33 @@
                             <div class="col s12 center"><strong>Code</strong></div>
                         </div>
                         <div class="collapsible-body">
+                            <% if (project.doc.code.length === 0) { %>
+                                <p class="center-align">Aucune documentation du code fournie.</p>
+                            <% } else { %>
+                                <div class="row">
+                                    <div class="col s12 m10 offset-m1">
+                                        <table class="responsive-table striped centered">
+                                            <thead>
+                                            <tr>
+                                                <th>Version</th>
+                                                <th>Date</th>
+                                                <th>Lien de Téléchargement</th>
+                                            </tr>
+                                            </thead>
+
+                                            <tbody>
+                                            <% project.doc.code.forEach(doc => { %>
+                                                <tr>
+                                                    <td><%=doc.version%></td>
+                                                    <td><%=doc.date%></td>
+                                                    <td><a href="/<%=doc.docUrl%>" target="_blank">Télécharger</a></td>
+                                                </tr>
+                                            <% }) %>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            <% } %>
                         </div>
                     </li>
                     <li>
@@ -42,6 +69,33 @@
                             <div class="col s12 center"><strong>Utilisateur</strong></div>
                         </div>
                         <div class="collapsible-body">
+                            <% if (project.doc.user.length === 0) { %>
+                                <p class="center-align">Aucune documentation utilisateur fournie.</p>
+                            <% } else { %>
+                                    <div class="row">
+                                        <div class="col s12 m10 offset-m1">
+                                            <table class="responsive-table striped centered">
+                                                <thead>
+                                                <tr>
+                                                    <th>Version</th>
+                                                    <th>Date</th>
+                                                    <th>Lien de Téléchargement</th>
+                                                </tr>
+                                                </thead>
+
+                                                <tbody>
+                                                <% project.doc.user.forEach(doc => { %>
+                                                <tr>
+                                                    <td><%=doc.version%></td>
+                                                    <td><%=doc.date%></td>
+                                                    <td><a href="/<%=doc.docUrl%>" target="_blank">Télécharger</a></td>
+                                                </tr>
+                                                <% }) %>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                            <% } %>
                         </div>
                     </li>
                     <li>
@@ -49,6 +103,33 @@
                             <div class="col s12 center"><strong>Administrateur</strong></div>
                         </div>
                         <div class="collapsible-body">
+                            <% if (project.doc.admin.length === 0) { %>
+                                <p class="center-align">Aucune documentation administrateur fournie.</p>
+                            <% } else { %>
+                                    <div class="row">
+                                        <div class="col s12 m10 offset-m1">
+                                            <table class="responsive-table striped centered">
+                                                <thead>
+                                                <tr>
+                                                    <th>Version</th>
+                                                    <th>Date</th>
+                                                    <th>Lien de Téléchargement</th>
+                                                </tr>
+                                                </thead>
+
+                                                <tbody>
+                                                <% project.doc.admin.forEach(doc => { %>
+                                                <tr>
+                                                    <td><%=doc.version%></td>
+                                                    <td><%=doc.date%></td>
+                                                    <td><a href="/<%=doc.docUrl%>" target="_blank">Télécharger</a></td>
+                                                </tr>
+                                                <% }) %>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                            <% } %>
                         </div>
                     </li>
                 </ul>

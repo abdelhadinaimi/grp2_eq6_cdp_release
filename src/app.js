@@ -5,6 +5,7 @@ const csrf = require("csurf");
 const dotenv = require("dotenv");
 const flash = require("connect-flash");
 const methodOverride = require("method-override");
+const multer = require("multer");
 const path = require("path");
 const session = require("express-session");
 const MongoStore = require("connect-mongo")(session);
@@ -36,13 +37,26 @@ try {
 const PORT = process.env.SERVER_PORT || 8080;
 const app = express();
 const csrfProtection = csrf();
+const doc_storage = "doc_storage";
+
+const fileStorage = multer.diskStorage({
+  destination: (req, file, cb) => {cb(null, doc_storage)},
+  filename: (req, file, cb) => {cb(null, new Date().toISOString() + "-" + file.originalname)}
+});
+const fileFilter = (req, file, cb) => {
+  if (file.mimetype === "application/pdf" || file.mimetype === "application/zip")
+    cb(null, true);
+  cb(null, false);
+};
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 app.use(express.static(path.join(__dirname, "public")));
+app.use("/" + doc_storage, express.static(path.join(__dirname, doc_storage)));
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(multer({storage: fileStorage, fileFilter: fileFilter}).single("doc"));
 app.use(cookieParser());
 app.use(
   session({
