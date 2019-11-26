@@ -66,7 +66,9 @@
                 <% } %>
             </div>
             <div class="col s12 l5">
-                <canvas id="burnDownChart"></canvas>
+                <% if (project.burndown) { %>
+                    <canvas id="burnDownChart"></canvas>
+                <% } %>
             </div>
         </div>
         <div class="row">
@@ -162,8 +164,9 @@
           event.target.closest("form").submit();
         });
 
-        var ctx = document.getElementById('burnDownChart').getContext('2d');
-        new Chart(ctx, {
+        <% if (project.burndown) { %>
+          var ctx = document.getElementById('burnDownChart').getContext('2d');
+          new Chart(ctx, {
             type: 'line',
             data: <%- project.burndown%>,
             options: {
@@ -180,7 +183,8 @@
                 'position': 'bottom'
               }
             }
-        });
+          });
+        <% } %>
     });
 </script>
 
