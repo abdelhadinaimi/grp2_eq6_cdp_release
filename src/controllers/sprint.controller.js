@@ -1,5 +1,4 @@
 const sprintRepo = require("../repositories/sprint.repository");
-const projectRepo = require("../repositories/project.repository");
 
 const { errorGeneralMessages } = require("../util/constants");
 const titlesSprint = require('../util/constants').global.titles.sprint;

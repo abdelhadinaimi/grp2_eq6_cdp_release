@@ -8,7 +8,8 @@
     "start:dev": "nodemon app.js",
     "debug": "node --inspect app.js",
     "test": "mocha",
-    "selenium": "mocha test/selenium/US.js"
+    "selenium": "mocha test/selenium/US.js",
+    "lint": "eslint ."
   },
   "repository": {
     "type": "git",
@@ -43,6 +44,9 @@
   },
   "devDependencies": {
     "chai": "^4.2.0",
+    "eslint": "^6.7.1",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-plugin-import": "^2.18.2",
     "mocha": "^6.2.2",
     "selenium-webdriver": "^4.0.0-alpha.5"
   }

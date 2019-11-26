@@ -85,8 +85,10 @@ module.exports.issueValidations = [
       return issueRepo
         .isUniqueStoryId(projectId, issueId, value)
         .then(result => {
-          if (!result)
+          if (!result){
             return Promise.reject(errorIssueMessages.storyId.unique);
+          }
+          return null;
         });
     }),
   body("difficulty")

@@ -1,7 +1,6 @@
 const route = require("express").Router({ mergeParams: true });
 
 const sprintController = require("../controllers/sprint.controller");
-const { sprintValidation, validate } = require("../config/validations.config");
 
 route.get("/:sprintId?", sprintController.getProjectSprints);
 
