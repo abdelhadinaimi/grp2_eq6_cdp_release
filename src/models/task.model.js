@@ -12,7 +12,8 @@ const TaskSchema = new Schema(
     testLink: String,
     state: { type: String, enum: ["TODO", "DOING", "DONE", "TOTEST", "TESTING", "TESTED"], default: "TODO" },
     assignedContributors: [{ type: Schema.Types.ObjectId, ref: User.name }],
-    linkedIssues: [{ type: Schema.Types.ObjectId, ref: 'Project' }]
+    linkedIssues: [{ type: Schema.Types.ObjectId, ref: 'Project' }],
+    linkedSprint: { type: Schema.Types.ObjectId, ref: 'Project' }
   },
   { timestamps: true }
 );
