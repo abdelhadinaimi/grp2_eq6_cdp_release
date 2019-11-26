@@ -36,6 +36,7 @@ describe('UT Project Repository', () => {
         title: 'Test Project',
         description: 'Test Description',
         dueDate: '31/12/2019',
+        issues:[],
         projectOwner: userId
       };
 
