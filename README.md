@@ -1,4 +1,4 @@
-<img src=https://github.com/Version-Project/grp2_eq6_cdp_dev/workflows/tests/badge.svg/>
+[![Actions Status](https://github.com/Version-Project/grp2_eq6_cdp_dev/workflows/tests/badge.svg)](https://github.com/Version-Project/grp2_eq6_cdp_dev/actions)
 
 
 # Utilisation
