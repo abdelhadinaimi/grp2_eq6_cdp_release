@@ -36,10 +36,8 @@ describe('UT Project Repository', () => {
         title: 'Test Project',
         description: 'Test Description',
         dueDate: '31/12/2019',
-        issues:[],
         projectOwner: userId
       };
-
       projectRepo
         .createProject(project)
         .then(result => {
@@ -52,7 +50,7 @@ describe('UT Project Repository', () => {
       const project = {
         id: project2Id,
         title: 'Test Project 2',
-        projectOwner: userId
+        projectOwner: userId,
       };
 
       projectRepo
