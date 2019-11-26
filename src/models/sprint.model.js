@@ -6,7 +6,6 @@ const SprintSchema = new Schema(
     id: {
       type: String,
       maxlength: 20,
-      unique: true
     },
     description: {
       type: String,
