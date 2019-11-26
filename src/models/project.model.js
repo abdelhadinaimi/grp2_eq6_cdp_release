@@ -5,6 +5,7 @@ const Issue = require("./issue.model");
 const Task = require("./task.model");
 const User = require("./user.model");
 const Sprint = require("./sprint.model");
+const Release = require("./release.model");
 const Doc = require("./doc.model");
 
 const projectSchema = new Schema(
@@ -28,6 +29,7 @@ const projectSchema = new Schema(
     issues: [Issue.schema],
     tasks: [Task.schema],
     sprint: [Sprint.schema],
+    releases: [Release.schema],
     docs: [Doc.schema],
     collaborators: [
       {
