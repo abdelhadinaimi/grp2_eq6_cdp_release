@@ -1,0 +1,103 @@
+<%- include('../partials/head.ejs') %>
+<%- include('../partials/project-header.ejs') %>
+
+<div class="row">
+    <div class="col s12 m10 offset-m1 l8 offset-l2">
+        <div class="card-panel">
+            <div class="row">
+                <div class="col s12">
+                    <h5 class="center-align"><%= editing ? 'Modifier le Sprint' : 'Créer un nouveau Sprint' %></h5>
+                </div>
+            </div>
+            <form action="<%= editing ? '/projects/' + projectId + '/sprints/' + values._id + '?_method=PUT' : '/projects/' + projectId + '/sprints/add' %>"
+                  method="post">
+                <div class="row">
+                    <div class="col s12">
+                        <div class="row">
+                            <div class="input-field col s4">
+                                <% let index = errors.findIndex(error => error.id) %>
+                                <i class="material-icons prefix">fingerprint</i>
+                                <input id="id" name="id" type="text" data-length="20" placeholder="Sprint 1" required
+                                       class="validate <%= (index >= 0) ? 'invalid' : (errors.length > 0) ? 'valid' : '' %>"
+                                       value="<%= values ? values.id : '' %>" required>
+                                <label for="id">Identifiant</label>
+                                <span class="helper-text"
+                                      data-error="<%= (index >= 0) ? errors[index].id : '' %>"></span>
+                            </div>
+                            <div class="input-field col s4">
+                                <% index = errors.findIndex(error => error.startDate) %>
+                                <i class="material-icons prefix">date_range</i>
+                                <input id="startDate" name="startDate" type="text" required
+                                       class="datepicker validate <%= (index >= 0) ? 'invalid' : (errors.length > 0) ? 'valid' : '' %>"
+                                       value="<%= values ? values.startDate : '' %>">
+                                <label for="startDate">Date de début</label>
+                                <span class="helper-text"
+                                      data-error="<%= (index >= 0) ? errors[index].startDate : '' %>"></span>
+                            </div>
+                            <div class="input-field col s4">
+                                <% index = errors.findIndex(error => error.endDate) %>
+                                <i class="material-icons prefix">date_range</i>
+                                <input id="endDate" name="endDate" type="text" required
+                                       class="datepicker validate <%= (index >= 0) ? 'invalid' : (errors.length > 0) ? 'valid' : '' %>"
+                                       value="<%= values ? values.endDate : '' %>">
+                                <label for="endDate">Date de fin</label>
+                                <span class="helper-text"
+                                      data-error="<%= (index >= 0) ? errors[index].endDate : '' %>"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <% index = errors.findIndex(error => error.description) %>
+                                <i class="material-icons prefix">description</i>
+                                <textarea id="description" name="description" placeholder="Optionnelle"
+                                          data-length="3000"
+                                          class="materialize-textarea validate <%= (index >= 0) ? 'invalid' : (errors.length > 0) ? 'valid' : '' %>"
+                                ><%= values ? values.description : '' %></textarea>
+                                <label for="description">Description</label>
+                                <span class="helper-text"
+                                      data-error="<%= (index >= 0) ? errors[index].description : '' %>"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col s12 right-align">
+                            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                            <a href="/projects/<%=projectId%>/sprints"
+                               class="waves-effect waves-green btn-flat red-text">Annuler</a>
+                            <button type="submit" class="waves-effect waves-green btn-flat green-text">
+                                <%= editing ? 'Modifier' : 'Ajouter' %>
+                            </button>
+                        </div>
+                    </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/scripts.ejs') %>
+<%- include('../partials/project-header-script.ejs') %>
+
+<script>
+  $(document).ready(() => {
+    $('select').formSelect();
+    $('.datepicker').datepicker({
+      container: 'body',
+      firstDay: 1,
+      format: 'dd/mm/yyyy',
+      showClearBtn: 'true',
+      yearRange: [2019, 2040],
+      i18n: {
+        cancel: 'Annuler',
+        clear: 'Effacer',
+        months: ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'],
+        monthsShort: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Jui', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'],
+        weekdays: ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'],
+        weekdaysShort: ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'],
+        weekdaysAbbrev: ['D', 'L', 'Ma', 'Me', 'J', 'V', 'S']
+      }
+    });
+    $('input#id, textarea#description').characterCounter();
+  });
+</script>
+
+<%- include('../partials/foot.ejs') %>

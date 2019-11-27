@@ -18,4 +18,4 @@ const SprintSchema = new Schema(
   { timestamps: true }
 );
 
-module.exports = { name: "Schema", schema: SprintSchema };
+module.exports = { name: "Sprint", schema: SprintSchema };

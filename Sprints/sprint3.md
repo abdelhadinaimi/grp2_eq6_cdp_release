@@ -3,8 +3,8 @@
 
 | ID | Descriptif | Priorité | Coût | État |
 | :-: | -- | :-: | :-: | :-: |
-| US#29 | **En tant que** PO ou CP, **je souhaite** cliquer sur le bouton “Créer un sprint” de la page “Sprints” du projet, remplir un formulaire contenant les champs “Identifiant” (unique, 20 char max), “Description” (3000 char max), “Date de début” (format jj/mm/aaaa) et “Date de fin” (format jj/mm/aaaa, postérieur à la date de début), puis cliquer sur le bouton “Créer” **afin de** créer un nouveau sprint. | Low | 2 | TODO |
-| US#30 | **En tant que** PO ou CP, **je souhaite** cliquer sur le bouton “Modifier” d’un sprint puis afficher le formulaire (cf. spécifications US#29) **afin de** mettre à jour les information de ce sprint.  | Low | 2 | TODO |
+| US#29 | **En tant que** PO ou CP, **je souhaite** cliquer sur le bouton “Créer un sprint” de la page “Sprints” du projet, remplir un formulaire contenant les champs “Identifiant” (unique, 20 char max), “Description” (3000 char max), “Date de début” (format jj/mm/aaaa) et “Date de fin” (format jj/mm/aaaa, postérieur à la date de début), puis cliquer sur le bouton “Créer” **afin de** créer un nouveau sprint. | Low | 2 | DOING |
+| US#30 | **En tant que** PO ou CP, **je souhaite** cliquer sur le bouton “Modifier” d’un sprint puis afficher le formulaire (cf. spécifications US#29) **afin de** mettre à jour les information de ce sprint.  | Low | 2 | DOING |
 | US#31 | **En tant que** PO ou CP, **je souhaite** cliquer sur le bouton “Supprimer” devant le nom du sprint **afin de** supprimer ce sprint. | Low | 1 | TODO |
 | US#32 | **En tant que** utilisateur, **je souhaite** cliquer sur l’onglet “Sprints” **afin de** afficher toute la liste des sprints du projet. | Low | 1 | DOING |
 | US#33 | **En tant que** utilisateur, **je souhaite** une fois dans l’onglet “Sprint”, cliquer sur un sprint **afin de** afficher les informations relatives à ce sprint (Cf spécifications US#29), l’état d’avancement, le coût total et le temps restant| Low | 1 | DOING |
