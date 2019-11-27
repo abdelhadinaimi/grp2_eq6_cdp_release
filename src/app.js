@@ -35,7 +35,7 @@ try {
   console.error('.env file doens\'t exist please add it.');
 }
 
-const PORT = process.env.SERVER_PORT || 8080;
+const PORT = process.env.PORT || 8080;
 const app = express();
 const csrfProtection = csrf();
 const doc_storage = "doc_storage";
