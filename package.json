@@ -7,9 +7,9 @@
     "start": "node src/app.js",
     "start:dev": "nodemon src/app.js",
     "debug": "node --inspect src/app.js",
-    "test": "mocha",
-    "selenium": "mocha src/test/selenium/US.js",
-    "lint": "eslint src"
+    "test": "mocha src/test/unit",
+    "selenium": "mocha src/test/selenium",
+    "lint": "eslint src/ -c src/.eslintrc.js"
   },
   "repository": {
     "type": "git",
