@@ -9,13 +9,8 @@ route.get('/:sprintId/edit', sprintController.getEdit);
 
 route.post('/add', sprintValidations, validate, sprintController.postSprint);
 
-
-// route.put('/:sprintId', sprintValidations, validate, sprintController.putEdit);
-
 route.delete('/:sprintId', sprintController.deleteSprint);
 
-
 route.get("/:sprintId?", sprintController.getProjectSprints);
-
 
 module.exports = route;

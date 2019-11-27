@@ -27,10 +27,7 @@ module.exports.getProjectSprints = (projectId, userId) => new Promise((resolve, 
 module.exports.createSprint = (projectId, sprint, userId) => new Promise((resolve, reject) => {
   if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(userId))
     return resolve({ success: false, error: errorGeneralMessages.notAllowed });
-  
   const newSprint = new Sprint();
-  console.log(sprint);
-
   if (sprint.id)
     newSprint.id = sprint.id;
   if (sprint.startDate && sprint.startDate.length > 0) {

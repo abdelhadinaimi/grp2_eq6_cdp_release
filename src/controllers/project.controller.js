@@ -166,7 +166,8 @@ module.exports.postInvite = async (req, res) => {
 
   if (email !== ""){
     userFound = await userRepo.findUserBy('email', email);
-  } else if (userFound === null && username !== ""){
+  }
+  if (userFound === null && username !== ""){
     // eslint-disable-next-line require-atomic-updates
     userFound = await userRepo.findUserBy('username', username);
   }
