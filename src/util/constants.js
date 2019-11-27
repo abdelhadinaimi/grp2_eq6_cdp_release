@@ -96,6 +96,9 @@ module.exports.global = {
     sprint: {
       sprints: projectId => projects + projectId + "/sprints"
     },
+    doc: {
+      docs: projectId => projects + projectId + "/doc"
+    },
     user: {
       register: "/register",
       login: "/login",
@@ -196,4 +199,25 @@ module.exports.errorTaskMessages = {
   state: {
     match: "If faut spécifier un état valide."
   }
+};
+
+module.exports.errorSprintMessages = {
+  id: {
+    max: "L'identifiant ne doit pas dépasser 20 caractères.",
+    empty: "Il faut spécifier un identifiant."
+  },
+  startDate: {
+    format: "La date ne respecte pas le format (dd/mm/yyyy)."
+  },
+  endDate: {
+    format: "La date ne respecte pas le format (dd/mm/yyyy)."
+  },
+  description: {
+    max: "La description ne doit pas dépasser 3000 caractères."
+  }
+};
+
+module.exports.errorDocsMessages = {
+  success: "Documentation ajoutée !",
+  failed: "La documentation n'a pas pu être ajoutée..."
 };

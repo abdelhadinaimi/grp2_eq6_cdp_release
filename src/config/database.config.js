@@ -24,3 +24,6 @@ mongoose.model(userModel.name, userModel.schema);
 
 const projectModel = require("../models/project.model");
 mongoose.model(projectModel.name, projectModel.schema);
+
+const sprintModel = require("../models/sprint.model");
+mongoose.model(sprintModel.name, sprintModel.schema);

@@ -1,5 +1,5 @@
 <div id="addDocument" class="modal">
-    <form action="/projects/<%=project.id%>/doc/add" method="post">
+    <form action="/projects/<%=project.id%>/doc/add" method="post" enctype="multipart/form-data">
         <input type="hidden" name="_csrf" value="<%= csrfToken %>">
         <div class="modal-content center-align">
             <div class="row">

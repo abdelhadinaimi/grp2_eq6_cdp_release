@@ -3,7 +3,8 @@ const {
   errorUserMessages,
   errorProjectMessages,
   errorIssueMessages,
-  errorTaskMessages
+  errorTaskMessages,
+  errorSprintMessages
 } = require("../util/constants");
 
 const issueRepo = require("../repositories/issue.repository");
@@ -85,8 +86,10 @@ module.exports.issueValidations = [
       return issueRepo
         .isUniqueStoryId(projectId, issueId, value)
         .then(result => {
-          if (!result)
+          if (!result){
             return Promise.reject(errorIssueMessages.storyId.unique);
+          }
+          return null;
         });
     }),
   body("difficulty")
@@ -128,6 +131,27 @@ module.exports.taskStateValidation = [
   body("state")
   .matches(/^(TODO|DOING|DONE|TOTEST|TESTING|TESTED)$/)
   .withMessage(errorTaskMessages.state.match)
+];
+
+module.exports.sprintValidations = [
+  body("id")
+    .not()
+    .isEmpty()
+    .withMessage(errorSprintMessages.id.empty)
+    .isLength({max: 20})
+    .withMessage(errorSprintMessages.id.max),
+  body("startDate")
+    .optional({checkFalsy: true})
+    .matches(/^\d{2}\/\d{2}\/\d{4}$/)
+    .withMessage(errorSprintMessages.startDate.format),
+    body("endDate")
+    .optional({checkFalsy: true})
+    .matches(/^\d{2}\/\d{2}\/\d{4}$/)
+    .withMessage(errorSprintMessages.endDate.format),
+  body('description')
+    .optional({checkFalsy: true})
+    .isLength({max: 3000})
+    .withMessage(errorSprintMessages.description.max)
 ];
 
 /**

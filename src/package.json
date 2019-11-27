@@ -8,7 +8,8 @@
     "start:dev": "nodemon app.js",
     "debug": "node --inspect app.js",
     "test": "mocha",
-    "selenium": "mocha test/selenium/US.js"
+    "selenium": "mocha test/selenium/US.js",
+    "lint": "eslint ."
   },
   "repository": {
     "type": "git",
@@ -37,12 +38,16 @@
     "method-override": "^3.0.0",
     "mongodb": "^3.3.3",
     "mongoose": "^5.7.7",
+    "multer": "^1.4.2",
     "nodemailer": "^6.3.1",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0"
   },
   "devDependencies": {
     "chai": "^4.2.0",
+    "eslint": "^6.7.1",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-plugin-import": "^2.18.2",
     "mocha": "^6.2.2",
     "selenium-webdriver": "^4.0.0-alpha.5"
   }

@@ -1,21 +1,23 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const SprintSchema = new Schema(
+const ReleaseSchema = new Schema(
   {
-    id: {
+    version: {
       type: String,
       maxlength: 20,
+      required: true
     },
     description: {
       type: String,
       maxlength: 3000,
       required: false
     },
-    startDate: Date,
-    endDate: Date
+    downloadLink: String,
+    docLink: String,
+    releaseDate: Date,
   },
   { timestamps: true }
 );
 
-module.exports = { name: "Sprint", schema: SprintSchema };
+module.exports = { name: "Release", schema: ReleaseSchema };
