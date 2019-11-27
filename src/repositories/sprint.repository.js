@@ -56,3 +56,26 @@ module.exports.createSprint = (projectId, sprint, userId) => new Promise((resolv
     .then(() => resolve({ success: true }))
     .catch(err => reject(err));
 });
+
+module.exports.deleteSprint = (projectId, sprintId, userId) => new Promise((resolve, reject) => {
+  const errorMessage = {success: false, errors: {error: errorGeneralMessages.deleteNotAllowed}};
+  if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(sprintId) || !mongoose.Types.ObjectId.isValid(userId))
+    return resolve(errorMessage);
+
+  return Project
+    .findIfUserType(projectId, userId, ['po', 'pm'])
+    .then(project => {
+      if (!project)
+        return resolve(errorMessage);
+
+      project.sprints = project.sprints.filter(sprint => sprint._id.toString() !== sprintId.toString());
+      project.tasks.forEach(task => {
+        if(task.linkedSprint.toString() === sprintId.toString()){
+          task.linkedSprint = null;
+        }
+      });
+      return project.save();
+    })
+    .then(() => resolve({success: true}))
+    .catch(err => reject(err));
+});
