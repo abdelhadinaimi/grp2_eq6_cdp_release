@@ -2,14 +2,14 @@
   "name": "cdp_dev",
   "version": "1.0.0",
   "description": "Projet CDP 2019",
-  "main": "app.js",
+  "main": "src/app.js",
   "scripts": {
-    "start": "node app.js",
-    "start:dev": "nodemon app.js",
-    "debug": "node --inspect app.js",
-    "test": "mocha",
-    "selenium": "mocha test/selenium/US.js",
-    "lint": "eslint ."
+    "start": "node src/app.js",
+    "start:dev": "nodemon src/app.js",
+    "debug": "node --inspect src/app.js",
+    "test": "mocha src/test/unit",
+    "selenium": "mocha src/test/selenium",
+    "lint": "eslint src/ -c src/.eslintrc.js"
   },
   "repository": {
     "type": "git",

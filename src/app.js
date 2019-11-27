@@ -20,6 +20,7 @@ const tasksRoutes = require('./routes/tasks.routes');
 const sprintsRoutes = require('./routes/sprints.routes');
 const docsRoutes = require('./routes/doc.routes');
 const projectRoutes = require('./routes/project.routes');
+const releasesRoutes = require('./routes/releases.routes');
 const indexRoutes = require('./routes/index.routes');
 const userRoutes = require('./routes/user.routes');
 const errorRoutes = require('./routes/error.routes');
@@ -34,7 +35,7 @@ try {
   console.error('.env file doens\'t exist please add it.');
 }
 
-const PORT = process.env.SERVER_PORT || 8080;
+const PORT = process.env.PORT || 8080;
 const app = express();
 const csrfProtection = csrf();
 const doc_storage = "doc_storage";
@@ -81,6 +82,7 @@ app.use((req, res, next) => {
 app.use('/projects/:projectId/issues', isAuth, issuesRoutes);
 app.use('/projects/:projectId/tasks', isAuth, tasksRoutes);
 app.use('/projects/:projectId/sprints', isAuth, sprintsRoutes);
+app.use('/projects/:projectId/releases', isAuth, releasesRoutes);
 app.use('/projects/:projectId/doc', isAuth, docsRoutes);
 app.use('/projects', isAuth, projectRoutes);
 app.use(indexRoutes, userRoutes, errorRoutes);

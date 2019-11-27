@@ -174,3 +174,20 @@ module.exports.putEdit = (req, res) => {
       return res.status(500).redirect(routes.error["500"]);
     });
 };
+
+module.exports.deleteSprint = (req, res) => {
+  return sprintRepo
+    .deleteSprint(req.params.projectId, req.params.sprintId, req.session.user._id)
+    .then(result => {
+      if (!result.success) {
+        req.flash("toast", result.errors.error);
+        return res.status(403).redirect(routes.index);
+      }
+      req.flash("toast", "Sprint supprimé avec succès !");
+      return res.status(200).redirect(routes.index);
+    })
+    .catch(err => {
+      console.log(err);
+      return res.status(500).redirect(routes.error["500"]);
+    });
+};

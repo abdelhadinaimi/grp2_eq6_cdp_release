@@ -30,6 +30,10 @@ module.exports.global = {
       sprint: "sprint/sprint",
       addEdit: "sprint/add-edit-sprint"
     },
+    release: {
+      releases: "release/releases",
+      addEdit: "release/add-edit-release"
+    },
     doc: {
       doc: "doc/doc"
     },
@@ -76,7 +80,12 @@ module.exports.global = {
       forgotPassword: "Mot de Passe Oublié",
       resetPassword: "Réinitialisation Mot de Passe",
       account: "Mon Compte"
-    }
+    },
+    release: {
+      releases: "Releases",
+      add: "Nouvelle Release",
+      edit: "Éditer Release"
+    },
   },
   routes: {
     error: {

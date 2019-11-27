@@ -50,7 +50,6 @@ describe('UT User Repository', () => {
         .upsertUser(sameUser1)
         .then(result => {
           expect(result.success).to.be.false;
-          expect(result.errors.length).to.equal(1);
           done();
         });
     });
