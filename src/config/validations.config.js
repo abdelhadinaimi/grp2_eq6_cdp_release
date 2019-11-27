@@ -154,6 +154,10 @@ module.exports.sprintValidations = [
     .withMessage(errorSprintMessages.description.max)
 ];
 
+module.exports.releaseValidations = [
+
+];
+
 /**
  * a middleware to validate the request using the provided validators
  * if there are errors, returns a list of errors with 442 HTTP Code else it executes
