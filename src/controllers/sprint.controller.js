@@ -65,6 +65,42 @@ module.exports.getAdd = (req, res) => {
     });
 };
 
+module.exports.postSprint = (req, res) => {
+  const sprint = {
+    id: req.body.id,
+    startDate: req.body.startDate,
+    endDate: req.body.endDate,
+    description: req.body.description
+  };
+
+  if (!req.validation.success) {
+    return res.status(422).render(viewsSprint.addEdit, {
+      pageTitle: titlesSprint.add,
+      errors: req.validation.errors,
+      values: sprint,
+      projectId: req.params.projectId,
+      project: { id: req.params.projectId },
+      url: 'spr',
+      editing: false
+    });
+  }
+
+  return sprintRepo.createSprint(req.params.projectId, sprint, req.session.user._id)
+    .then(result => {
+      if (!result.success) {
+        req.flash("toast", result.error);
+        return res.status(403).redirect(routes.project.project(req.params.projectId));
+      }
+
+      req.flash("toast", "Sprint créé avec succès !");
+      return res.status(201).redirect(routes.sprint.sprints(req.params.projectId));
+    })
+    .catch(err => {
+      console.log(err);
+      return res.status(500).redirect(routes.error["500"]);
+    });
+};
+
 module.exports.getEdit = (req, res) => {
   const { projectId } = req.params;
   const { sprintId } = req.params;
@@ -102,34 +138,35 @@ module.exports.getEdit = (req, res) => {
     });
 };
 
-module.exports.postSprint = (req, res) => {
+module.exports.putEdit = (req, res) => {
   const sprint = {
-    id: req.body.id,
+    _id: req.params.id,
     startDate: req.body.startDate,
     endDate: req.body.endDate,
-    description: req.body.description
+    description: req.body.description,
   };
 
   if (!req.validation.success) {
     return res.status(422).render(viewsSprint.addEdit, {
-      pageTitle: titlesSprint.add,
+      pageTitle: titlesSprint.edit,
       errors: req.validation.errors,
       values: sprint,
       projectId: req.params.projectId,
-      project: { id: req.params.projectId },
-      url: 'spr',
-      editing: false
+      project: {id: req.params.projectId},
+      url: 'iss',
+      editing: true
     });
   }
 
-  return sprintRepo.createSprint(req.params.projectId, sprint, req.session.user._id)
+  return sprintRepo
+    .updateSprint(req.params.projectId, sprint, req.session.user._id)
     .then(result => {
       if (!result.success) {
         req.flash("toast", result.error);
-        return res.status(403).redirect(routes.project.project(req.params.projectId));
+        return res.status(403).redirect(routes.sprint.sprints(req.params.projectId));
       }
 
-      req.flash("toast", "Sprint créé avec succès !");
+      req.flash("toast", "Sprint mis à jour !");
       return res.status(201).redirect(routes.sprint.sprints(req.params.projectId));
     })
     .catch(err => {

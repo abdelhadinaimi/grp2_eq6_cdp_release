@@ -10,10 +10,12 @@ module.exports.createProject = project => new Promise((resolve, reject) => {
   if (project.id)
     newProject._id = project.id;
   newProject.title = project.title;
+  console.log("due_before= " + project.dueDate);
   if (project.dueDate && project.dueDate.length > 0) {
     const [day, month, year] = project.dueDate.split('/');
     newProject.dueDate = new Date(year, month - 1, day);
   }
+  console.log("due_after= " + newProject.dueDate);
   if (project.description && project.description.length > 0) {
     newProject.description = project.description;
   }

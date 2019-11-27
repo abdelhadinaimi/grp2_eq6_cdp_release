@@ -141,11 +141,9 @@ module.exports.sprintValidations = [
     .isLength({max: 20})
     .withMessage(errorSprintMessages.id.max),
   body("startDate")
-    .optional({checkFalsy: true})
     .matches(/^\d{2}\/\d{2}\/\d{4}$/)
     .withMessage(errorSprintMessages.startDate.format),
-    body("endDate")
-    .optional({checkFalsy: true})
+  body("endDate")
     .matches(/^\d{2}\/\d{2}\/\d{4}$/)
     .withMessage(errorSprintMessages.endDate.format),
   body('description')
