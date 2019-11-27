@@ -14,6 +14,8 @@ module.exports = dbName => {
     dbName
   };
 
+  if (PORT === "srv")
+    return mongoose.connect(`mongodb+srv://${USER}:${PASS}@${URL}`, mongooseOptions);
   return mongoose.connect(`mongodb://${USER}:${PASS}@${URL}:${PORT}`, mongooseOptions);
 };
 

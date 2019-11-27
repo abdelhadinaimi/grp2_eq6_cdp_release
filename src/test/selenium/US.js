@@ -1,4 +1,4 @@
-const {Builder, By, Key, until} = require("selenium-webdriver");
+/*const {Builder, By, Key, until} = require("selenium-webdriver");
 const assert = require("assert");
 
 const mongoose = require("mongoose");
@@ -94,7 +94,7 @@ describe("User Stories",  function () {
   let driver;
 
   before(async () => {
-    driver = await new Builder().forBrowser("chrome").build();
+    driver = await new Builder().forBrowser("chrome").usingServer("http://localhost:4444/wd/hub").build();
     await driver.manage().window().maximize();
 
     await buildConnection('cdp');
@@ -460,4 +460,23 @@ describe("User Stories",  function () {
       .then(() => mongoose.disconnect())
       .then(() => done());
   });
+});*/
+
+const {Builder, By, until} = require('selenium-webdriver');
+
+describe('Google Search', function() {
+  let driver;
+
+  before(async function () {
+    driver = await new Builder().forBrowser('chrome').usingServer('http://localhost:4444/wd/hub').build();
+  });
+
+  it('works with generators', function*() {
+    yield driver.get('http://www.google.com/ncr');
+    yield driver.findElement(By.name('q')).sendKeys('webdriver');
+    yield driver.findElement(By.name('btnG')).click();
+    yield driver.wait(until.titleIs('webdriver - Google Search'), 1000);
+  });
+
+  after(() => driver.quit());
 });
