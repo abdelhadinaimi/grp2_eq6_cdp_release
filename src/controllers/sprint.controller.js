@@ -133,6 +133,7 @@ module.exports.postSprint = (req, res) => {
       return res.status(201).redirect(routes.sprint.sprints(req.params.projectId));
     })
     .catch(err => {
+      console.log(err);
       return res.status(500).redirect(routes.error["500"]);
     });
 };
