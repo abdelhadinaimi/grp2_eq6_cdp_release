@@ -1,5 +1,7 @@
-[![Actions Status](https://github.com/Version-Project/grp2_eq6_cdp_dev/workflows/tests/badge.svg)](https://github.com/Version-Project/grp2_eq6_cdp_dev/actions)
+# Intégration Continue
+Dernière exécution Test Unitaire et Intégration : [![Actions Status](https://github.com/Version-Project/grp2_eq6_cdp_dev/workflows/tests/badge.svg)](https://github.com/Version-Project/grp2_eq6_cdp_dev/actions)
 
+Dernière Release disponible [ici](https://grp2-eq6-cdp-dev.herokuapp.com/)
 
 # Utilisation
 Téléchargez le projet, décompressez l'archive, rendez vous dans le nouveau dossier puis lancez la commande :<br>
