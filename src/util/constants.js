@@ -85,7 +85,7 @@ module.exports.global = {
       releases: "Releases",
       add: "Nouvelle Release",
       edit: "Éditer Release"
-    },
+    }
   },
   routes: {
     error: {
@@ -105,6 +105,9 @@ module.exports.global = {
     sprint: {
       sprints: projectId => projects + projectId + "/sprints"
     },
+    release: {
+      releases: projectId => projects + projectId + "/releases"
+    },
     doc: {
       docs: projectId => projects + projectId + "/doc"
     },
@@ -122,6 +125,13 @@ module.exports.errorGeneralMessages = {
   notAllowed: "Création non-autorisée !",
   modificationNotAllowed: "Modification non-autorisée !",
   deleteNotAllowed: "Suppression non-autorisée !"
+};
+
+module.exports.generaleValidationMessages = {
+  description: {
+    empty: "Il faut spécifier une description.",
+    max: "La description ne doit pas dépasser 3000 char."
+  }
 };
 
 module.exports.errorUserMessages = {
@@ -160,7 +170,7 @@ module.exports.errorProjectMessages = {
     format: "La date ne respecte pas le format (dd/mm/yyyy)."
   },
   description: {
-    max: "La description ne doit pas dépasser 3000 caractères."
+    max: this.generaleValidationMessages.description.max
   },
   role: {
     empty: "Il faut spécifier un rôle.",
@@ -199,7 +209,7 @@ module.exports.errorTaskMessages = {
   },
   description: {
     empty: "Il faut spécifier une description.",
-    max: "La description ne doit pas dépasser 3000 char."
+    max: this.generaleValidationMessages.description.max
   },
   definitionOfDone: {
     empty: "Il faut spécifier une Definition of Done.",
@@ -222,7 +232,17 @@ module.exports.errorSprintMessages = {
     format: "La date ne respecte pas le format (dd/mm/yyyy)."
   },
   description: {
-    max: "La description ne doit pas dépasser 3000 caractères."
+    max: this.generaleValidationMessages.description.max
+  }
+};
+
+module.exports.errorReleaseMessages = {
+  version: {
+    max: "L'identifiant ne doit pas dépasser 20 caractères.",
+    empty: "Il faut spécifier une version."
+  },
+  description: {
+    max: this.generaleValidationMessages.description.max
   }
 };
 

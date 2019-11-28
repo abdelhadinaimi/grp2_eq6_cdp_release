@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
-const Project = mongoose.model('Project');
-
 const dateformat = require('dateformat');
+const Project = mongoose.model('Project');
+const { errorGeneralMessages } = require('../util/constants');
 
 const dateFormatString = 'dd/mm/yyyy';
 
@@ -26,5 +26,23 @@ module.exports.getProjectReleases = (projectId, userId) => new Promise((resolve,
       );
       return resolve(proj);
     })
+    .catch(err => reject(err));
+});
+
+
+module.exports.createRelease = (projectId, release, userId) => new Promise((resolve, reject) => {
+  if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(userId))
+    return resolve({success: false, error: errorGeneralMessages.notAllowed});
+
+  return Project.findIfUserType(projectId, userId, ['po', 'pm'])
+    .then(project => {
+      if (!project) {
+        return resolve({success: false, error: errorGeneralMessages.notAllowed});
+      }
+
+      project.releases.push(release);
+      return project.save();
+    })
+    .then(() => resolve({success: true}))
     .catch(err => reject(err));
 });

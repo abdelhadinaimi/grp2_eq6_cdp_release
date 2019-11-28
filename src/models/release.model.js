@@ -15,7 +15,7 @@ const ReleaseSchema = new Schema(
     },
     downloadLink: String,
     docLink: String,
-    releaseDate: Date,
+    releaseDate: { type: Date, default: Date.now }
   },
   { timestamps: true }
 );

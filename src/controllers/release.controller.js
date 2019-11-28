@@ -1,7 +1,7 @@
 const releaseRepo = require("../repositories/release.repository");
-
+const projectRepo = require("../repositories/project.repository");
 const { errorGeneralMessages } = require("../util/constants");
-const { routes } = require('../util/constants').global;
+const { routes } = require("../util/constants").global;
 const titlesRelease = require("../util/constants").global.titles.release;
 const viewsRelease = require("../util/constants").global.views.release;
 
@@ -13,8 +13,11 @@ module.exports.getProjectReleases = (req, res) => {
     .then(project => {
       if (project) {
         const isPo = project.projectOwner.toString() === userId.toString();
-        const isPm = (project.collaborators.findIndex(collaborator =>
-          (collaborator._id.toString() === userId.toString() && collaborator.userType === "pm")) >= 0);
+        const isPm =
+          project.collaborators.findIndex(
+            collaborator =>
+              collaborator._id.toString() === userId.toString() && collaborator.userType === "pm"
+          ) >= 0;
         return res.render(viewsRelease.releases, {
           pageTitle: titlesRelease.issues,
           activeRelease: releaseId,
@@ -35,11 +38,66 @@ module.exports.getProjectReleases = (req, res) => {
 };
 
 module.exports.getAdd = (req, res) => {
-  res.send("getAdd");
+  const { projectId } = req.params;
+
+  return projectRepo
+    .hasAuthorizationOnProject(projectId, req.session.user._id, ["po", "pm"])
+    .then(result => {
+      if (result) {
+        return res.render(viewsRelease.addEdit, {
+          pageTitle: viewsRelease.add,
+          errors: [],
+          values: undefined,
+          projectId: projectId,
+          url: "rel",
+          editing: false,
+          project: { id: projectId }
+        });
+      } else {
+        req.flash("toast", errorGeneralMessages.accessNotAuthorized);
+        return res.status(403).redirect(routes.release.releases(projectId));
+      }
+    })
+    .catch(err => {
+      console.log(err);
+      return res.status(500).redirect(routes.error["500"]);
+    });
 };
 
 module.exports.postRelease = (req, res) => {
-  res.send("postRelease");
+  const release = {
+    version: req.body.version,
+    description: req.body.description,
+    downloadLink: req.body.downloadLink,
+    docLink: req.body.docLink
+  };
+
+  if (!req.validation.success) {
+    return res.status(422).render(release.addEdit, {
+      pageTitle: titlesRelease.add,
+      errors: req.validation.errors,
+      values: release,
+      projectId: req.params.projectId,
+      project: { id: req.params.projectId },
+      url: "rel",
+      editing: false
+    });
+  }
+  return releaseRepo
+    .createRelease(req.params.projectId, release, req.session.user._id)
+    .then(result => {
+      if (!result.success) {
+        req.flash("toast", result.error);
+        return res.status(403).redirect(routes.project.project(req.params.projectId));
+      }
+
+      req.flash("toast", "Release créée avec succès !");
+      return res.status(201).redirect(routes.release.releases(req.params.projectId));
+    })
+    .catch(err => {
+      console.log(err);
+      return res.status(500).redirect(routes.error["500"]);
+    });
 };
 
 module.exports.getEdit = (req, res) => {
