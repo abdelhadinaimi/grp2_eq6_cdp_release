@@ -100,7 +100,7 @@ module.exports.global = {
       issues: projectId => projects + projectId + "/issues"
     },
     task: {
-      tasks: projectId => projects + projectId + "/tasks"
+      tasks: (projectId, sprintId) => projects + projectId + "/sprints/" + sprintId + "/tasks"
     },
     sprint: {
       sprints: projectId => projects + projectId + "/sprints"

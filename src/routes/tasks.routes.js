@@ -17,6 +17,6 @@ route.put('/:taskId', taskValidations, validate, taskController.putEdit);
 
 route.delete('/:taskId', taskController.deleteTask);
 
-route.get("/:taskId?", taskController.getProjectTasks);
+route.get("/:taskId?", taskController.getSprintTasks);
 
 module.exports = route;

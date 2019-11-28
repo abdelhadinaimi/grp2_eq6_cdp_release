@@ -79,8 +79,8 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use('/projects/:projectId/sprints/:sprintId/tasks', isAuth, tasksRoutes);
 app.use('/projects/:projectId/issues', isAuth, issuesRoutes);
-app.use('/projects/:projectId/tasks', isAuth, tasksRoutes);
 app.use('/projects/:projectId/sprints', isAuth, sprintsRoutes);
 app.use('/projects/:projectId/releases', isAuth, releasesRoutes);
 app.use('/projects/:projectId/doc', isAuth, docsRoutes);
