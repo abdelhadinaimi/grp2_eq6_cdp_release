@@ -30,7 +30,7 @@ module.exports.getProjectSprints = (projectId, userId) => new Promise((resolve, 
         const today = new Date();
         let completion = null;
         if (sprint.startDate <= today)
-          completion = tasks.length !== 0 ? tasksDone / tasks.length : 0;
+          completion = tasks.length !== 0 ? Math.round((tasksDone / tasks.length) * 100) : 0;
 
         let remaining = null;
         if (sprint.startDate <= today && today <= sprint.endDate)

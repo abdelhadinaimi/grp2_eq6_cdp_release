@@ -108,7 +108,7 @@ module.exports.getTaskById = (projectId, taskId) => new Promise((resolve, reject
     .catch(err => reject(err));
 });
 
-module.exports.getProjectTasks = (projectId, userId) => new Promise((resolve, reject) => {
+module.exports.getSprintTasks = (projectId, sprintId, userId) => new Promise((resolve, reject) => {
   if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(userId))
     return resolve(undefined);
 
@@ -133,6 +133,7 @@ module.exports.getProjectTasks = (projectId, userId) => new Promise((resolve, re
 
       const proj = {
         id: projectId,
+        sprintId,
         title: project.title,
         tasks: project.tasks,
         projectOwner: project.projectOwner,

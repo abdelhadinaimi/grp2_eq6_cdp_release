@@ -128,11 +128,15 @@
                                         <h5>Tâches</h5>
                                     </div>
                                     <div class="col offset-s1 s2 right-align">
-                                        <a class="btn-floating blue" href=""><i class="material-icons">remove_red_eye</i></a>
+                                        <a class="btn-floating blue" href="/projects/<%=project.id%>/sprints/<%=sprint._id%>/tasks">
+                                            <i class="material-icons">remove_red_eye</i>
+                                        </a>
                                     </div>
                                     <% if (sprint.edit) { %>
                                     <div class="col s2 left-align">
-                                        <a class="btn-floating green" href=""><i class="material-icons">add</i></a>
+                                        <a class="btn-floating green" href="/projects/<%=project.id%>/sprints/<%=sprint._id%>/tasks/add">
+                                            <i class="material-icons">add</i>
+                                        </a>
                                     </div>
                                     <% } %>
                                 </div>

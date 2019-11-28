@@ -6,13 +6,14 @@ const titlesTask = require('../util/constants').global.titles.task;
 const {routes} = require('../util/constants').global;
 const viewsTask = require('../util/constants').global.views.task;
 
-module.exports.getProjectTasks = (req, res) => {
+module.exports.getSprintTasks = (req, res) => {
   const userId = req.session.user._id;
   const {projectId} = req.params;
-  let {taskId} = req.params;
+  const {sprintId} = req.params;
+  const {taskId} = req.params;
 
   return taskRepo
-    .getProjectTasks(projectId, userId)
+    .getSprintTasks(projectId, sprintId, userId)
     .then(project => {
       if (project) {
         const isPo = (project.projectOwner.toString() === userId.toString());
@@ -22,7 +23,7 @@ module.exports.getProjectTasks = (req, res) => {
         return res.render(viewsTask.tasks, {
           pageTitle: titlesTask.tasks,
           activeTask: taskId,
-          url: 'tas',
+          url: 'spr',
           isPo: isPo,
           isPm: isPm,
           mine: false,
@@ -73,6 +74,7 @@ module.exports.getMyTasks = (req, res) => {
 
 module.exports.getAdd = (req, res) => {
   const {projectId} = req.params;
+  const {sprintId} = req.params;
 
   return projectRepo
     .hasAuthorizationOnProject(projectId, req.session.user._id, ["po", "pm"])
@@ -82,8 +84,9 @@ module.exports.getAdd = (req, res) => {
           pageTitle: titlesTask.add,
           errors: [],
           values: undefined,
-          projectId: projectId,
-          url: 'tas',
+          projectId,
+          sprintId,
+          url: 'spr',
           editing: false,
           project: {id: projectId}
         });
@@ -140,7 +143,8 @@ module.exports.postTask = (req, res) => {
     description: req.body.description,
     definitionOfDone: req.body.definitionOfDone,
     cost: req.body.cost,
-    testLink: req.body.testLink
+    testLink: req.body.testLink,
+    linkedSprint: req.params.sprintId
   };
 
   if (!req.validation.success) {
@@ -164,7 +168,7 @@ module.exports.postTask = (req, res) => {
       }
 
       req.flash("toast", "Tâche créée avec succès !");
-      return res.status(201).redirect(routes.task.tasks(req.params.projectId));
+      return res.status(201).redirect(routes.task.tasks(req.params.projectId, req.params.sprintId));
     })
     .catch(err => {
       console.log(err);
@@ -243,6 +247,7 @@ module.exports.putTaskState = (req, res) => {
 
 module.exports.deleteTask = (req, res) => {
   const {projectId} = req.params;
+  const {sprintId} = req.params;
   const {taskId} = req.params;
   const userId = req.session.user._id;
 
@@ -254,7 +259,7 @@ module.exports.deleteTask = (req, res) => {
         return res.status(403).redirect(routes.index);
       }
       req.flash("toast", "Tâche supprimée avec succès !");
-      return res.status(200).redirect(routes.task.tasks(projectId));
+      return res.status(200).redirect(routes.task.tasks(projectId, sprintId));
     })
     .catch(err => {
       console.log(err);
