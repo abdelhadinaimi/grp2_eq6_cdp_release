@@ -140,7 +140,8 @@ module.exports.getEdit = (req, res) => {
 
 module.exports.putEdit = (req, res) => {
   const sprint = {
-    _id: req.params.id,
+    _id: req.params.sprintId,
+    id: req.body.id,
     startDate: req.body.startDate,
     endDate: req.body.endDate,
     description: req.body.description,
@@ -153,7 +154,7 @@ module.exports.putEdit = (req, res) => {
       values: sprint,
       projectId: req.params.projectId,
       project: {id: req.params.projectId},
-      url: 'iss',
+      url: 'spr',
       editing: true
     });
   }

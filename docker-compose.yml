@@ -24,21 +24,20 @@ services:
       MONGO_PORT: 27017
       MONGO_USER: root
       MONGO_PASS: example
-
-#  hub:
-#    image: selenium/hub:3.141.59-xenon
-#    ports:
-#      - "4444:4444"
-#  chrome:
-#    image: selenium/node-chrome:3.141.59-xenon
-#    volumes:
-#      - /dev/shm:/dev/shm
-#    depends_on:
-#      - hub
-#      - mongodb
-#      - api
-#    environment:
-#      HUB_HOST: hub
+  hub:
+    image: selenium/hub:3.141.59-xenon
+    ports:
+      - "4444:4444"
+  chrome:
+    image: selenium/node-chrome:3.141.59-xenon
+    volumes:
+      - /dev/shm:/dev/shm
+    depends_on:
+      - hub
+      - mongodb
+      - api
+    environment:
+      HUB_HOST: hub
 
 volumes:
   mongodb_data:

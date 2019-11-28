@@ -1,4 +1,4 @@
-/*const {Builder, By, Key, until} = require("selenium-webdriver");
+const {Builder, By, Key, until} = require("selenium-webdriver");
 const assert = require("assert");
 
 const mongoose = require("mongoose");
@@ -93,9 +93,8 @@ describe("User Stories",  function () {
   this.timeout(3000);
   let driver;
 
-  before(async () => {
+  before(async function() {
     driver = await new Builder().forBrowser("chrome").usingServer("http://localhost:4444/wd/hub").build();
-    await driver.manage().window().maximize();
 
     await buildConnection('cdp');
     await User.create({username: user2.username, email: user2.email, password: user2.password});
@@ -104,20 +103,21 @@ describe("User Stories",  function () {
   describe("US#01 Register", () => {
     const url = rootUrl + "/register";
 
-    it("New user", async () => {
-      driver.get(url);
+    it("New user", async function() {
+      await driver.get(url);
 
       await driver.findElement(By.id(fields.user.username)).sendKeys(user.username);
       await driver.findElement(By.id(fields.user.email)).sendKeys(user.email);
       await driver.findElement(By.id(fields.user.password)).sendKeys(user.password);
       await driver.findElement(By.id(fields.user.confirmPassword)).sendKeys(user.password, Key.ENTER);
+      await driver.wait(until.elementIsVisible(driver.findElement(By.css(cssSelectors.toast))), 10000);
       const toast = await driver.findElement(By.css(cssSelectors.toast));
       const text = await toast.getText();
 
       assert(text === "Compte créé avec succès !");
     });
 
-    it("New user with same credentials as first", async () => {
+    /*it("New user with same credentials as first", async () => {
       driver.get(url);
 
       await driver.findElement(By.id(fields.user.username)).sendKeys(user.username);
@@ -147,10 +147,10 @@ describe("User Stories",  function () {
       assert(textUsername === errorUserMessages.username.min);
       assert(textPassword === errorUserMessages.password.number);
       assert(textConfirmPassword === errorUserMessages.confirmPassword.same);
-    });
+    });*/
   });
 
-  describe("US#02 Login", () => {
+  /*describe("US#02 Login", () => {
     const url = rootUrl + "/login";
 
     it("Login with non-existing email", async () => {
@@ -408,7 +408,7 @@ describe("User Stories",  function () {
 
     it("First issue", async () => {
     });
-  });
+  });*/
 
   describe("US#16 Update Issue", () => {
 
@@ -438,7 +438,7 @@ describe("User Stories",  function () {
 
   });
 
-  describe("US#03 Logout", () => {
+  /*describe("US#03 Logout", () => {
     it("Logout", async function () {
       await driver.get(rootUrl);
       await driver.findElement(By.css("a.dropdown-trigger")).click();
@@ -448,35 +448,14 @@ describe("User Stories",  function () {
 
       assert(url === "http://localhost:8080/");
     });
+  });*/
+
+  after(async function() {
+    await driver.quit();
+    await User.deleteOne({username: user.usernameUpdate});
+    await User.deleteOne({username: user2.username});
+    await Project.deleteOne({title: firstProject.titleUpdate});
+    await Project.deleteOne({title: secondProject.title});
+    await mongoose.disconnect();
   });
-
-  after(done => {
-    driver
-      .quit()
-      .then(() => User.deleteOne({username: user.usernameUpdate}))
-      .then(() => User.deleteOne({username: user2.username}))
-      .then(() => Project.deleteOne({title: firstProject.titleUpdate}))
-      .then(() => Project.deleteOne({title: secondProject.title}))
-      .then(() => mongoose.disconnect())
-      .then(() => done());
-  });
-});*/
-
-const {Builder, By, until} = require('selenium-webdriver');
-
-describe('Google Search', function() {
-  let driver;
-
-  before(async function () {
-    driver = await new Builder().forBrowser('chrome').usingServer('http://localhost:4444/wd/hub').build();
-  });
-
-  it('works with generators', function*() {
-    yield driver.get('http://www.google.com/ncr');
-    yield driver.findElement(By.name('q')).sendKeys('webdriver');
-    yield driver.findElement(By.name('btnG')).click();
-    yield driver.wait(until.titleIs('webdriver - Google Search'), 1000);
-  });
-
-  after(() => driver.quit());
 });

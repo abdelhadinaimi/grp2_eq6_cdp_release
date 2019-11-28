@@ -18,7 +18,7 @@ module.exports.getProjectReleases = (req, res) => {
         return res.render(viewsRelease.releases, {
           pageTitle: titlesRelease.issues,
           activeRelease: releaseId,
-          url: "spr",
+          url: "rel",
           isPo: isPo,
           isPm: isPm,
           project

@@ -13,18 +13,23 @@ module.exports.getProjectSprints = (projectId, userId) => new Promise((resolve, 
   return Project
     .findOne({ _id: projectId, 'collaborators._id': userId }, 'sprints projectOwner collaborators')
     .then(project => {
-      if (!project) return resolve(undefined);
+      if (!project) return resolve(null);
 
-      project.sprints.forEach( sprint => {
-        console.log("before: " + sprint.startDate);
-        sprint.startDate = dateformat(sprint.startDate, dateFormatString);
-        sprint.endDate = dateformat(sprint.endDate, dateFormatString);
-        console.log("after: " + sprint.startDate);
+      const sprints = project.sprints.map(sprint => {
+        const newSprint = {
+          _id: sprint._id,
+          id: sprint.id,
+          description: sprint.description,
+          startDate: dateformat(sprint.startDate, dateFormatString),
+          endDate: dateformat(sprint.endDate, dateFormatString)
+        };
+
+        return newSprint;
       });
 
       const proj = {
         id: projectId,
-        sprints: project.sprints,
+        sprints: sprints,
         projectOwner: project.projectOwner,
         collaborators: project.collaborators
       };
@@ -74,25 +79,19 @@ module.exports.updateSprint = (projectId, sprint, userId) => new Promise((resolv
   if (!mongoose.Types.ObjectId.isValid(projectId))
     return resolve(errorMessage);
 
-  let startDate, endDate;
-  if (sprint['startDate'] && sprint['startDate'].length > 0) {
+  if (sprint.startDate && sprint.startDate.length > 0) {
     const [day, month, year] = sprint['startDate'].split('/');
-    startDate = new Date(year, month - 1, day);
+    sprint.startDate = new Date(year, month - 1, day);
   }
-  if (sprint['endDate'] && sprint['endDate'].length > 0) {
+  if (sprint.endDate && sprint.endDate.length > 0) {
     const [day, month, year] = sprint['endDate'].split('/');
-    endDate = new Date(year, month - 1, day);
+    sprint.endDate = new Date(year, month - 1, day);
   }
 
   const set = {};
-  for (const field in sprint) {
+  for (const field in sprint)
     if (field !== '_id')
       set[`sprints.$.${field}`] = sprint[field];
-    if (field === 'startDate')
-      set[`sprints.$.${field}`] = startDate;
-    if (field === 'endDate')
-      set[`sprints.$.${field}`] = endDate;
-  }
 
   return Project
     .findOneAndUpdate({
@@ -101,10 +100,9 @@ module.exports.updateSprint = (projectId, sprint, userId) => new Promise((resolv
       "sprints._id": sprint._id
     }, { $set: set })
     .then(project => {
-      console.log("passing here");
       if (!project)
         return resolve(errorMessage);
-      console.log("not passing here");
+
       return resolve({ success: true });
     })
     .catch(err => reject(err));
