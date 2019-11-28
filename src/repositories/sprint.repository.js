@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Project = mongoose.model('Project');
 const Sprint = mongoose.model('Sprint');
-const { errorGeneralMessages } = require('../util/constants');
+const {errorGeneralMessages} = require('../util/constants');
 
 const dateformat = require('dateformat');
 const dateFormatString = 'dd/mm/yyyy';
@@ -11,7 +11,7 @@ module.exports.getProjectSprints = (projectId, userId) => new Promise((resolve, 
     return resolve(undefined);
 
   return Project
-    .findOne({ _id: projectId, 'collaborators._id': userId }, 'sprints projectOwner collaborators')
+    .findOne({_id: projectId, 'collaborators._id': userId}, 'sprints projectOwner collaborators')
     .then(project => {
       if (!project) return resolve(null);
 
@@ -41,12 +41,12 @@ module.exports.getProjectSprints = (projectId, userId) => new Promise((resolve, 
 
 module.exports.createSprint = (projectId, sprint, userId) => new Promise((resolve, reject) => {
   if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(userId))
-    return resolve({ success: false, error: errorGeneralMessages.notAllowed });
+    return resolve({success: false, error: errorGeneralMessages.notAllowed});
   const newSprint = new Sprint();
 
   if (sprint.id) {
     newSprint._id = sprint.id;
-    newSprint.id  = sprint.id;
+    newSprint.id = sprint.id;
   }
   if (sprint.startDate && sprint.startDate.length > 0) {
     const [day, month, year] = sprint.startDate.split('/');
@@ -63,18 +63,18 @@ module.exports.createSprint = (projectId, sprint, userId) => new Promise((resolv
   return Project.findIfUserType(projectId, userId, ['po', 'pm'])
     .then(project => {
       if (!project) {
-        return resolve({ success: false, error: errorGeneralMessages.notAllowed });
+        return resolve({success: false, error: errorGeneralMessages.notAllowed});
       }
 
       project.sprints.push(newSprint);
       return project.save();
     })
-    .then(() => resolve({ success: true }))
+    .then(() => resolve({success: true}))
     .catch(err => reject(err));
 });
 
 module.exports.updateSprint = (projectId, sprint, userId) => new Promise((resolve, reject) => {
-  const errorMessage = { success: false, error: errorGeneralMessages.modificationNotAllowed };
+  const errorMessage = {success: false, error: errorGeneralMessages.modificationNotAllowed};
 
   if (!mongoose.Types.ObjectId.isValid(projectId))
     return resolve(errorMessage);
@@ -98,12 +98,12 @@ module.exports.updateSprint = (projectId, sprint, userId) => new Promise((resolv
       _id: projectId,
       collaborators: {$elemMatch: {_id: userId, userType: {$in: ["po", "pm"]}}},
       "sprints._id": sprint._id
-    }, { $set: set })
+    }, {$set: set})
     .then(project => {
       if (!project)
         return resolve(errorMessage);
 
-      return resolve({ success: true });
+      return resolve({success: true});
     })
     .catch(err => reject(err));
 });
@@ -120,11 +120,8 @@ module.exports.deleteSprint = (projectId, sprintId, userId) => new Promise((reso
         return resolve(errorMessage);
 
       project.sprints = project.sprints.filter(sprint => sprint._id.toString() !== sprintId.toString());
-      project.tasks.forEach(task => {
-        if(task.linkedSprint.toString() === sprintId.toString()){
-          task.linkedSprint = null;
-        }
-      });
+      project.tasks = project.tasks.filter(task => task.linkedSprint.toString() !== sprintId.toString());
+
       return project.save();
     })
     .then(() => resolve({success: true}))

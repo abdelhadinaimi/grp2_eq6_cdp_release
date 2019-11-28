@@ -177,15 +177,20 @@ module.exports.putEdit = (req, res) => {
 };
 
 module.exports.deleteSprint = (req, res) => {
+  const {projectId} = req.params;
+  const {sprintId} = req.params;
+  const userId = req.session.user._id;
+
   return sprintRepo
-    .deleteSprint(req.params.projectId, req.params.sprintId, req.session.user._id)
+    .deleteSprint(projectId, sprintId, userId)
     .then(result => {
       if (!result.success) {
         req.flash("toast", result.errors.error);
         return res.status(403).redirect(routes.index);
       }
+
       req.flash("toast", "Sprint supprimé avec succès !");
-      return res.status(200).redirect(routes.index);
+      return res.status(200).redirect(routes.sprint.sprints(projectId));
     })
     .catch(err => {
       console.log(err);
