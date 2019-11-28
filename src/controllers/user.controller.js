@@ -126,7 +126,7 @@ module.exports.postForgotPassword = (req, res) => {
         <p>
             Bonjour,<br>
             Vous avez demandé la réinitialisation de votre mot de passe.<br>
-            Veuillez cliquer sur ce lien pour l'effectuer : <a href="http://localhost:8080/reset-password/${token}">Réinitialiser</a><br>
+            Veuillez cliquer sur ce lien pour l'effectuer : <a href="http://${req.get('host')}/reset-password/${token}">Réinitialiser</a><br>
             Bonne journée !
         </p>`;
         sendMail(req.body.email, 'Réinitialisation de votre mot de passe', message);
