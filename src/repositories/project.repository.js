@@ -170,7 +170,7 @@ module.exports.getProjectsByContributorId = contributorId => new Promise((resolv
           activated: true
         }
       }
-    }, 'title description createdAt dueDate collaborators projectOwner')
+    }, 'title description createdAt dueDate collaborators projectOwner tasks')
     .then(projects => {
       projects = projects.map(project => {
         const newProject = {id: project._id, title: project.title};
@@ -180,8 +180,16 @@ module.exports.getProjectsByContributorId = contributorId => new Promise((resolv
           newProject.description = project.description;
         if (project.dueDate)
           newProject.endDate = dateformat(project.dueDate, dateFormatString);
-        if (project.projectOwner.toString() === contributorId.toString()) {
+        if (project.projectOwner.toString() === contributorId.toString())
           newProject.deleteEdit = true;
+        if (project.tasks.length !== 0) {
+          let tasksDone = 0;
+          project.tasks.forEach(task => {
+            if (task.state === "DONE")
+              tasksDone++;
+          });
+
+          newProject.completion = Math.round((tasksDone / project.tasks.length) * 100);
         }
 
         return newProject;

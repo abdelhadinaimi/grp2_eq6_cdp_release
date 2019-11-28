@@ -18,9 +18,16 @@
                     <% } %>
                 </div>
                 <div class="row valign-wrapper hide-on-med-and-up">
-                    <div class="col m4 offset-m4 center-align">
+                    <div class="col s4 offset-s4 center-align">
                         <h5><%= pageTitle %></h5>
                     </div>
+                    <% if (isPo || isPm) { %>
+                    <div class="col offset-m1 m2 right-align">
+                        <a class="btn-floating green modal-trigger" href="/projects/<%= project.id %>/sprints/add">
+                            <i class="material-icons">add</i>
+                        </a>
+                    </div>
+                    <% } %>
                 </div>
             </div>
         </div>
@@ -28,10 +35,10 @@
     <div class="row">
         <div class="col s12 m10 offset-m1 l8 offset-l2">
             <div class="row card-content">
-                <ul class="collapsible">
+                <ul class="collapsible popout">
                     <li class="collapsible-header">
-                        <div class="col s1 center"><strong>Identifiant</strong></div>
-                        <div class="col s8 center"><strong>Description</strong></div>
+                        <div class="col s2 center"><strong>Identifiant</strong></div>
+                        <div class="col s6 center"><strong>Description</strong></div>
                         <div class="col s2 center"><strong>Date de début</strong></div>
                         <div class="col s2 center"><strong>Date de fin</strong></div>
                     </li>
@@ -39,19 +46,14 @@
                     <li <%= activeSprint ? (activeSprint.toString() === sprint._id.toString() ? "class=active" : "" ) : "" %>
                         id="<%=sprint._id%>">
                         <div class="collapsible-header line" tabindex="0">
-                            <div class="col s1 center"><%= sprint.id %></div>
-                            <div class="col s8 center truncate"><%= sprint.description %></div>
+                            <div class="col s2 center"><%= sprint.id %></div>
+                            <div class="col s6 center truncate"><%= sprint.description %></div>
                             <div class="col s2 center"><%= sprint.startDate %></div>
                             <div class="col s2 center"><%= sprint.endDate %></div>
                         </div>
                         <div class="collapsible-body">
                             <div class="row center-align hide-on-med-and-up">
-                                <div class="col s6">
-                                    <a href="sprints/<%= sprint._id %>" class="btn-floating blue">
-                                        <i class="material-icons">remove_red_eye</i>
-                                    </a>
-                                </div>
-                                <% if (!project.deleteEdit) { %>
+                                <% if ((isPo || isPm) && sprint.edit) { %>
                                 <div class="col s6">
                                     <a href="sprints/<%= sprint._id %>/edit" class="btn-floating white">
                                         <i class="material-icons black-text">edit</i>
@@ -67,29 +69,47 @@
                             </div>
                             <div class="row">
                                 <div class="col s12 m9 l10">
-                                    <div class="row">
-                                        <div class="row">
-                                            <div class="col s12 m6 center-align">
-                                                <b>Début du Sprint :</b> <%= sprint.startDate %>
+                                    <div class="row" style="margin-bottom: 0">
+                                        <div class="row" style="margin-bottom: 0">
+                                            <div class="col s6 m4 center-align">
+                                                <b>Coût total :</b> <%= sprint.cost %>
                                             </div>
-                                            <div class="col s12 m6 center-align">
-                                                <b>Fin du Sprint :</b> <%= sprint.endDate %>
+                                            <div class="col s6 m4 center-align">
+                                            <% if (sprint.remaining) { %>
+                                                <b>Temps restant :</b> <%= sprint.remaining %>j
+                                            <% } else if (sprint.completion !== null) { %>
+                                                <b>Sprint terminé</b>
+                                            <% } else { %>
+                                                <b>Sprint non commencé</b>
+                                            <% } %>
                                             </div>
+                                            <% if (sprint.completion !== null) { %>
+                                            <div class="col s10 offset-s1 m4">
+                                                <div class="row">
+                                                    <div class="col s10 offset-s1">
+                                                        <span class="col s10" style="padding: 0">Avancement</span>
+                                                        <span class="col s2 right-align"><%= sprint.completion %>%</span>
+                                                        <div class="progress">
+                                                            <div class="determinate green"
+                                                                 style="width: <%= sprint.completion %>%"></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <% } %>
                                         </div>
-                                        <div class="row">
+                                        <% if (sprint.description) { %>
+                                        <div class="row" style="margin-bottom: 0">
                                             <div class="col s12 offset-m1 m10">
                                                 <b>Description :</b><br />
                                                 <%= sprint.description %>
                                             </div>
                                         </div>
+                                        <% } %>
                                     </div>
                                 </div>
-                                <div class="col s12 m3 l2 center-align hide-on-small-only">
-                                    <div class="row">
-                                        <a href="/projects/<%=project.id%>/sprints/<%= sprint._id %>" class="btn blue"
-                                            style="width: 100%">Consulter</a>
-                                    </div>
-                                    <% if ((isPo || isPm) && !project.deleteEdit) { %>
+                                <div class="col m3 l2 center-align hide-on-small-only">
+                                    <% if ((isPo || isPm) && sprint.edit) { %>
                                     <div class="row">
                                         <a href="/projects/<%=project.id%>/sprints/<%= sprint._id %>/edit"
                                             class="btn white black-text" style="width: 100%">Modifier</a>
@@ -98,6 +118,47 @@
                                         <a href="#deleteSprint" class="btn red modal-trigger deleteButton"
                                             _id="<%= sprint._id %>" style="width: 100%">Supprimer</a>
                                     </div>
+                                    <% } %>
+                                </div>
+                            </div>
+                            <div class="divider" style="margin-bottom: 5px"></div>
+                            <div class="row" style="margin-bottom: 0">
+                                <div class="row valign-wrapper">
+                                    <div class="col s5 offset-s1">
+                                        <h5>Tâches</h5>
+                                    </div>
+                                    <div class="col offset-s1 s2 right-align">
+                                        <a class="btn-floating blue" href=""><i class="material-icons">remove_red_eye</i></a>
+                                    </div>
+                                    <% if (sprint.edit) { %>
+                                    <div class="col s2 left-align">
+                                        <a class="btn-floating green" href=""><i class="material-icons">add</i></a>
+                                    </div>
+                                    <% } %>
+                                </div>
+                                <div class="col s10 offset-s1 center-align">
+                                    <% if (sprint.tasks.length !== 0) { %>
+                                    <table class="highlight responsive-table centered">
+                                        <thead>
+                                            <tr>
+                                                <th>Description</th>
+                                                <th>Coût</th>
+                                                <th>État</th>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+                                            <% sprint.tasks.forEach(task => { %>
+                                            <tr>
+                                                <td class="truncate"><%=task.description%></td>
+                                                <td><%=task.cost%></td>
+                                                <td><%=task.state%></td>
+                                            </tr>
+                                            <% }) %>
+                                        </tbody>
+                                    </table>
+                                    <% } else { %>
+                                    <p>Aucune tâche assignée à ce sprint...</p>
                                     <% } %>
                                 </div>
                             </div>

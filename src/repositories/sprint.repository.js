@@ -11,30 +11,53 @@ module.exports.getProjectSprints = (projectId, userId) => new Promise((resolve, 
     return resolve(undefined);
 
   return Project
-    .findOne({_id: projectId, 'collaborators._id': userId}, 'sprints projectOwner collaborators')
+    .findOne({_id: projectId, 'collaborators._id': userId}, 'sprints tasks projectOwner collaborators')
     .then(project => {
       if (!project) return resolve(null);
 
       const sprints = project.sprints.map(sprint => {
-        const newSprint = {
+        const tasks = [];
+        let cost = 0, tasksDone = 0;
+        project.tasks.forEach(task => {
+          if (task.linkedSprint.toString() === sprint._id.toString()) {
+            tasks.push(task);
+            cost += task.cost;
+            if (task.state === "DONE")
+              tasksDone++;
+          }
+        });
+
+        const today = new Date();
+        let completion = null;
+        if (sprint.startDate <= today)
+          completion = tasks.length !== 0 ? tasksDone / tasks.length : 0;
+
+        let remaining = null;
+        if (sprint.startDate <= today && today <= sprint.endDate)
+          remaining = Math.round((sprint.endDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)) + 2;
+
+        const edit = ((sprint.startDate <= today && today <= sprint.endDate) || (today < sprint.startDate));
+
+        return {
           _id: sprint._id,
           id: sprint.id,
           description: sprint.description,
           startDate: dateformat(sprint.startDate, dateFormatString),
-          endDate: dateformat(sprint.endDate, dateFormatString)
+          endDate: dateformat(sprint.endDate, dateFormatString),
+          completion,
+          remaining,
+          cost,
+          tasks,
+          edit
         };
-
-        return newSprint;
       });
 
-      const proj = {
+      return resolve({
         id: projectId,
         sprints: sprints,
         projectOwner: project.projectOwner,
         collaborators: project.collaborators
-      };
-
-      return resolve(proj);
+      });
     })
     .catch(err => reject(err));
 });
