@@ -46,3 +46,27 @@ module.exports.createRelease = (projectId, release, userId) => new Promise((reso
     .then(() => resolve({success: true}))
     .catch(err => reject(err));
 });
+
+module.exports.updateRelease = (projectId, release, userId) => new Promise((resolve, reject) => {
+  const errorMessage = {success: false, error: errorGeneralMessages.modificationNotAllowed};
+
+  if (!mongoose.Types.ObjectId.isValid(projectId)) {
+    return resolve(errorMessage);
+  }
+  const set = {};
+  for (const field in release) {
+    if (field !== '_id') {
+      set[`releases.$.${field}`] = release[field];
+    }
+  }
+  return Project.findOneAndUpdate({
+    _id: projectId,
+    collaborators: {$elemMatch: {_id: userId, userType: {$in: ["po", "pm"]}}},
+    "releases._id": release._id
+  }, {$set: set})
+    .then(project => {
+      if (!project) return resolve(errorMessage);
+      return resolve({success: true});
+    })
+    .catch(err => reject(err));
+});

@@ -19,7 +19,7 @@ module.exports.getProjectReleases = (req, res) => {
               collaborator._id.toString() === userId.toString() && collaborator.userType === "pm"
           ) >= 0;
         return res.render(viewsRelease.releases, {
-          pageTitle: titlesRelease.issues,
+          pageTitle: titlesRelease.releases,
           activeRelease: releaseId,
           url: "rel",
           isPo: isPo,
@@ -101,11 +101,74 @@ module.exports.postRelease = (req, res) => {
 };
 
 module.exports.getEdit = (req, res) => {
-  res.send("getEdit");
+  const {releaseId} = req.params;
+
+  releaseRepo
+    .getProjectReleases(req.params.projectId, req.session.user._id)
+    .then(project => {
+      if (!project) {
+        req.flash("toast", errorGeneralMessages.accessNotAuthorized);
+        return res.status(403).redirect(routes.index);
+      }
+
+      const release = project.releases.find(release => release._id.toString() === releaseId.toString());
+
+      if (!release) {
+        req.flash("toast", errorGeneralMessages.accessNotAuthorized);
+        return res.status(403).redirect(routes.index);
+      }
+
+      return res.render(viewsRelease.addEdit, {
+        pageTitle: titlesRelease.edit,
+        errors: [],
+        values: release,
+        projectId: req.params.projectId,
+        url: 'iss',
+        editing: true,
+        project
+      });
+    })
+    .catch(err => {
+      console.log(err);
+      return res.status(500).redirect(routes.error["500"]);
+    });
 };
 
 module.exports.putEdit = (req, res) => {
-  res.send("putEdit");
+  const release = {
+    _id: req.params.releaseId,
+    version: req.body.version,
+    description: req.body.description,
+    downloadLink: req.body.downloadLink,
+    docLink: req.body.docLink
+  };
+
+  if (!req.validation.success) {
+    return res.status(422).render(viewsRelease.addEdit, {
+      pageTitle: titlesRelease.edit,
+      errors: req.validation.errors,
+      values: release,
+      projectId: req.params.projectId,
+      project: {id: req.params.projectId},
+      url: 'rel',
+      editing: true
+    });
+  }
+  return releaseRepo
+    .updateRelease(req.params.projectId, release, req.session.user._id)
+    .then(result => {
+      if (!result.success) {
+        req.flash("toast", result.error);
+        return res.status(403).redirect(routes.release.releases(req.params.projectId));
+      }
+
+      req.flash("toast", "Release mise à jour !");
+      return res.status(201).redirect(routes.release.releases(req.params.projectId));
+    })
+    .catch(err => {
+      console.log(err);
+      return res.status(500).redirect(routes.error["500"]);
+    });
 };
 
 module.exports.deleteRelease = (req, res) => {
