@@ -24,6 +24,7 @@ const releasesRoutes = require('./routes/releases.routes');
 const indexRoutes = require('./routes/index.routes');
 const userRoutes = require('./routes/user.routes');
 const errorRoutes = require('./routes/error.routes');
+const testsRoutes = require('./routes/tests.routes');
 
 const DBNAME = process.env.MONGO_NAME || 'cdp';
 
@@ -83,6 +84,7 @@ app.use('/projects/:projectId/sprints/:sprintId/tasks', isAuth, tasksRoutes);
 app.use('/projects/:projectId/issues', isAuth, issuesRoutes);
 app.use('/projects/:projectId/sprints', isAuth, sprintsRoutes);
 app.use('/projects/:projectId/releases', isAuth, releasesRoutes);
+app.use('/projects/:projectId/tests', isAuth, testsRoutes);
 app.use('/projects/:projectId/doc', isAuth, docsRoutes);
 app.use('/projects', isAuth, projectRoutes);
 app.use(indexRoutes, userRoutes, errorRoutes);

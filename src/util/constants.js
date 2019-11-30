@@ -37,6 +37,9 @@ module.exports.global = {
     doc: {
       doc: "doc/doc"
     },
+    test: {
+      tests: "test/tests"
+    },
     user: {
       register: "user/register",
       login: "user/login",
@@ -85,6 +88,9 @@ module.exports.global = {
       releases: "Releases",
       add: "Nouvelle Release",
       edit: "Éditer Release"
+    },
+    test: {
+      tests: "Tests"
     }
   },
   routes: {
