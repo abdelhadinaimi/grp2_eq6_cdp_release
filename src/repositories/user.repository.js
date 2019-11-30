@@ -1,3 +1,8 @@
+/**
+ * test repository module
+ * @module repositories/test
+ */
+
 const mongoose = require("mongoose");
 const User = mongoose.model("User");
 const MongoError = require("mongodb").MongoError;
@@ -5,6 +10,11 @@ const crypto = require('crypto');
 
 const errorMessages = require("../util/constants").errorUserMessages;
 
+/**
+ * adds or updates a user
+ * @param {Object} user - the user to add or update
+ * @returns {Promise<Object>} an object represeting the result of this operation
+ */
 module.exports.upsertUser = async user => {
   if(user.password){
     user.password = User.generateHash(user.password);
@@ -32,6 +42,11 @@ module.exports.upsertUser = async user => {
   }
 };
 
+/**
+ * checks if the user's password match
+ * @param {Object} user - the user to check
+ * @returns {Promise<Object>} an object represeting the result of this operation
+ */
 module.exports.checkLogin = async user => {
   const foundUser = await User.findOne({email: user.email});
 
@@ -81,6 +96,11 @@ module.exports.resetPassword = (token, password) => new Promise((resolve, reject
     .catch(err => reject(err));
 });
 
+/**
+ * returns a user by its id
+ * @param {Object} userId - the user to find
+ * @returns {Promise<Object>} an object represeting the result of this operation
+ */
 module.exports.getUser = async (userId) => {
   const foundUser = await User.findById(userId);
   if (!foundUser) {

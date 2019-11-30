@@ -1,3 +1,8 @@
+/**
+ * sprint repository module
+ * @module repositories/sprint
+ */
+
 const mongoose = require('mongoose');
 const Project = mongoose.model('Project');
 const Sprint = mongoose.model('Sprint');
@@ -6,6 +11,13 @@ const { errorGeneralMessages } = require('../util/constants');
 const dateformat = require('dateformat');
 const dateFormatString = 'dd/mm/yyyy';
 
+/**
+ * returns a sprint
+ * @param {string} projectId - the id a project
+ * @param {string} userId - the id of the user who did the operation
+ * @param {string} sprintId - the id of the sprint to return
+ * @returns {Promise<Object>} an object representing the result of this operation
+ */
 module.exports.getSprint = (projectId, userId, sprintId) => new Promise((resolve, reject) => {
   if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(userId))
     return resolve(undefined);
@@ -112,6 +124,12 @@ module.exports.getSprint = (projectId, userId, sprintId) => new Promise((resolve
     .catch(err => reject(err));
 });
 
+/**
+ * returns a list of a project sprints
+ * @param {string} projectId - the id a project
+ * @param {string} userId - the id of the user who did the operation
+ * @returns {Promise<Object>} an object representing the result of this operation
+ */
 module.exports.getProjectSprints = (projectId, userId) => new Promise((resolve, reject) => {
   if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(userId))
     return resolve(undefined);
@@ -168,6 +186,13 @@ module.exports.getProjectSprints = (projectId, userId) => new Promise((resolve, 
     .catch(err => reject(err));
 });
 
+/**
+ * add a sprint into a project
+ * @param {string} projectId - the id of the project to add the sprint in
+ * @param {Object} sprint - the sprint to add
+ * @param {string} userId - the id of the user who did the operation
+ * @returns {Promise<Object>} an object representing the result of this operation
+ */
 module.exports.createSprint = (projectId, sprint, userId) => new Promise((resolve, reject) => {
   if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(userId))
     return resolve({ success: false, error: errorGeneralMessages.notAllowed });
@@ -202,6 +227,13 @@ module.exports.createSprint = (projectId, sprint, userId) => new Promise((resolv
     .catch(err => reject(err));
 });
 
+/**
+ * updates a sprint in a project
+ * @param {string} projectId - the id of the project to update the sprint in
+ * @param {Object} sprint - the sprint to update
+ * @param {string} userId - the id of the user who did the operation
+ * @returns {Promise<Object>} an object representing the result of this operation
+ */
 module.exports.updateSprint = (projectId, sprint, userId) => new Promise((resolve, reject) => {
   const errorMessage = { success: false, error: errorGeneralMessages.modificationNotAllowed };
 
@@ -237,6 +269,13 @@ module.exports.updateSprint = (projectId, sprint, userId) => new Promise((resolv
     .catch(err => reject(err));
 });
 
+/**
+ * removes a sprint from a project given its id
+ * @param {string} projectId - the id of the project to remove the sprint from
+ * @param {string} sprintId - the id of the sprint to remove
+ * @param {string} userId - the id of the user who did the operation
+ * @returns {Promise<Object>} an object representing the result of this operation
+ */
 module.exports.deleteSprint = (projectId, sprintId, userId) => new Promise((resolve, reject) => {
   const errorMessage = { success: false, errors: { error: errorGeneralMessages.deleteNotAllowed } };
   if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(sprintId) || !mongoose.Types.ObjectId.isValid(userId))
@@ -257,6 +296,12 @@ module.exports.deleteSprint = (projectId, sprintId, userId) => new Promise((reso
     .catch(err => reject(err));
 });
 
+/**
+ * returns a sprint by its id
+ * @param {string} projectId - the id of a project
+ * @param {Object} sprintId - the id of the sprint to check
+ * @returns {Promise<Object>} an object representing the result of this operation
+ */
 module.exports.getSprintById = (projectId, sprintId) => new Promise((resolve, reject) => {
   return Project
     .findById(projectId, 'sprints collaborators')
