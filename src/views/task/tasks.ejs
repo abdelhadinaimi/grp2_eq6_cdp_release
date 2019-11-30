@@ -1,6 +1,11 @@
 <%- include('../partials/head.ejs') %>
 <%- include('../partials/project-header.ejs') %>
 <% const states = ["TODO", "DOING", "DONE", "TOTEST", "TESTING", "TESTED"]; %>
+
+<div class="row center-align" style="margin-top: 15px">
+  <a class="btn white black-text" href="/projects/<%= project.id %>/sprints/<%=project.sprintId%>#<%=project.sprintId%>">Retour</a>
+</div>
+
 <% if (project.tasks.length > 0) { %>
 <div class="row">
   <div class="col s12">
@@ -12,7 +17,7 @@
           </div>
           <% if ((isPo || isPm) && !mine) { %>
           <div class="col m4 center-align">
-            <a class="btn green modal-trigger" href="/projects/<%= project.id %>/tasks/add">Créer une tâche</a>
+            <a class="btn green modal-trigger" href="/projects/<%= project.id %>/sprints/<%= project.sprintId %>/tasks/add">Ajouter une tâche</a>
           </div>
           <% } %>
         </div>
@@ -28,11 +33,11 @@
     <div class="col s12 m10 offset-m1 l8 offset-l2">
       <div class="row">
         <% if (mine) { %>
-          <a class="btn-small light-blue darken-1 right" href="/projects/<%= project.id %>/tasks">
+          <a class="btn-small light-blue darken-1 right" href="/projects/<%= project.id %>/sprints/<%= project.sprintId %>/tasks">
             <i class="material-icons left">remove_red_eye</i>Toutes
           </a>
         <% } else { %>
-          <a class="btn-small light-blue darken-1 right" href="/projects/<%= project.id %>/tasks/mine">
+          <a class="btn-small light-blue darken-1 right" href="/projects/<%= project.id %>/sprints/<%= project.sprintId %>/tasks/mine">
             <i class="material-icons left">remove_red_eye</i>Mes Tâches
           </a>
         <% } %>
@@ -49,14 +54,19 @@
                   id="<%=task._id%>">
             <div class="collapsible-header line" tabindex="0">
               <div class="col s8 center truncate"><%=task.description %></div>
-              <div class="col s1 center"><%=task.cost%> j/h</div>
+              <div class="col s1 center <%=task.cost >= 2 ? 'red-text tooltipped' : '' %>" data-position="bottom"
+                   data-tooltip="
+                   Conseil : Une tâche ne devrait pas avoir un coût si élevé !<br>
+                   Il faut peut-être repenser cette tâche.">
+                <%=task.cost%> j/h
+              </div>
               <div class="col s3 center state"><%=task.state%></div>
             </div>
             <div class="collapsible-body">
               <div class="row center-align hide-on-med-and-up">
                 <% if (!project.deleteEdit) { %>
                 <div class="col s6">
-                  <a href="tasks/<%=task._id%>/edit" class="btn-floating white">
+                  <a href="/projects/<%=project.id%>/sprints/<%=project.sprintId%>/tasks/<%=task._id%>/edit" class="btn-floating white">
                     <i class="material-icons black-text">edit</i>
                   </a>
                 </div>
@@ -118,7 +128,7 @@
                 <div class="col m3 l2 center-align hide-on-small-only">
                     <% if ((isPo || isPm) && !mine) { %>
                   <div class="row">
-                    <a href="/projects/<%=project.id%>/tasks/<%=task._id%>/edit" class="btn white black-text" style="width: 100%">Modifier</a>
+                    <a href="/projects/<%=project.id%>/sprints/<%=project.sprintId%>/tasks/<%=task._id%>/edit" class="btn white black-text" style="width: 100%">Modifier</a>
                   </div>
                   <div class="row">
                     <a href="#deleteTask" class="btn red modal-trigger deleteButton" _id="<%= task._id %>"
@@ -150,8 +160,8 @@
     <div class="row valign-wrapper" style="margin-top: 10%">
       <div class="col s12 center-align">
         <div class="row">
-          <h5>Vous n'avez actuellement aucune tâche qui vous est assignée pour ce projet...</h5>
-          <a href="/projects/<%= project.id %>/tasks">Retour</a>
+          <h5>Vous n'avez actuellement aucune tâche qui vous est assignée pour ce sprint...</h5>
+          <a href="/projects/<%= project.id %>/sprints">Retour</a>
         </div>
       </div>
     </div>
@@ -159,14 +169,14 @@
     <div class="row valign-wrapper" style="margin-top: 10%">
       <div class="col s12 center-align">
         <div class="row">
-          <h5>Il n'y a actuellement aucune tâche pour ce projet...</h5>
+          <h5>Il n'y a actuellement aucune tâche dans ce sprint...</h5>
         </div>
         <% if (isPo || isPm) { %>
           <div class="row">
             <h6>Essayez de créer une première tâche !</h6>
           </div>
           <div class="row">
-            <a href="tasks/add" class="btn-flat green-text waves-effect">Créer une première tâche</a>
+            <a href="/projects/<%= project.id %>/sprints/<%= project.sprintId %>/tasks/add" class="btn-flat green-text waves-effect">Créer une première tâche</a>
           </div>
         <% } %>
       </div>
@@ -182,10 +192,12 @@
 <script>
   $(document).ready(function () {
     $('.collapsible').collapsible();
+    $('.tooltipped').tooltip();
+
     $('.state-select').formSelect().change(function (){
       const taskId = this.getAttribute('_id')
       const state = this.options[this.selectedIndex].value;
-      fetch('/projects/<%=project.id%>/tasks/' + taskId+'/state', {
+      fetch('/projects/<%=project.id%>/sprints/<%= project.sprintId %>/tasks/' + taskId +'/state', {
         credentials: 'same-origin',
         method: 'PUT',
         headers: {
@@ -202,6 +214,5 @@
         }
       });
     });
-    
   });
 </script>

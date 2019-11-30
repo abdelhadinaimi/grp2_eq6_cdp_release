@@ -1,9 +1,9 @@
-<div id="deleteTask" class="modal">
+<div id="deleteRelease" class="modal">
     <form action="" method="post" class="deleteForm">
         <input type="hidden" name="_csrf" value="<%= csrfToken %>">
         <div class="modal-content center-align">
-            <h4>Suppression de la Tâche</h4>
-            <p>Souhaitez-vous réellement supprimer cette tâche ?</p>
+            <h4>Suppression de la Release</h4>
+            <p>Souhaitez-vous réellement supprimer cette release ?</p>
         </div>
         <div class="modal-footer">
             <a class="btn-flat green-text modal-close">Annuler</a>
@@ -20,8 +20,8 @@
     const buttons = document.querySelectorAll(".deleteButton");
     console.log("form:" + form);
     buttons.forEach(button => button.addEventListener("click", () => {
-      const taskId = button.getAttribute("_id");
-      form.setAttribute("action", "/projects/<%=project.id%>/sprints/<%=project.sprintId%>/tasks/" + taskId + "?_method=DELETE");
+      const releaseId = button.getAttribute("_id");
+      form.setAttribute("action", "/projects/<%=project.id%>/releases/" + releaseId + "?_method=DELETE");
     }));
   });
 </script>

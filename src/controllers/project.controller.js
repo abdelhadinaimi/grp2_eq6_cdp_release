@@ -164,10 +164,13 @@ module.exports.postInvite = async (req, res) => {
   const {username} = req.body;
   let userFound = null;
 
-  if (email !== "")
+  if (email !== ""){
     userFound = await userRepo.findUserBy('email', email);
-  if (userFound === null && username !== "")
+  }
+  if (userFound === null && username !== ""){
+    // eslint-disable-next-line require-atomic-updates
     userFound = await userRepo.findUserBy('username', username);
+  }
 
   if (userFound !== null) {
     return projectRepo
@@ -191,7 +194,7 @@ module.exports.postInvite = async (req, res) => {
                 <p>
                     Bonjour,<br>
                     Vous venez d'être ajouté à un projet.<br>
-                    Pour le rejoindre cliquer sur ce lien : <a href="http://localhost:8080/projects/${projectId}/invite">Accepter</a><br>
+                    Pour le rejoindre cliquer sur ce lien : <a href="http://${req.get('host')}/projects/${projectId}/invite">Accepter</a><br>
                     Bonne journée !
                 </p>`;
 

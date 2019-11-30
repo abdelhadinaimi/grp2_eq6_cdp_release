@@ -1,0 +1,96 @@
+<%- include('../partials/head.ejs') %>
+<%- include('../partials/project-header.ejs') %>
+
+<div class="row">
+    <div class="col s12 m10 offset-m1 l8 offset-l2">
+        <div class="card-panel">
+            <div class="row">
+                <div class="col s12">
+                    <h5 class="center-align"><%= editing ? 'Modifier la Release' : 'Créer une nouvelle Release' %></h5>
+                </div>
+            </div>
+            <form action="<%= editing ? '/projects/' + projectId + '/releases/' + values._id + '?_method=PUT' : '/projects/' + projectId + '/releases/add' %>"
+                  method="post">
+                <div class="row">
+                    <div class="col s12">
+                        
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <% index = errors.findIndex(error => error.version) %>
+                                <i class="material-icons prefix">build</i>
+                                <textarea id="version" name="version" data-length="3000" required
+                                          class="materialize-textarea validate <%= (index >= 0) ? 'invalid' : (errors.length > 0) ? 'valid' : '' %>"
+                                ><%= values ? values.version : '' %></textarea>
+                                <label for="version"><i>Version</i></label>
+                                <span class="helper-text"
+                                      data-error="<%= (index >= 0) ? errors[index].version : '' %>"> </span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <% index = errors.findIndex(error => error.description) %>
+                                <i class="material-icons prefix">description</i>
+                                <textarea id="description" name="description" data-length="3000"
+                                          class="materialize-textarea validate <%= (index >= 0) ? 'invalid' : (errors.length > 0) ? 'valid' : '' %>"
+                                ><%= values ? values.description : '' %></textarea>
+                                <label for="description">Description</label>
+                                <span class="helper-text"
+                                      data-error="<%= (index >= 0) ? errors[index].description : '' %>"> </span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s12 m8 offset-m4">
+                                <% index = errors.findIndex(error => error.downloadLink) %>
+                                <i class="material-icons prefix">link</i>
+                                <input id="downloadLink" name="downloadLink" type="url" data-length="2000"
+                                       placeholder="https://test-url.com" pattern=".*://.*"
+                                       class="validate <%= (index >= 0) ? 'invalid' : (errors.length > 0) ? 'valid' : '' %>"
+                                       value="<%= values ? values.downloadLink : '' %>">
+                                <label for="downloadLink">Lien de telechargement</label>
+                                <span class="helper-text"
+                                      data-error="<%= (index >= 0) ? errors[index].downloadLink : '' %>"> </span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s12 m8 offset-m4">
+                                <% index = errors.findIndex(error => error.docLink) %>
+                                <i class="material-icons prefix">link</i>
+                                <input id="docLink" name="docLink" type="url" data-length="2000"
+                                       placeholder="https://test-url.com" pattern=".*://.*"
+                                       class="validate <%= (index >= 0) ? 'invalid' : (errors.length > 0) ? 'valid' : '' %>"
+                                       value="<%= values ? values.docLink : '' %>">
+                                <label for="docLink">Lien vers la doc</label>
+                                <span class="helper-text"
+                                      data-error="<%= (index >= 0) ? errors[index].docLink : '' %>"> </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col s12 right-align">
+                            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                            <a href="/projects/<%= projectId %>/releases"
+                               class="waves-effect waves-green btn-flat red-text">Annuler</a>
+                            <button type="submit" class="waves-effect waves-green btn-flat green-text">
+                                <%= editing ? 'Modifier' : 'Ajouter' %>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/scripts.ejs') %>
+<%- include('../partials/project-header-script.ejs') %>
+
+<script>
+  $(document).ready(() => {
+    $('input#testLink, textarea#description, textarea#definitionOfDone').characterCounter();
+    $("#linkedIssues").formSelect();
+    $("#assignedContributors").formSelect();
+  });
+</script>
+
+<%- include('../partials/foot.ejs') %>

@@ -10,10 +10,12 @@ module.exports.createProject = project => new Promise((resolve, reject) => {
   if (project.id)
     newProject._id = project.id;
   newProject.title = project.title;
+  console.log("due_before= " + project.dueDate);
   if (project.dueDate && project.dueDate.length > 0) {
     const [day, month, year] = project.dueDate.split('/');
     newProject.dueDate = new Date(year, month - 1, day);
   }
+  console.log("due_after= " + newProject.dueDate);
   if (project.description && project.description.length > 0) {
     newProject.description = project.description;
   }
@@ -93,6 +95,60 @@ module.exports.getProjectById = (projectId, userId) => new Promise((resolve, rej
         collaborators: project.collaborators
       };
 
+      if (project.issues.length !== 0) {
+        const labels = [];
+        const associateNbIssueToDate = [];
+        const endDate = project.dueDate ? project.dueDate : new Date();
+        const nbDays = Math.round((endDate.getTime() - project.createdAt.getTime()) / (1000 * 60 * 60 * 24)) + 2;
+        for (let i = 0; i < nbDays; i++) {
+          const date = new Date(project.createdAt.valueOf());
+          date.setDate(project.createdAt.getDate() + i);
+          const dateStr = dateformat(date, dateFormatString);
+          labels.push(dateStr);
+          associateNbIssueToDate[dateStr] = 0;
+        }
+        let totalDifficulty = 0;
+        project.issues.forEach(issue => totalDifficulty += issue.difficulty);
+        const ratioPerDay = totalDifficulty / (nbDays - 1);
+        const idealDifficulty = [];
+        for (let i = totalDifficulty; i >= 0; i -= ratioPerDay)
+          idealDifficulty.push(Math.round(i * 100) / 100);
+        project.issues.forEach(issue => {
+          const tasksIssue = project.tasks.filter(task =>
+            !!task.linkedIssues.find(linkedIssue => linkedIssue._id.toString() === issue._id.toString()));
+          if (tasksIssue.length === 0) return;
+          if (tasksIssue.filter(task => task.state !== 'DONE').length === 0) {
+            const dates = [];
+            tasksIssue.forEach(task => dates.push(task.doneAt));
+            const maxDate = Math.max.apply(null, dates);
+            const maxDateStr = dateformat(maxDate, dateFormatString);
+            associateNbIssueToDate[maxDateStr] += issue.difficulty;
+          }
+        });
+        const realDifficulty = [];
+        labels.forEach(label => {
+          totalDifficulty -= associateNbIssueToDate[label];
+          realDifficulty.push(totalDifficulty);
+        });
+
+        proj.burndown = {
+          labels: labels,
+          datasets: [{
+            label: 'Difficulté Restante Idéale',
+            borderColor: 'rgb(39, 99, 255)',
+            backgroundColor: 'rgb(0, 0, 0, 0)',
+            data: idealDifficulty
+          }, {
+            label: 'Difficulté Restante Réelle',
+            borderColor: 'rgb(255, 99, 132)',
+            backgroundColor: 'rgb(0, 0, 0, 0)',
+            data: realDifficulty
+          }]
+        };
+
+        proj.burndown = JSON.stringify(proj.burndown);
+      }
+
       if (project.description)
         proj.description = project.description;
       if (project.createdAt)
@@ -114,7 +170,7 @@ module.exports.getProjectsByContributorId = contributorId => new Promise((resolv
           activated: true
         }
       }
-    }, 'title description createdAt dueDate collaborators projectOwner')
+    }, 'title description createdAt dueDate collaborators projectOwner tasks')
     .then(projects => {
       projects = projects.map(project => {
         const newProject = {id: project._id, title: project.title};
@@ -124,8 +180,16 @@ module.exports.getProjectsByContributorId = contributorId => new Promise((resolv
           newProject.description = project.description;
         if (project.dueDate)
           newProject.endDate = dateformat(project.dueDate, dateFormatString);
-        if (project.projectOwner.toString() === contributorId.toString()) {
+        if (project.projectOwner.toString() === contributorId.toString())
           newProject.deleteEdit = true;
+        if (project.tasks.length !== 0) {
+          let tasksDone = 0;
+          project.tasks.forEach(task => {
+            if (task.state === "DONE")
+              tasksDone++;
+          });
+
+          newProject.completion = Math.round((tasksDone / project.tasks.length) * 100);
         }
 
         return newProject;
