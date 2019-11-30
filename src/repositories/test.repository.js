@@ -1,6 +1,17 @@
+/**
+ * test repository module
+ * @module repositories/test
+ */
+
 const mongoose = require('mongoose');
 const Project = mongoose.model('Project');
 
+/**
+ * returns a list of a project tests
+ * @param {string} projectId - the id a project
+ * @param {string} userId - the id of the user who did the operation
+ * @returns {Promise<Object>} an object represeting the result of this operation
+ */
 module.exports.getProjectTests = (projectId, userId) => new Promise((resolve, reject) => {
   if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(userId))
     return resolve(undefined);

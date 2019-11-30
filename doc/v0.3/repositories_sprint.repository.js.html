@@ -1,4 +1,32 @@
-/**
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: repositories/sprint.repository.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: repositories/sprint.repository.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
  * sprint repository module
  * @module repositories/sprint
  */
@@ -15,7 +43,7 @@ const dateFormatString = 'dd/mm/yyyy';
  * returns a list of a project sprints
  * @param {string} projectId - the id a project
  * @param {string} userId - the id of the user who did the operation
- * @returns {Promise<Object>} an object represeting the result of this operation
+ * @returns {Promise&lt;Object>} an object represeting the result of this operation
  */
 module.exports.getProjectSprints = (projectId, userId) => new Promise((resolve, reject) => {
   if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(userId))
@@ -40,14 +68,14 @@ module.exports.getProjectSprints = (projectId, userId) => new Promise((resolve, 
 
         const today = new Date();
         let completion = null;
-        if (sprint.startDate <= today)
+        if (sprint.startDate &lt;= today)
           completion = tasks.length !== 0 ? Math.round((tasksDone / tasks.length) * 100) : 0;
 
         let remaining = null;
-        if (sprint.startDate <= today && today <= sprint.endDate)
+        if (sprint.startDate &lt;= today &amp;&amp; today &lt;= sprint.endDate)
           remaining = Math.round((sprint.endDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)) + 2;
 
-        const edit = ((sprint.startDate <= today && today <= sprint.endDate) || (today < sprint.startDate));
+        const edit = ((sprint.startDate &lt;= today &amp;&amp; today &lt;= sprint.endDate) || (today &lt; sprint.startDate));
 
         return {
           _id: sprint._id,
@@ -78,7 +106,7 @@ module.exports.getProjectSprints = (projectId, userId) => new Promise((resolve, 
  * @param {string} projectId - the id of the project to add the sprint in
  * @param {Object} sprint - the sprint to add
  * @param {string} userId - the id of the user who did the operation
- * @returns {Promise<Object>} an object represeting the result of this operation
+ * @returns {Promise&lt;Object>} an object represeting the result of this operation
  */
 module.exports.createSprint = (projectId, sprint, userId) => new Promise((resolve, reject) => {
   if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(userId))
@@ -89,15 +117,15 @@ module.exports.createSprint = (projectId, sprint, userId) => new Promise((resolv
     newSprint._id = sprint.id;
     newSprint.id = sprint.id;
   }
-  if (sprint.startDate && sprint.startDate.length > 0) {
+  if (sprint.startDate &amp;&amp; sprint.startDate.length > 0) {
     const [day, month, year] = sprint.startDate.split('/');
     newSprint.startDate = new Date(year, month - 1, day);
   }
-  if (sprint.endDate && sprint.endDate.length > 0) {
+  if (sprint.endDate &amp;&amp; sprint.endDate.length > 0) {
     const [day, month, year] = sprint.endDate.split('/');
     newSprint.endDate = new Date(year, month - 1, day);
   }
-  if (sprint.description && sprint.description.length > 0) {
+  if (sprint.description &amp;&amp; sprint.description.length > 0) {
     newSprint.description = sprint.description;
   }
 
@@ -119,7 +147,7 @@ module.exports.createSprint = (projectId, sprint, userId) => new Promise((resolv
  * @param {string} projectId - the id of the project to update the sprint in
  * @param {Object} sprint - the sprint to update
  * @param {string} userId - the id of the user who did the operation
- * @returns {Promise<Object>} an object represeting the result of this operation
+ * @returns {Promise&lt;Object>} an object represeting the result of this operation
  */
 module.exports.updateSprint = (projectId, sprint, userId) => new Promise((resolve, reject) => {
   const errorMessage = {success: false, error: errorGeneralMessages.modificationNotAllowed};
@@ -127,11 +155,11 @@ module.exports.updateSprint = (projectId, sprint, userId) => new Promise((resolv
   if (!mongoose.Types.ObjectId.isValid(projectId))
     return resolve(errorMessage);
 
-  if (sprint.startDate && sprint.startDate.length > 0) {
+  if (sprint.startDate &amp;&amp; sprint.startDate.length > 0) {
     const [day, month, year] = sprint['startDate'].split('/');
     sprint.startDate = new Date(year, month - 1, day);
   }
-  if (sprint.endDate && sprint.endDate.length > 0) {
+  if (sprint.endDate &amp;&amp; sprint.endDate.length > 0) {
     const [day, month, year] = sprint['endDate'].split('/');
     sprint.endDate = new Date(year, month - 1, day);
   }
@@ -161,7 +189,7 @@ module.exports.updateSprint = (projectId, sprint, userId) => new Promise((resolv
  * @param {string} projectId - the id of the project to remove the sprint from
  * @param {string} sprintId - the id of the sprint to remove
  * @param {string} userId - the id of the user who did the operation
- * @returns {Promise<Object>} an object represeting the result of this operation
+ * @returns {Promise&lt;Object>} an object represeting the result of this operation
  */
 module.exports.deleteSprint = (projectId, sprintId, userId) => new Promise((resolve, reject) => {
   const errorMessage = {success: false, errors: {error: errorGeneralMessages.deleteNotAllowed}};
@@ -187,7 +215,7 @@ module.exports.deleteSprint = (projectId, sprintId, userId) => new Promise((reso
  * returns a sprint by its id
  * @param {string} projectId - the id of a project
  * @param {Object} sprintId - the id of the sprint to check
- * @returns {Promise<Object>} an object represeting the result of this operation
+ * @returns {Promise&lt;Object>} an object represeting the result of this operation
  */
 module.exports.getSprintById = (projectId, sprintId) => new Promise((resolve, reject) => {
   return Project
@@ -209,3 +237,26 @@ module.exports.getSprintById = (projectId, sprintId) => new Promise((resolve, re
     })
     .catch(err => reject(err));
 });
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-config_auth.html">config/auth</a></li><li><a href="module-config_database.html">config/database</a></li><li><a href="module-config_validations.html">config/validations</a></li><li><a href="module-repositories_issue.html">repositories/issue</a></li><li><a href="module-repositories_project.html">repositories/project</a></li><li><a href="module-repositories_release.html">repositories/release</a></li><li><a href="module-repositories_sprint.html">repositories/sprint</a></li><li><a href="module-repositories_task.html">repositories/task</a></li><li><a href="module-repositories_test.html">repositories/test</a></li><li><a href="module-util_mail.html">util/mail</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Sat Nov 30 2019 16:27:01 GMT+0100 (Central European Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
