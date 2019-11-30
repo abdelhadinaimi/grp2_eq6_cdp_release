@@ -3,7 +3,7 @@
 <% const states = ["TODO", "DOING", "DONE", "TOTEST", "TESTING", "TESTED"]; %>
 
 <div class="row center-align" style="margin-top: 15px">
-  <a class="btn white black-text" href="/projects/<%= project.id %>/sprints/<%=project.sprintId%>#<%=project.sprintId%>">Retour</a>
+  <a class="btn white black-text" href="/projects/<%= project.id %>/sprints/<%=project.sprint.id%>#<%=project.sprint.id%>">Retour aux sprints</a>
 </div>
 
 <% if (project.tasks.length > 0) { %>
@@ -13,11 +13,11 @@
       <div class="col s12 m10 offset-m1 l8 offset-l2">
         <div class="row valign-wrapper hide-on-small-only">
           <div class="col m4 offset-m4 center-align">
-            <h5><%=pageTitle%></h5>
+            <h5><%=pageTitle%> - <%=project.sprint.title%></h5>
           </div>
           <% if ((isPo || isPm) && !mine) { %>
           <div class="col m4 center-align">
-            <a class="btn green modal-trigger" href="/projects/<%= project.id %>/sprints/<%= project.sprintId %>/tasks/add">Ajouter une tâche</a>
+            <a class="btn green modal-trigger" href="/projects/<%= project.id %>/sprints/<%= project.sprint.id %>/tasks/add">Ajouter une tâche</a>
           </div>
           <% } %>
         </div>
@@ -33,12 +33,12 @@
     <div class="col s12 m10 offset-m1 l8 offset-l2">
       <div class="row">
         <% if (mine) { %>
-          <a class="btn-small light-blue darken-1 right" href="/projects/<%= project.id %>/sprints/<%= project.sprintId %>/tasks">
-            <i class="material-icons left">remove_red_eye</i>Toutes
+          <a class="btn-small light-blue darken-1 right" href="/projects/<%= project.id %>/sprints/<%= project.sprint.id %>/tasks">
+            <i class="material-icons left">select_all</i>Toutes
           </a>
         <% } else { %>
-          <a class="btn-small light-blue darken-1 right" href="/projects/<%= project.id %>/sprints/<%= project.sprintId %>/tasks/mine">
-            <i class="material-icons left">remove_red_eye</i>Mes Tâches
+          <a class="btn-small light-blue darken-1 right" href="/projects/<%= project.id %>/sprints/<%= project.sprint.id %>/tasks/mine">
+            <i class="material-icons left">person_outline</i>Mes Tâches
           </a>
         <% } %>
       </div>
@@ -66,7 +66,7 @@
               <div class="row center-align hide-on-med-and-up">
                 <% if (!project.deleteEdit) { %>
                 <div class="col s6">
-                  <a href="/projects/<%=project.id%>/sprints/<%=project.sprintId%>/tasks/<%=task._id%>/edit" class="btn-floating white">
+                  <a href="/projects/<%=project.id%>/sprints/<%=project.sprint.id%>/tasks/<%=task._id%>/edit" class="btn-floating white">
                     <i class="material-icons black-text">edit</i>
                   </a>
                 </div>
@@ -96,9 +96,9 @@
 
                       <div class="row" style="margin-bottom: 0">
                         <div class="col s12 offset-m1 m10">
-                          <% if (task.linkedIssues.length > 0) { %>
+                          <% if (task.issues.length > 0) { %>
                             <b>Issues liées : </b>
-                            <% task.linkedIssues.forEach(issue => { %>
+                            <% task.issues.forEach(issue => { %>
                               <a href="/projects/<%=project.id%>/issues/<%=issue._id%>#<%=issue._id%>"><%=issue.storyId%></a>
                             <%})%>
                           <% } else { %>
@@ -106,9 +106,9 @@
                           <% } %>
                         </div>
                         <div class="col s12 offset-m1 m10">
-                          <% if (task.assignedContributors.length > 0) { %>
+                          <% if (task.contributors.length > 0) { %>
                             <b>Assignée à : </b>
-                            <% task.assignedContributors.forEach(contr => { %>
+                            <% task.contributors.forEach(contr => { %>
                               <span><%=contr._id.username%></span>
                             <%})%>
                           <% } else { %>
@@ -128,14 +128,14 @@
                 <div class="col m3 l2 center-align hide-on-small-only">
                     <% if ((isPo || isPm) && !mine) { %>
                   <div class="row">
-                    <a href="/projects/<%=project.id%>/sprints/<%=project.sprintId%>/tasks/<%=task._id%>/edit" class="btn white black-text" style="width: 100%">Modifier</a>
+                    <a href="/projects/<%=project.id%>/sprints/<%=project.sprint.id%>/tasks/<%=task._id%>/edit" class="btn white black-text" style="width: 100%">Modifier</a>
                   </div>
                   <div class="row">
                     <a href="#deleteTask" class="btn red modal-trigger deleteButton" _id="<%= task._id %>"
                       style="width: 100%">Supprimer</a>
                   </div>
                   <% } %>
-                  <% if (isPo || isPm || task.assigned) { %>
+                  <% if ((isPo || isPm || task.assigned) && project.sprint.active) { %>
                     <div class="row">
                         <select _id="<%=task._id%>" class="state-select">
                             <% for(let state of states) { %>
@@ -161,7 +161,7 @@
       <div class="col s12 center-align">
         <div class="row">
           <h5>Vous n'avez actuellement aucune tâche qui vous est assignée pour ce sprint...</h5>
-          <a href="/projects/<%= project.id %>/sprints">Retour</a>
+          <a href="/projects/<%= project.id %>/sprints/<%= project.sprint.id %>/tasks">Retour aux tâches</a>
         </div>
       </div>
     </div>
@@ -176,7 +176,7 @@
             <h6>Essayez de créer une première tâche !</h6>
           </div>
           <div class="row">
-            <a href="/projects/<%= project.id %>/sprints/<%= project.sprintId %>/tasks/add" class="btn-flat green-text waves-effect">Créer une première tâche</a>
+            <a href="/projects/<%= project.id %>/sprints/<%= project.sprint.id %>/tasks/add" class="btn-flat green-text waves-effect">Créer une première tâche</a>
           </div>
         <% } %>
       </div>
@@ -197,7 +197,7 @@
     $('.state-select').formSelect().change(function (){
       const taskId = this.getAttribute('_id')
       const state = this.options[this.selectedIndex].value;
-      fetch('/projects/<%=project.id%>/sprints/<%= project.sprintId %>/tasks/' + taskId +'/state', {
+      fetch('/projects/<%=project.id%>/sprints/<%= project.sprint.id %>/tasks/' + taskId +'/state', {
         credentials: 'same-origin',
         method: 'PUT',
         headers: {
@@ -209,8 +209,9 @@
         })
       })
       .then(result => {
-        if(result.status === 200){
+        if(result.status === 200) {
           $(`#${taskId} .state`).text(state);
+          M.toast({html: 'État mis à jour !', classes: 'rounded'});
         }
       });
     });

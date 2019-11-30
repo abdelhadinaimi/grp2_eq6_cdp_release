@@ -42,10 +42,11 @@ module.exports.getSprintTasks = (req, res) => {
 
 module.exports.getMyTasks = (req, res) => {
   const {projectId} = req.params;
+  const {sprintId} = req.params;
   const userId = req.session.user._id;
 
   return taskRepo
-    .getMyTasks(projectId, userId)
+    .getMyTasks(projectId, sprintId, userId)
     .then(project => {
       if (!project) {
         req.flash("toast", errorGeneralMessages.accessNotAuthorized);
@@ -103,6 +104,7 @@ module.exports.getAdd = (req, res) => {
 
 module.exports.getEdit = (req, res) => {
   const {projectId} = req.params;
+  const {sprintId} = req.params;
   const {taskId} = req.params;
 
   return projectRepo
@@ -117,10 +119,11 @@ module.exports.getEdit = (req, res) => {
                 pageTitle: titlesTask.edit,
                 errors: [],
                 values: task,
-                projectId: projectId,
                 url: 'tas',
                 editing: true,
-                project: {id: projectId}
+                project: {id: projectId},
+                projectId,
+                sprintId
               });
             } else {
               req.flash("toast", errorGeneralMessages.accessNotAuthorized);
@@ -207,11 +210,11 @@ module.exports.putEdit = (req, res) => {
     .then(result => {
       if (!result.success) {
         req.flash("toast", result.error);
-        return res.status(403).redirect(routes.task.tasks(req.params.projectId));
+        return res.status(403).redirect(routes.task.tasks(req.params.projectId, req.params.sprintId));
       }
 
       req.flash("toast", "Tâche modifiée avec succès !");
-      return res.status(201).redirect(routes.task.tasks(req.params.projectId));
+      return res.status(201).redirect(routes.task.tasks(req.params.projectId, req.params.sprintId));
     })
     .catch(err => {
       console.log(err);

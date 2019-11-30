@@ -79,7 +79,7 @@
                                                 <% if (issue.tasks.length > 0) { %>
                                                     <b>Tâches : </b>
                                                     <% issue.tasks.forEach(task => { %>
-                                                        <a class="<%=task.color%>" href="/projects/<%=project.id%>/tasks/<%=task._id%>#<%=task._id%>">
+                                                        <a class="<%=task.color%>" href="/projects/<%=project.id%>/sprints/<%=task.linkedSprint%>/tasks/<%=task._id%>#<%=task._id%>">
                                                             #<%=task.index%>
                                                         </a>
                                                     <%})%>
