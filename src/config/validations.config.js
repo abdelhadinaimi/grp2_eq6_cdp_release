@@ -1,3 +1,8 @@
+/**
+ * validations config module
+ * @module config/validations
+ */
+
 const { body, validationResult } = require("express-validator");
 const {
   errorUserMessages,
@@ -10,6 +15,10 @@ const {
 
 const issueRepo = require("../repositories/issue.repository");
 
+/**
+ * user validations to check a post or put request conserning user
+ * @type {ValidationChain[]}
+ */
 module.exports.userValidations = [
   body("email")
     .isEmail()
@@ -38,6 +47,10 @@ module.exports.userValidations = [
     .withMessage(errorUserMessages.username.max)
 ];
 
+/**
+ * project validations to check a post or put request conserning project
+ * @type {ValidationChain[]}
+ */
 module.exports.projectValidations = [
   body("title")
     .not()
@@ -55,6 +68,10 @@ module.exports.projectValidations = [
     .withMessage(errorProjectMessages.description.max)
 ];
 
+/**
+ * issue validations to check a post or put request conserning issue
+ * @type {ValidationChain[]}
+ */
 module.exports.issueValidations = [
   body("userType")
     .not()
@@ -98,12 +115,20 @@ module.exports.issueValidations = [
     .withMessage(errorIssueMessages.difficulty.min)
 ];
 
+/**
+ * role validations to check role
+ * @type {ValidationChain[]}
+ */
 module.exports.roleValidation = [
   body("role")
     .matches(/^(pm|user)$/)
     .withMessage(errorProjectMessages.role.values)
 ];
 
+/**
+ * task validations to check a post or put request conserning Task
+ * @type {ValidationChain[]}
+ */
 module.exports.taskValidations = [
   body("cost")
     .not()
@@ -125,12 +150,20 @@ module.exports.taskValidations = [
     .withMessage(errorTaskMessages.definitionOfDone.max)
 ];
 
+/**
+ * task state validations to check a post or put request conserning task
+ * @type {ValidationChain[]}
+ */
 module.exports.taskStateValidation = [
   body("state")
     .matches(/^(TODO|DOING|DONE|TOTEST|TESTING|TESTED)$/)
     .withMessage(errorTaskMessages.state.match)
 ];
 
+/**
+ * sprint validations to check a post or put request conserning sprint
+ * @type {ValidationChain[]}
+ */
 module.exports.sprintValidations = [
   body("id")
     .not()
@@ -150,6 +183,10 @@ module.exports.sprintValidations = [
     .withMessage(errorSprintMessages.description.max)
 ];
 
+/**
+ * release validations to check a post or put request conserning release
+ * @type {ValidationChain[]}
+ */
 module.exports.releaseValidations = [
   body("version")
     .not()
@@ -167,6 +204,9 @@ module.exports.releaseValidations = [
  * a middleware to validate the request using the provided validators
  * if there are errors, returns a list of errors with 442 HTTP Code else it executes
  * the next middleware.
+ * @param {Object} req
+ * @param {Object} res
+ * @param {Object} next
  */
 module.exports.validate = (req, res, next) => {
   req.validation = { success: true };

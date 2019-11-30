@@ -1,3 +1,9 @@
+/**
+ * project repository module
+ * @module repositories/project
+ */
+
+
 const mongoose = require('mongoose');
 const Project = mongoose.model('Project');
 const {errorGeneralMessages} = require('../util/constants');
@@ -5,6 +11,11 @@ const dateformat = require('dateformat');
 
 const dateFormatString = 'dd/mm/yyyy';
 
+/**
+ * create a new project
+ * @param {Object} projectId - the project to create
+ * @returns {Promise<boolean|Error>} true if created, eles returns an error
+ */
 module.exports.createProject = project => new Promise((resolve, reject) => {
   const newProject = new Project();
   if (project.id)
@@ -34,6 +45,12 @@ module.exports.createProject = project => new Promise((resolve, reject) => {
     .catch(err => reject(err));
 });
 
+/**
+ * updates a project
+ * @param {Object} projectId - the project to update
+ * @param {string} userId - the id of the user who did the operation
+ * @returns {Promise<Object>} an object represeting the result of this operation
+ */
 module.exports.updateProject = (project, userId) => new Promise((resolve, reject) => {
   if (!mongoose.Types.ObjectId.isValid(project.id) || !mongoose.Types.ObjectId.isValid(userId))
     return resolve({success: false, error: errorGeneralMessages.modificationNotAllowed});
@@ -61,6 +78,12 @@ module.exports.updateProject = (project, userId) => new Promise((resolve, reject
     .catch(err => reject(err))
 });
 
+/**
+ * deletes a project if the userId is the project owner
+ * @param {string} projectId - the id of the project to delete
+ * @param {string} userId - the id of the user who did the operation
+ * @returns {Promise<Object>} an object represeting the result of this operation
+ */
 module.exports.deleteProject = (projectId, userId) => new Promise((resolve, reject) => {
   if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(userId))
     return resolve({success: false, errors: {error: errorGeneralMessages.deleteNotAllowed}});
@@ -77,6 +100,12 @@ module.exports.deleteProject = (projectId, userId) => new Promise((resolve, reje
     .catch(err => reject(err));
 });
 
+/**
+ * returns the project if the userId is a collaborator in that project
+ * @param {string} projectId - the id a project
+ * @param {string} userId - the id of the user who did the operation
+ * @returns {Promise<Object>} an object represeting the result of this operation
+ */
 module.exports.getProjectById = (projectId, userId) => new Promise((resolve, reject) => {
   if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(userId))
     return resolve(undefined);
@@ -161,6 +190,11 @@ module.exports.getProjectById = (projectId, userId) => new Promise((resolve, rej
     .catch(err => reject(err));
 });
 
+/**
+ * returns all the projects which the userId is a collaborator in
+ * @param {string} contributorId - the id of the user who did the operation
+ * @returns {Promise<Object>} an object represeting the result of this operation
+ */
 module.exports.getProjectsByContributorId = contributorId => new Promise((resolve, reject) => {
   return Project
     .find({
@@ -200,6 +234,12 @@ module.exports.getProjectsByContributorId = contributorId => new Promise((resolv
     .catch(err => reject(err));
 });
 
+/**
+ * checks if the contributorId is a contributor of a project
+ * @param {string} projectId - the id a project
+ * @param {string} contributorId - the id of the user who did the operation
+ * @returns {Promise<boolean>}
+ */
 module.exports.isContributorFromProject = (projectId, contributorId) => new Promise((resolve, reject) => {
   Project
     .findOne({_id: projectId, 'collaborators._id': contributorId})
@@ -211,6 +251,13 @@ module.exports.isContributorFromProject = (projectId, contributorId) => new Prom
     .catch(err => reject(err));
 });
 
+/**
+ * checks if the contributorId has a given authorization in a project
+ * @param {string} projectId - the id a project
+ * @param {string} contributorId - the id of the user who did the operation
+ * @param {Object} authorization - the authorizations to check
+ * @returns {Promise<boolean>}
+ */
 module.exports.hasAuthorizationOnProject = (projectId, contributorId, authorization) => new Promise((resolve, reject) => {
   Project
     .findIfUserType(projectId, contributorId, authorization)
@@ -218,6 +265,13 @@ module.exports.hasAuthorizationOnProject = (projectId, contributorId, authorizat
     .catch(err => reject(err));
 });
 
+/**
+ * add a user into a project as a contributor
+ * @param {string} projectId - the id of a project
+ * @param {string} contributorId - the user to add
+ * @param {string} addId - the id of the user who did the operation
+ * @returns {Promise<Object>} an object represeting the result of this operation
+ */
 module.exports.addContributorToProject = (projectId, contributorId, addId) => new Promise((resolve, reject) => {
   Project
     .findIfUserType(projectId, addId, ['po', 'pm'])
@@ -236,6 +290,13 @@ module.exports.addContributorToProject = (projectId, contributorId, addId) => ne
     .catch(err => reject(err));
 });
 
+/**
+ * removes a user from a project
+ * @param {string} projectId - the id of a project
+ * @param {string} userId - the user to remove
+ * @param {string} remId - the id of the user who did the operation
+ * @returns {Promise<boolean|Error>} an object represeting the result of this operation
+ */
 module.exports.removeContributorToProject = (projectId, userId, remId) => new Promise((resolve, reject) => {
   Project
     .findIfUserType(projectId, remId, ['po', 'pm', userId === remId ? 'user' : ''])
@@ -250,6 +311,12 @@ module.exports.removeContributorToProject = (projectId, userId, remId) => new Pr
     .catch(err => reject(err));
 });
 
+/**
+ * accept an invitation to a project
+ * @param {string} projectId - the id of a project
+ * @param {string} contributorId - the user who is accepting the invitaition
+ * @returns {Promise<boolean|Error>} an object represeting the result of this operation
+ */
 module.exports.acceptInvitation = (projectId, contributorId) => new Promise((resolve, reject) => {
   Project
     .findOne({_id: projectId, collaborators: {$elemMatch: {_id: contributorId, activated: false}}})
@@ -266,6 +333,13 @@ module.exports.acceptInvitation = (projectId, contributorId) => new Promise((res
     .catch(err => reject(err));
 });
 
+/**
+ * updates a user's role in a given project
+ * @param {string} projectId - the id of a project
+ * @param {string} userId - the id of the user who did the operation
+ * @param {object} user - the user to update
+ * @returns {Promise<Object>} an object represeting the result of this operation
+ */
 module.exports.updateUserRole = (projectId, userId, user) => new Promise((resolve, reject) => {
   const errorMessage = {success: false, error: errorGeneralMessages.modificationNotAllowed};
 
