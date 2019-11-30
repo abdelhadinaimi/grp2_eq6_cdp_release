@@ -71,6 +71,7 @@ module.exports.global = {
     },
     sprint: {
       sprints: "Sprints",
+      sprint: "Sprint",
       add: "Nouveau Sprint",
       edit: "Éditer Sprint"
     },

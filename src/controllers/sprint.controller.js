@@ -6,6 +6,37 @@ const titlesSprint = require('../util/constants').global.titles.sprint;
 const { routes } = require('../util/constants').global;
 const viewsSprint = require('../util/constants').global.views.sprint;
 
+module.exports.getSprint = (req, res) => {
+  const userId = req.session.user._id;
+  const { projectId } = req.params;
+  const { sprintId } = req.params;
+
+  return sprintRepo
+    .getSprint(projectId, userId, sprintId)
+    .then(project => {
+      if (!project) {
+        req.flash("toast", errorGeneralMessages.accessNotAuthorized);
+        return res.status(403).redirect(routes.sprint.sprints(projectId));
+      }
+
+      const isPo = (project.projectOwner.toString() === userId.toString());
+      const isPm = (project.collaborators.findIndex(collaborator =>
+        (collaborator._id.toString() === userId.toString() && collaborator.userType === "pm")) >= 0);
+
+      return res.render(viewsSprint.sprint, {
+        pageTitle: titlesSprint.sprint,
+        errors: [],
+        values: project,
+        projectId: projectId,
+        url: 'spr',
+        isPo: isPo,
+        isPm: isPm,
+        project: { id: projectId }
+      });
+
+    });
+};
+
 module.exports.getProjectSprints = (req, res) => {
   const userId = req.session.user._id;
   const { projectId } = req.params;
@@ -153,7 +184,7 @@ module.exports.putEdit = (req, res) => {
       errors: req.validation.errors,
       values: sprint,
       projectId: req.params.projectId,
-      project: {id: req.params.projectId},
+      project: { id: req.params.projectId },
       url: 'spr',
       editing: true
     });
@@ -177,8 +208,8 @@ module.exports.putEdit = (req, res) => {
 };
 
 module.exports.deleteSprint = (req, res) => {
-  const {projectId} = req.params;
-  const {sprintId} = req.params;
+  const { projectId } = req.params;
+  const { sprintId } = req.params;
   const userId = req.session.user._id;
 
   return sprintRepo
