@@ -70,3 +70,21 @@ module.exports.updateRelease = (projectId, release, userId) => new Promise((reso
     })
     .catch(err => reject(err));
 });
+
+module.exports.deleteRelease = (projectId, releaseId, userId) => new Promise((resolve, reject) => {
+  const errorMessage = {success: false, errors: {error: errorGeneralMessages.deleteNotAllowed}};
+  if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(releaseId) || !mongoose.Types.ObjectId.isValid(userId))
+    return resolve(errorMessage);
+
+  return Project
+    .findIfUserType(projectId, userId, ['po', 'pm'])
+    .then(project => {
+      if (!project)
+        return resolve(errorMessage);
+
+      project.releases = project.releases.filter(release => release._id.toString() !== releaseId.toString());
+      return project.save();
+    })
+    .then(() => resolve({success: true}))
+    .catch(err => reject(err));
+});
