@@ -37,15 +37,6 @@ module.exports.getSprint = (req, res) => {
     });
 };
 
-module.exports.getAdd = (req, res) => {
-  res.render(viewsProject.addEdit, {
-    pageTitle: titlesProject.add,
-    errors: [],
-    values: undefined,
-    editing: false
-  });
-};
-
 module.exports.getProjectSprints = (req, res) => {
   const userId = req.session.user._id;
   const { projectId } = req.params;

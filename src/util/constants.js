@@ -124,26 +124,6 @@ module.exports.global = {
       forgotPassword: "/forgot-password",
       account: "/account"
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   }
 };
 

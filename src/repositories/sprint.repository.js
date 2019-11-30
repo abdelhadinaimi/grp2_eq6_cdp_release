@@ -1,4 +1,4 @@
-/**
+  /**
  * sprint repository module
  * @module repositories/sprint
  */
@@ -311,12 +311,11 @@ module.exports.getSprintById = (projectId, sprintId) => new Promise((resolve, re
       if (!project) return resolve(null);
 
       const sprint = project.sprints.find(sprint => sprint._id.toString() === sprintId.toString());
-      if (sprint) {
-        sprint.startDate = dateformat(sprint.startDate, dateFormatString);
-        sprint.endDate = dateformat(sprint.endDate, dateFormatString);
+      if (!sprint) return resolve(null);
 
-        return resolve(sprint);
-      }
+      sprint.startDate = dateformat(sprint.startDate, dateFormatString);
+      sprint.endDate = dateformat(sprint.endDate, dateFormatString);
+      return resolve(sprint);
     })
     .catch(err => reject(err));
 });
