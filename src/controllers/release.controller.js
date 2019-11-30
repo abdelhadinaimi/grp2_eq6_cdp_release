@@ -123,7 +123,7 @@ module.exports.getEdit = (req, res) => {
         errors: [],
         values: release,
         projectId: req.params.projectId,
-        url: 'iss',
+        url: 'rel',
         editing: true,
         project
       });
@@ -172,5 +172,22 @@ module.exports.putEdit = (req, res) => {
 };
 
 module.exports.deleteRelease = (req, res) => {
-  res.send("deleteRelease");
+  const { projectId } = req.params;
+  const { releaseId } = req.params;
+  const userId = req.session.user._id;
+
+  releaseRepo
+    .deleteRelease(projectId, releaseId, userId)
+    .then(result => {
+      if (!result.success) {
+        req.flash("toast", result.errors.error);
+        return res.status(403).redirect(routes.index);
+      }
+      req.flash("toast", "Release supprimée avec succès !");
+      return res.status(200).redirect(routes.release.releases(projectId));
+    })
+    .catch(err => {
+      console.log(err);
+      return res.status(500).redirect(routes.error["500"]);
+    });
 };

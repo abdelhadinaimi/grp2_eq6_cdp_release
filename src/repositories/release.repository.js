@@ -1,3 +1,8 @@
+/**
+ * release repository module
+ * @module repositories/release
+ */
+
 const mongoose = require('mongoose');
 const dateformat = require('dateformat');
 const Project = mongoose.model('Project');
@@ -5,6 +10,12 @@ const { errorGeneralMessages } = require('../util/constants');
 
 const dateFormatString = 'dd/mm/yyyy';
 
+/**
+ * returns a list of releases of a project given its id
+ * @param {string} projectId - the id a project
+ * @param {string} userId - the id of the user who did the operation
+ * @returns {Promise<Object>} an object represeting the result of this operation
+ */
 module.exports.getProjectReleases = (projectId, userId) => new Promise((resolve, reject) => {
   if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(userId))
     return resolve(undefined);
@@ -29,7 +40,13 @@ module.exports.getProjectReleases = (projectId, userId) => new Promise((resolve,
     .catch(err => reject(err));
 });
 
-
+/**
+ * add a release into a project
+ * @param {string} projectId - the id of the project to add the release in
+ * @param {Object} release - the release to add
+ * @param {string} userId - the id of the user who did the operation
+ * @returns {Promise<Object>} an object represeting the result of this operation
+ */
 module.exports.createRelease = (projectId, release, userId) => new Promise((resolve, reject) => {
   if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(userId))
     return resolve({success: false, error: errorGeneralMessages.notAllowed});
@@ -47,6 +64,13 @@ module.exports.createRelease = (projectId, release, userId) => new Promise((reso
     .catch(err => reject(err));
 });
 
+/**
+ * updates a release in a project
+ * @param {string} projectId - the id of the project to update the release in
+ * @param {Object} release - the release to update
+ * @param {string} userId - the id of the user who did the operation
+ * @returns {Promise<Object>} an object represeting the result of this operation
+ */
 module.exports.updateRelease = (projectId, release, userId) => new Promise((resolve, reject) => {
   const errorMessage = {success: false, error: errorGeneralMessages.modificationNotAllowed};
 
@@ -68,5 +92,30 @@ module.exports.updateRelease = (projectId, release, userId) => new Promise((reso
       if (!project) return resolve(errorMessage);
       return resolve({success: true});
     })
+    .catch(err => reject(err));
+});
+
+/**
+ * removes a release from a project given its id
+ * @param {string} projectId - the id of the project to remove the release from
+ * @param {string} releaseId - the id of the release to remove
+ * @param {string} userId - the id of the user who did the operation
+ * @returns {Promise<Object>} an object represeting the result of this operation
+ */
+module.exports.deleteRelease = (projectId, releaseId, userId) => new Promise((resolve, reject) => {
+  const errorMessage = {success: false, errors: {error: errorGeneralMessages.deleteNotAllowed}};
+  if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(releaseId) || !mongoose.Types.ObjectId.isValid(userId))
+    return resolve(errorMessage);
+
+  return Project
+    .findIfUserType(projectId, userId, ['po', 'pm'])
+    .then(project => {
+      if (!project)
+        return resolve(errorMessage);
+
+      project.releases = project.releases.filter(release => release._id.toString() !== releaseId.toString());
+      return project.save();
+    })
+    .then(() => resolve({success: true}))
     .catch(err => reject(err));
 });

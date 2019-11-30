@@ -1,3 +1,8 @@
+/**
+ * mail util module
+ * @module util/mail
+ */
+
 const nodemailer = require('nodemailer');
 
 const mailAccount = 'projet.cdp.m2.2019@gmail.com';
@@ -11,6 +16,13 @@ const transporter = nodemailer.createTransport({
   }
 });
 
+/**
+ * sends a mail
+ * @param {string} dst - the receving email
+ * @param {string} subject - the subject of the mail
+ * @param {string} message - the message to send
+ * @returns {Promise<Object>} an object represeting the result of this operation
+ */
 module.exports.sendMail = (dst, subject, message) => new Promise((resolve, reject) => {
   const mailOptions = {
     from: mailAccount,

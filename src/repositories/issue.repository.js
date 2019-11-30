@@ -1,11 +1,24 @@
+/**
+ * issue repository module
+ * @module repositories/issue
+ */
+
 const mongoose = require('mongoose');
 const Project = mongoose.model('Project');
 const {errorGeneralMessages} = require('../util/constants');
 
+/**
+ * add an issue into a project
+ * @param {string} projectId - the id of the project to add the issue in
+ * @param {Object} issue - the issue to add
+ * @param {string} userId - the id of the user who did the operation
+ * @returns {Promise<Object>} an object represeting the result of this operation
+ */
 module.exports.createIssue = (projectId, issue, userId) => new Promise((resolve, reject) => {
+  projectId.equals
   if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(userId))
     return resolve({success: false, error: errorGeneralMessages.notAllowed});
-
+  
   return Project.findIfUserType(projectId, userId, ['po', 'pm'])
     .then(project => {
       if (!project) {
@@ -20,6 +33,13 @@ module.exports.createIssue = (projectId, issue, userId) => new Promise((resolve,
     .catch(err => reject(err));
 });
 
+/**
+ * updates an issue in a project
+ * @param {string} projectId - the id of the project to update the issue in
+ * @param {Object} issue - the issue to update
+ * @param {string} userId - the id of the user who did the operation
+ * @returns {Promise<Object>} an object represeting the result of this operation
+ */
 module.exports.updateIssue = (projectId, issue, userId) => new Promise((resolve, reject) => {
   const errorMessage = {success: false, error: errorGeneralMessages.modificationNotAllowed};
 
@@ -44,6 +64,13 @@ module.exports.updateIssue = (projectId, issue, userId) => new Promise((resolve,
     .catch(err => reject(err));
 });
 
+/**
+ * removes an issue from a project given its id
+ * @param {string} projectId - the id of the project to remove the issue from
+ * @param {string} issueId - the id of the issue to remove
+ * @param {string} userId - the id of the user who did the operation
+ * @returns {Promise<Object>} an object represeting the result of this operation
+ */
 module.exports.deleteIssue = (projectId, issueId, userId) => new Promise((resolve, reject) => {
   const errorMessage = {success: false, errors: {error: errorGeneralMessages.deleteNotAllowed}};
   if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(issueId) || !mongoose.Types.ObjectId.isValid(userId))
@@ -66,6 +93,12 @@ module.exports.deleteIssue = (projectId, issueId, userId) => new Promise((resolv
     .catch(err => reject(err));
 });
 
+/**
+ * returns a list of issues and tasks of a project given its id
+ * @param {string} projectId - the id a project
+ * @param {string} userId - the id of the user who did the operation
+ * @returns {Promise<Object>} an object represeting the result of this operation
+ */
 module.exports.getProjectIssues = (projectId, userId) => new Promise((resolve, reject) => {
   if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(userId))
     return resolve(undefined);
@@ -110,6 +143,13 @@ module.exports.getProjectIssues = (projectId, userId) => new Promise((resolve, r
     .catch(err => reject(err));
 });
 
+/**
+ * checks if the provided storyId is unique
+ * @param {string} projectId - the id of a project
+ * @param {Object} issueId - the id of the issue to check
+ * @param {string} storyId - the id of the story to check
+ * @returns {Promise<boolean>} true if is unique
+ */
 module.exports.isUniqueStoryId = (projectId, issueId, storyId) => new Promise(resolve => {
   if (!issueId) {
     return Project

@@ -1,7 +1,19 @@
+/**
+ * task repository module
+ * @module repositories/task
+ */
+
 const mongoose = require('mongoose');
 const Project = mongoose.model('Project');
 const {errorGeneralMessages} = require('../util/constants');
 
+/**
+ * add a task into a project
+ * @param {string} projectId - the id of the project to add the task in
+ * @param {Object} task - the task to add
+ * @param {string} userId - the id of the user who did the operation
+ * @returns {Promise<Object>} an object represeting the result of this operation
+ */
 module.exports.createTask = (projectId, task, userId) => new Promise((resolve, reject) => {
   if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(userId))
     return resolve({success: false, error: errorGeneralMessages.notAllowed});
@@ -20,6 +32,13 @@ module.exports.createTask = (projectId, task, userId) => new Promise((resolve, r
     .catch(err => reject(err));
 });
 
+/**
+ * updates a task in a project
+ * @param {string} projectId - the id of the project to update the task in
+ * @param {Object} task - the task to update
+ * @param {string} userId - the id of the user who did the operation
+ * @returns {Promise<Object>} an object represeting the result of this operation
+ */
 module.exports.updateTask = (projectId, task) => new Promise((resolve, reject) => {
   const errorMessage = {success: false, error: errorGeneralMessages.modificationNotAllowed};
   if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(task._id))
@@ -41,6 +60,13 @@ module.exports.updateTask = (projectId, task) => new Promise((resolve, reject) =
     .catch(err => reject(err));
 });
 
+/**
+ * updates a task's state in a project
+ * @param {string} projectId - the id of the project to update the task in
+ * @param {string} userId - the id of the user who did the operation
+ * @param {Object} task - the task to update the state
+ * @returns {Promise<Object>} an object represeting the result of this operation
+ */
 module.exports.updateTaskState = async (projectId, userId, task) => {
   const errorMessage = {success: false, error: errorGeneralMessages.modificationNotAllowed};
   if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(userId)) {
@@ -61,6 +87,13 @@ module.exports.updateTaskState = async (projectId, userId, task) => {
   return {success: true};
 };
 
+/**
+ * removes a taks from a project given its id
+ * @param {string} projectId - the id of the project to remove the taks from
+ * @param {string} taksId - the id of the taks to remove
+ * @param {string} userId - the id of the user who did the operation
+ * @returns {Promise<Object>} an object represeting the result of this operation
+ */
 module.exports.deleteTask = (projectId, taskId, userId) => new Promise((resolve, reject) => {
   const errorMessage = {success: false, errors: {error: errorGeneralMessages.deleteNotAllowed}};
   if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(taskId) || !mongoose.Types.ObjectId.isValid(userId))
@@ -80,6 +113,12 @@ module.exports.deleteTask = (projectId, taskId, userId) => new Promise((resolve,
     .catch(err => reject(err));
 });
 
+/**
+ * returns a task by its id
+ * @param {string} projectId - the id of a project
+ * @param {Object} taskId - the id of the task to check
+ * @returns {Promise<Object>} an object represeting the result of this operation
+ */
 module.exports.getTaskById = (projectId, taskId) => new Promise((resolve, reject) => {
   return Project
     .findById(projectId, 'tasks issues collaborators')
@@ -98,7 +137,6 @@ module.exports.getTaskById = (projectId, taskId) => new Promise((resolve, reject
 
         task.linkedIssues = project.issues;
         task.assignedContributors = project.collaborators;
-        console.log(task.assignedContributors);
 
         if (task)
           return resolve(task);
@@ -108,6 +146,13 @@ module.exports.getTaskById = (projectId, taskId) => new Promise((resolve, reject
     .catch(err => reject(err));
 });
 
+/**
+ * returns all the tasks of a given sprint
+ * @param {string} projectId - the id of a project
+ * @param {string} sprintId - the id of the sprint
+ * @param {string} userId - the id of the user who did the operation
+ * @returns {Promise<Object>} an object represeting the result of this operation
+ */
 module.exports.getSprintTasks = (projectId, sprintId, userId) => new Promise((resolve, reject) => {
   if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(userId))
     return resolve(undefined);
@@ -144,6 +189,12 @@ module.exports.getSprintTasks = (projectId, sprintId, userId) => new Promise((re
     .catch(err => reject(err));
 });
 
+/**
+ * returns all the tasks of a given user
+ * @param {string} projectId - the id of a project
+ * @param {string} userId - the id of the user who did the operation
+ * @returns {Promise<Object>} an object represeting the result of this operation
+ */
 module.exports.getMyTasks = (projectId, userId) => new Promise((resolve, reject) => {
   return this
     .getProjectTasks(projectId, userId)
