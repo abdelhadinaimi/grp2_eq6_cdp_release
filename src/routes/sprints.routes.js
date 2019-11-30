@@ -1,4 +1,5 @@
 const route = require("express").Router({ mergeParams: true });
+const { param } = require("express-validator");
 
 const sprintController = require("../controllers/sprint.controller");
 const {sprintValidations, validate} = require('../config/validations.config');
@@ -12,6 +13,8 @@ route.post('/add', sprintValidations, validate, sprintController.postSprint);
 route.put('/:sprintId', sprintValidations, validate, sprintController.putEdit);
 
 route.delete('/:sprintId', sprintController.deleteSprint);
+
+route.get("/:sprintId", [param("sprintId").exists().isMongoId()], sprintController.getSprint);
 
 route.get("/:sprintId?", sprintController.getProjectSprints);
 
