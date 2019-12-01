@@ -21,7 +21,7 @@
     console.log("form:" + form);
     buttons.forEach(button => button.addEventListener("click", () => {
       const taskId = button.getAttribute("_id");
-      form.setAttribute("action", "/projects/<%=project.id%>/sprints/<%=project.sprintId%>/tasks/" + taskId + "?_method=DELETE");
+      form.setAttribute("action", "/projects/<%=project.id%>/sprints/<%=project.sprint.id%>/tasks/" + taskId + "?_method=DELETE");
     }));
   });
 </script>

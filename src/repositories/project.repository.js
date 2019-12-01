@@ -21,12 +21,16 @@ module.exports.createProject = project => new Promise((resolve, reject) => {
   if (project.id)
     newProject._id = project.id;
   newProject.title = project.title;
-  console.log("due_before= " + project.dueDate);
+
   if (project.dueDate && project.dueDate.length > 0) {
     const [day, month, year] = project.dueDate.split('/');
     newProject.dueDate = new Date(year, month - 1, day);
+    newProject.dueDate.setHours(
+      newProject.dueDate.getHours() + 23,
+      newProject.dueDate.getMinutes() + 59,
+      newProject.dueDate.getSeconds() + 59);
   }
-  console.log("due_after= " + newProject.dueDate);
+
   if (project.description && project.description.length > 0) {
     newProject.description = project.description;
   }
@@ -47,9 +51,9 @@ module.exports.createProject = project => new Promise((resolve, reject) => {
 
 /**
  * updates a project
- * @param {Object} projectId - the project to update
+ * @param {Object} project - the project to update
  * @param {string} userId - the id of the user who did the operation
- * @returns {Promise<Object>} an object represeting the result of this operation
+ * @returns {Promise<Object>} an object representing the result of this operation
  */
 module.exports.updateProject = (project, userId) => new Promise((resolve, reject) => {
   if (!mongoose.Types.ObjectId.isValid(project.id) || !mongoose.Types.ObjectId.isValid(userId))
@@ -64,6 +68,10 @@ module.exports.updateProject = (project, userId) => new Promise((resolve, reject
       if (project.dueDate && project.dueDate.length > 0) {
         const [day, month, year] = project.dueDate.split('/');
         projectToUpdate.dueDate = new Date(year, month - 1, day);
+        projectToUpdate.dueDate.setHours(
+          projectToUpdate.dueDate.getHours() + 23,
+          projectToUpdate.dueDate.getMinutes() + 59,
+          projectToUpdate.dueDate.getSeconds() + 59);
       } else {
         projectToUpdate.dueDate = null;
       }
@@ -128,7 +136,8 @@ module.exports.getProjectById = (projectId, userId) => new Promise((resolve, rej
         const labels = [];
         const associateNbIssueToDate = [];
         const endDate = project.dueDate ? project.dueDate : new Date();
-        const nbDays = Math.round((endDate.getTime() - project.createdAt.getTime()) / (1000 * 60 * 60 * 24)) + 2;
+        const nbDays = Math.round((endDate.getTime() - project.createdAt.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+
         for (let i = 0; i < nbDays; i++) {
           const date = new Date(project.createdAt.valueOf());
           date.setDate(project.createdAt.getDate() + i);
@@ -136,12 +145,15 @@ module.exports.getProjectById = (projectId, userId) => new Promise((resolve, rej
           labels.push(dateStr);
           associateNbIssueToDate[dateStr] = 0;
         }
+
         let totalDifficulty = 0;
         project.issues.forEach(issue => totalDifficulty += issue.difficulty);
+
         const ratioPerDay = totalDifficulty / (nbDays - 1);
         const idealDifficulty = [];
         for (let i = totalDifficulty; i >= 0; i -= ratioPerDay)
           idealDifficulty.push(Math.round(i * 100) / 100);
+
         project.issues.forEach(issue => {
           const tasksIssue = project.tasks.filter(task =>
             !!task.linkedIssues.find(linkedIssue => linkedIssue._id.toString() === issue._id.toString()));
@@ -154,6 +166,7 @@ module.exports.getProjectById = (projectId, userId) => new Promise((resolve, rej
             associateNbIssueToDate[maxDateStr] += issue.difficulty;
           }
         });
+
         const realDifficulty = [];
         labels.forEach(label => {
           totalDifficulty -= associateNbIssueToDate[label];
