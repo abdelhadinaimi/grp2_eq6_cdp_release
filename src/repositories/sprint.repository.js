@@ -23,7 +23,7 @@ module.exports.getSprint = (projectId, userId, sprintId) => new Promise((resolve
     return resolve(undefined);
 
   return Project
-    .findOne({ _id: projectId, 'collaborators._id': userId }, 'sprints tasks projectOwner collaborators')
+    .findOne({ _id: projectId, 'collaborators._id': userId }, 'active sprints tasks projectOwner collaborators')
     .then(project => {
       if (!project) return resolve(null);
 
@@ -107,6 +107,7 @@ module.exports.getSprint = (projectId, userId, sprintId) => new Promise((resolve
 
       return resolve({
         id: projectId,
+        active: project.active,
         sprint: sprint,
         startDate: dateformat(sprint.startDate, dateFormatString),
         endDate: dateformat(sprint.endDate, dateFormatString),
@@ -135,7 +136,7 @@ module.exports.getProjectSprints = (projectId, userId) => new Promise((resolve, 
     return resolve(undefined);
 
   return Project
-    .findOne({ _id: projectId, 'collaborators._id': userId }, 'sprints tasks projectOwner collaborators')
+    .findOne({ _id: projectId, 'collaborators._id': userId }, 'active sprints tasks projectOwner collaborators')
     .then(project => {
       if (!project) return resolve(null);
 
@@ -178,6 +179,7 @@ module.exports.getProjectSprints = (projectId, userId) => new Promise((resolve, 
 
       return resolve({
         id: projectId,
+        active: project.active,
         sprints: sprints,
         projectOwner: project.projectOwner,
         collaborators: project.collaborators

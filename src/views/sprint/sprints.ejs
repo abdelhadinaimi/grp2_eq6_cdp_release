@@ -10,7 +10,7 @@
           <div class="col m4 offset-m4 center-align">
             <h5><%= pageTitle %></h5>
           </div>
-          <% if (isPo || isPm) { %>
+          <% if ((isPo || isPm) && project.active) { %>
           <div class="col m4 center-align">
             <a class="btn green modal-trigger" href="/projects/<%= project.id %>/sprints/add">Créer un
               sprint</a>
@@ -21,7 +21,7 @@
           <div class="col s4 offset-s4 center-align">
             <h5><%= pageTitle %></h5>
           </div>
-          <% if (isPo || isPm) { %>
+          <% if ((isPo || isPm) && project.active) { %>
           <div class="col offset-m1 m2 right-align">
             <a class="btn-floating green modal-trigger" href="/projects/<%= project.id %>/sprints/add">
               <i class="material-icons">add</i>
@@ -53,7 +53,7 @@
             </div>
             <div class="collapsible-body">
               <div class="row center-align hide-on-med-and-up">
-                <% if ((isPo || isPm) && sprint.edit) { %>
+                <% if ((isPo || isPm) && sprint.edit && project.active) { %>
                 <div class="col s6">
                   <a href="sprints/<%= sprint._id %>/edit" class="btn-floating white">
                     <i class="material-icons black-text">edit</i>
@@ -111,7 +111,7 @@
                     <a href="/projects/<%= project.id %>/sprints/<%= sprint._id %>" class="btn blue"
                       style="width: 100%">Consulter</a>
                   </div>
-                  <% if ((isPo || isPm) && sprint.edit) { %>
+                  <% if ((isPo || isPm) && sprint.edit && project.active) { %>
                   <div class="row">
                     <a href="/projects/<%=project.id%>/sprints/<%= sprint._id %>/edit" class="btn white black-text"
                       style="width: 100%">Modifier</a>
@@ -134,7 +134,7 @@
                       <i class="material-icons">remove_red_eye</i>
                     </a>
                   </div>
-                  <% if (sprint.edit) { %>
+                  <% if (sprint.edit && project.active) { %>
                   <div class="col s2 left-align">
                     <a class="btn-floating green" href="/projects/<%=project.id%>/sprints/<%=sprint._id%>/tasks/add">
                       <i class="material-icons">add</i>
@@ -182,7 +182,7 @@
     <div class="row">
       <h5>Il n'y a actuellement aucun sprint pour ce projet...</h5>
     </div>
-    <% if (isPo || isPm) { %>
+    <% if ((isPo || isPm) && project.active) { %>
     <div class="row">
       <h6>Essayez de créer un premier sprint !</h6>
     </div>

@@ -13,8 +13,8 @@ const dateFormatString = 'dd/mm/yyyy';
 
 /**
  * create a new project
- * @param {Object} projectId - the project to create
- * @returns {Promise<boolean|Error>} true if created, eles returns an error
+ * @param {Object} project - the project to create
+ * @returns {Promise<boolean|Error>} true if created, else returns an error
  */
 module.exports.createProject = project => new Promise((resolve, reject) => {
   const newProject = new Project();
@@ -90,7 +90,7 @@ module.exports.updateProject = (project, userId) => new Promise((resolve, reject
  * deletes a project if the userId is the project owner
  * @param {string} projectId - the id of the project to delete
  * @param {string} userId - the id of the user who did the operation
- * @returns {Promise<Object>} an object represeting the result of this operation
+ * @returns {Promise<Object>} an object representing the result of this operation
  */
 module.exports.deleteProject = (projectId, userId) => new Promise((resolve, reject) => {
   if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(userId))
@@ -109,10 +109,34 @@ module.exports.deleteProject = (projectId, userId) => new Promise((resolve, reje
 });
 
 /**
+ * closes a project if the userId is the project owner
+ * @param {string} projectId - the id of the project to delete
+ * @param {string} userId - the id of the user who did the operation
+ * @returns {Promise<Object>} an object representing the result of this operation
+ */
+module.exports.closeProject = (projectId, userId) => new Promise((resolve, reject) => {
+  if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(userId))
+    return resolve({success: false, errors: {error: errorGeneralMessages.modificationNotAllowed}});
+
+  return Project
+    .findOne({_id: projectId, projectOwner: userId})
+    .then(project => {
+      if (!project)
+        return resolve({success: false, errors: {error: errorGeneralMessages.modificationNotAllowed}});
+
+      project.active = false;
+
+      return project.save();
+    })
+    .then(() => resolve({success: true}))
+    .catch(err => reject(err));
+});
+
+/**
  * returns the project if the userId is a collaborator in that project
  * @param {string} projectId - the id a project
  * @param {string} userId - the id of the user who did the operation
- * @returns {Promise<Object>} an object represeting the result of this operation
+ * @returns {Promise<Object>} an object representing the result of this operation
  */
 module.exports.getProjectById = (projectId, userId) => new Promise((resolve, reject) => {
   if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(userId))
@@ -129,7 +153,8 @@ module.exports.getProjectById = (projectId, userId) => new Promise((resolve, rej
         id: projectId,
         title: project.title,
         projectOwner: project.projectOwner,
-        collaborators: project.collaborators
+        collaborators: project.collaborators,
+        active: project.active
       };
 
       if (project.issues.length !== 0) {
@@ -206,7 +231,7 @@ module.exports.getProjectById = (projectId, userId) => new Promise((resolve, rej
 /**
  * returns all the projects which the userId is a collaborator in
  * @param {string} contributorId - the id of the user who did the operation
- * @returns {Promise<Object>} an object represeting the result of this operation
+ * @returns {Promise<Object>} an object representing the result of this operation
  */
 module.exports.getProjectsByContributorId = contributorId => new Promise((resolve, reject) => {
   return Project
@@ -217,7 +242,7 @@ module.exports.getProjectsByContributorId = contributorId => new Promise((resolv
           activated: true
         }
       }
-    }, 'title description createdAt dueDate collaborators projectOwner tasks')
+    })
     .then(projects => {
       projects = projects.map(project => {
         const newProject = {id: project._id, title: project.title};
@@ -227,7 +252,7 @@ module.exports.getProjectsByContributorId = contributorId => new Promise((resolv
           newProject.description = project.description;
         if (project.dueDate)
           newProject.endDate = dateformat(project.dueDate, dateFormatString);
-        if (project.projectOwner.toString() === contributorId.toString())
+        if (project.projectOwner.toString() === contributorId.toString() && project.active)
           newProject.deleteEdit = true;
         if (project.tasks.length !== 0) {
           let tasksDone = 0;
@@ -283,7 +308,7 @@ module.exports.hasAuthorizationOnProject = (projectId, contributorId, authorizat
  * @param {string} projectId - the id of a project
  * @param {string} contributorId - the user to add
  * @param {string} addId - the id of the user who did the operation
- * @returns {Promise<Object>} an object represeting the result of this operation
+ * @returns {Promise<Object>} an object representing the result of this operation
  */
 module.exports.addContributorToProject = (projectId, contributorId, addId) => new Promise((resolve, reject) => {
   Project
@@ -308,7 +333,7 @@ module.exports.addContributorToProject = (projectId, contributorId, addId) => ne
  * @param {string} projectId - the id of a project
  * @param {string} userId - the user to remove
  * @param {string} remId - the id of the user who did the operation
- * @returns {Promise<boolean|Error>} an object represeting the result of this operation
+ * @returns {Promise<boolean|Error>} an object representing the result of this operation
  */
 module.exports.removeContributorToProject = (projectId, userId, remId) => new Promise((resolve, reject) => {
   Project
@@ -328,7 +353,7 @@ module.exports.removeContributorToProject = (projectId, userId, remId) => new Pr
  * accept an invitation to a project
  * @param {string} projectId - the id of a project
  * @param {string} contributorId - the user who is accepting the invitaition
- * @returns {Promise<boolean|Error>} an object represeting the result of this operation
+ * @returns {Promise<boolean|Error>} an object representing the result of this operation
  */
 module.exports.acceptInvitation = (projectId, contributorId) => new Promise((resolve, reject) => {
   Project
@@ -351,7 +376,7 @@ module.exports.acceptInvitation = (projectId, contributorId) => new Promise((res
  * @param {string} projectId - the id of a project
  * @param {string} userId - the id of the user who did the operation
  * @param {object} user - the user to update
- * @returns {Promise<Object>} an object represeting the result of this operation
+ * @returns {Promise<Object>} an object representing the result of this operation
  */
 module.exports.updateUserRole = (projectId, userId, user) => new Promise((resolve, reject) => {
   const errorMessage = {success: false, error: errorGeneralMessages.modificationNotAllowed};

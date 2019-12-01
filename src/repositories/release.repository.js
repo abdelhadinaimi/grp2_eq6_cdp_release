@@ -21,12 +21,13 @@ module.exports.getProjectReleases = (projectId, userId) => new Promise((resolve,
     return resolve(undefined);
 
   return Project
-    .findOne({_id: projectId, 'collaborators._id': userId}, 'title releases projectOwner collaborators')
+    .findOne({_id: projectId, 'collaborators._id': userId}, 'title active releases projectOwner collaborators')
     .then(project => {
       if (!project) return resolve(undefined);
       project = project.toJSON();
       const proj = {
         id: projectId,
+        active: project.active,
         title: project.title,
         releases: project.releases,
         projectOwner: project.projectOwner,

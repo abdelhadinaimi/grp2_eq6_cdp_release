@@ -104,7 +104,7 @@ module.exports.getProjectIssues = (projectId, userId) => new Promise((resolve, r
     return resolve(undefined);
 
   return Project
-    .findOne({_id: projectId, 'collaborators._id': userId}, 'issues tasks projectOwner collaborators')
+    .findOne({_id: projectId, 'collaborators._id': userId}, 'active issues tasks projectOwner collaborators')
     .then(project => {
       if (!project) return resolve(undefined);
 
@@ -132,10 +132,11 @@ module.exports.getProjectIssues = (projectId, userId) => new Promise((resolve, r
       });
 
       const proj = {
-          id: projectId,
-          issues: project.issues,
-          projectOwner: project.projectOwner,
-          collaborators: project.collaborators
+        id: projectId,
+        active: project.active,
+        issues: project.issues,
+        projectOwner: project.projectOwner,
+        collaborators: project.collaborators
       };
 
       return resolve(proj);

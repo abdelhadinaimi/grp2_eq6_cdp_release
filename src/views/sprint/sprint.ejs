@@ -8,27 +8,27 @@
       <div class="col s12 m10 offset-m1 l8 offset-l2">
         <div class="row valign-wrapper hide-on-med-and-down">
           <div class="col m4 offset-m4 center-align">
-            <h5><%= values.sprint.id %></h5>
+            <h5><%= project.sprint.id %></h5>
           </div>
-          <% if (isPo || isPm) { %>
+          <% if ((isPo || isPm) && project.active) { %>
           <div class="col m4 center-align">
             <a class="btn green modal-trigger"
-              href="/projects/<%= project.id %>/sprints/<%= values.sprint._id %>/edit">Modifier le Sprint</a>
+              href="/projects/<%= project.id %>/sprints/<%= project.sprint._id %>/edit">Modifier le Sprint</a>
           </div>
           <% } %>
           <div class="col m4 center-align">
             <a class="btn white black-text"
-              href="/projects/<%= project.id %>/sprints/<%=project.sprintId%>#<%=project.sprintId%>">Retour</a>
+              href="/projects/<%= project.id %>/sprints/<%=project.sprint._id%>#<%=project.sprint._id%>">Retour</a>
           </div>
         </div>
         <div class="row valign-wrapper hide-on-large-only">
           <div class="col s12 center-align">
-            <h5><%= values.sprint.id %></h5>
+            <h5><%= project.sprint.id %></h5>
           </div>
-          <% if (isPo || isPm) { %>
+          <% if ((isPo || isPm) && project.active) { %>
           <div class="col m4 center-align">
             <a class="btn green modal-trigger"
-              href="/projects/<%= project.id %>/sprints/<%= values.sprint._id %>/edit">Modifier</a>
+              href="/projects/<%= project.id %>/sprints/<%= project.sprint._id %>/edit">Modifier</a>
           </div>
           <% } %>
           <div class="col m4 center-align">
@@ -40,20 +40,20 @@
     </div>
     <div class="row">
       <div class="col s6 center-align">
-        <h6><b>Début du Sprint : </b><%= values.startDate %></h6>
+        <h6><b>Début du Sprint : </b><%= project.startDate %></h6>
       </div>
       <div class="col s6 center-align">
-        <h6><b>Fin du Sprint : </b><%= values.endDate %></h6>
+        <h6><b>Fin du Sprint : </b><%= project.endDate %></h6>
       </div>
       <div class="row">
         <div class="col s12 l5 offset-l1">
-          <% if (values.sprint.description) { %>
+          <% if (project.sprint.description) { %>
           <h4>Description</h4>
-          <blockquote><%- values.sprint.description.replace(/\n/g, '<br/>') %></blockquote>
+          <blockquote><%- project.sprint.description.replace(/\n/g, '<br/>') %></blockquote>
           <% } %>
         </div>
         <div class="col s12 l5">
-          <% if (values.burndown) { %>
+          <% if (project.burndown) { %>
           <canvas id="burnDownChart"></canvas>
           <% } %>
         </div>
@@ -67,20 +67,20 @@
       <h5>Tâches</h5>
     </div>
     <div class="col offset-s1 s2 right-align">
-      <a class="btn-floating blue" href="/projects/<%=project.id%>/sprints/<%=values.sprint._id%>/tasks">
+      <a class="btn-floating blue" href="/projects/<%=project.id%>/sprints/<%=project.sprint._id%>/tasks">
         <i class="material-icons">remove_red_eye</i>
       </a>
     </div>
-    <% if (values.edit) { %>
+    <% if (project.edit && project.active) { %>
     <div class="col s2 left-align">
-      <a class="btn-floating green" href="/projects/<%=project.id%>/sprints/<%=values.sprint._id%>/tasks/add">
+      <a class="btn-floating green" href="/projects/<%=project.id%>/sprints/<%=project.sprint._id%>/tasks/add">
         <i class="material-icons">add</i>
       </a>
     </div>
     <% } %>
   </div>
   <div class="col s10 offset-s1 center-align">
-    <% if (values.tasks.length !== 0) { %>
+    <% if (project.tasks.length !== 0) { %>
     <table class="highlight responsive-table centered">
       <thead>
         <tr>
@@ -91,7 +91,7 @@
       </thead>
 
       <tbody>
-        <% values.tasks.forEach(task => { %>
+        <% project.tasks.forEach(task => { %>
         <tr>
           <td class="truncate"><%=task.description%></td>
           <td><%=task.cost%></td>
@@ -110,11 +110,11 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
 <script>
   $(document).ready(() => {
-    <% if (values.burndown) { %>
+    <% if (project.burndown) { %>
       var ctx = document.getElementById('burnDownChart').getContext('2d');
       new Chart(ctx, {
         type: 'line',
-        data: <%- values.burndown %>,
+        data: <%- project.burndown %>,
         options: {
           elements: {
             line: {

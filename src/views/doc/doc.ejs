@@ -9,7 +9,7 @@
                     <div class="col m4 offset-m4 center-align">
                         <h5><%= pageTitle %></h5>
                     </div>
-                    <% if (isPo || isPm) { %>
+                    <% if ((isPo || isPm) && project.active) { %>
                         <div class="col m4 center-align">
                             <a class="btn green modal-trigger" href="#addDocument">Ajouter Documentation</a>
                         </div>
@@ -141,7 +141,7 @@
 <%- include('../partials/scripts.ejs') %>
 <%- include('../partials/toast.ejs') %>
 <%- include('../partials/menu-connected-script.ejs') %>
-<% if (isPo || isPm) { %>
+<% if ((isPo || isPm) && project.active) { %>
 <%- include('add.ejs') %>
 <% } %>
 
