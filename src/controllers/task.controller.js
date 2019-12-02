@@ -6,73 +6,6 @@ const titlesTask = require('../util/constants').global.titles.task;
 const {routes} = require('../util/constants').global;
 const viewsTask = require('../util/constants').global.views.task;
 
-module.exports.getSprintTasks = (req, res) => {
-  const userId = req.session.user._id;
-  const {projectId} = req.params;
-  const {sprintId} = req.params;
-  const {taskId} = req.params;
-
-  return taskRepo
-    .getSprintTasks(projectId, sprintId, userId)
-    .then(project => {
-      if (project) {
-        const isPo = (project.projectOwner.toString() === userId.toString());
-        const isPm = (project.collaborators.findIndex(collaborator =>
-          (collaborator._id._id.toString() === userId.toString()) && collaborator.userType === "pm") >= 0);
-
-        return res.render(viewsTask.tasks, {
-          pageTitle: titlesTask.tasks,
-          activeTask: taskId,
-          url: 'spr',
-          isPo: isPo,
-          isPm: isPm,
-          mine: false,
-          project
-        });
-      } else {
-        req.flash("toast", errorGeneralMessages.accessNotAuthorized);
-        return res.status(403).redirect(routes.index);
-      }
-    })
-    .catch(err => {
-      console.log(err);
-      return res.status(500).redirect(routes.error["500"]);
-    });
-};
-
-module.exports.getMyTasks = (req, res) => {
-  const {projectId} = req.params;
-  const {sprintId} = req.params;
-  const userId = req.session.user._id;
-
-  return taskRepo
-    .getMyTasks(projectId, sprintId, userId)
-    .then(project => {
-      if (!project) {
-        req.flash("toast", errorGeneralMessages.accessNotAuthorized);
-        return res.status(403).redirect(routes.task.tasks(projectId));
-      }
-
-      const isPo = (project.projectOwner.toString() === userId.toString());
-      const isPm = (project.collaborators.findIndex(collaborator =>
-        (collaborator._id.toString() === userId.toString() && collaborator.userType === "pm")) >= 0);
-
-      return res.render(viewsTask.tasks, {
-        pageTitle: titlesTask.mine,
-        url: 'tas',
-        activeTask: null,
-        isPo: isPo,
-        isPm: isPm,
-        mine: true,
-        project
-      });
-    })
-    .catch(err => {
-      console.log(err);
-      return res.status(500).redirect(routes.error["500"]);
-    });
-};
-
 module.exports.getAdd = (req, res) => {
   const {projectId} = req.params;
   const {sprintId} = req.params;
@@ -171,7 +104,7 @@ module.exports.postTask = (req, res) => {
       }
 
       req.flash("toast", "Tâche créée avec succès !");
-      return res.status(201).redirect(routes.task.tasks(req.params.projectId, req.params.sprintId));
+      return res.status(201).redirect(routes.sprint.sprint(req.params.projectId, req.params.sprintId));
     })
     .catch(err => {
       console.log(err);
@@ -210,11 +143,11 @@ module.exports.putEdit = (req, res) => {
     .then(result => {
       if (!result.success) {
         req.flash("toast", result.error);
-        return res.status(403).redirect(routes.task.tasks(req.params.projectId, req.params.sprintId));
+        return res.status(403).redirect(routes.task.task(projectId, req.params.sprintId, taskId));
       }
 
       req.flash("toast", "Tâche modifiée avec succès !");
-      return res.status(201).redirect(routes.task.tasks(req.params.projectId, req.params.sprintId));
+      return res.status(201).redirect(routes.task.task(projectId, req.params.sprintId, taskId));
     })
     .catch(err => {
       console.log(err);

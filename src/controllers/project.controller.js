@@ -158,19 +158,22 @@ module.exports.deleteProject = (req, res) => {
     });
 };
 
-module.exports.putClose = (req, res) => {
+module.exports.putCloseOpen = (req, res) => {
   const {projectId} = req.params;
   const userId = req.session.user._id;
 
   return projectRepo
-    .closeProject(projectId, userId)
+    .closeOrOpenProject(projectId, userId)
     .then(result => {
       if (!result.success) {
         req.flash("toast", result.errors.error);
         return res.status(403).redirect(routes.index);
       }
 
-      req.flash("toast", "Projet terminé !");
+      if (result.active)
+        req.flash("toast", "Projet actif !");
+      else
+        req.flash("toast", "Projet terminé !");
       return res.status(200).redirect(routes.project.project(projectId));
     })
     .catch(err => {

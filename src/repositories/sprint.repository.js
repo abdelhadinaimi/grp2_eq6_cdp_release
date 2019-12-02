@@ -23,19 +23,40 @@ module.exports.getSprint = (projectId, userId, sprintId) => new Promise((resolve
     return resolve(undefined);
 
   return Project
-    .findOne({ _id: projectId, 'collaborators._id': userId }, 'active sprints tasks projectOwner collaborators')
+    .findOne({ _id: projectId, 'collaborators._id': userId }, 'active issues sprints tasks projectOwner collaborators')
+    .populate('collaborators._id')
     .then(project => {
       if (!project) return resolve(null);
 
       let sprint = project.sprints.find(sprint => sprint._id.toString() === sprintId.toString());
       if (!sprint) return resolve(null);
 
+      const today = new Date();
+      sprint.active = (sprint.startDate <= today && today <= sprint.endDate);
+
       const tasks = [];
       let cost = 0, tasksDone = 0;
       if (project.tasks.length > 0) {
         project.tasks.forEach(task => {
           if (task.linkedSprint.toString() === sprint._id.toString()) {
+            task.issues = [];
+            task.linkedIssues.forEach(linkedIssue => {
+              const issue = project.issues.find(issue => issue._id.toString() === linkedIssue.toString());
+              if (issue)
+                task.issues.push(issue);
+            });
+
+            task.contributors = [];
+            task.assignedContributors.forEach(assContr => {
+              const contributor = project.collaborators.find(collaborator => collaborator._id._id.toString() === assContr.toString());
+              if (contributor)
+                task.contributors.push(contributor);
+            });
+
+            task.assigned = !!task.assignedContributors.find(coll => coll._id._id.toString() === userId.toString());
+
             tasks.push(task);
+
             cost += task.cost;
             if (task.state === "DONE")
               tasksDone++;
@@ -43,7 +64,6 @@ module.exports.getSprint = (projectId, userId, sprintId) => new Promise((resolve
         });
       }
 
-      const today = new Date();
       let completion = null;
       if (sprint.startDate <= today)
         completion = tasks.length !== 0 ? Math.round((tasksDone / tasks.length) * 100) : 0;

@@ -10,6 +10,7 @@ module.exports.getSprint = (req, res) => {
   const userId = req.session.user._id;
   const { projectId } = req.params;
   const { sprintId } = req.params;
+  const {taskId} = req.params;
 
   return sprintRepo
     .getSprint(projectId, userId, sprintId)
@@ -27,6 +28,7 @@ module.exports.getSprint = (req, res) => {
         pageTitle: titlesSprint.sprint,
         errors: [],
         url: 'spr',
+        activeTask: taskId,
         isPo,
         isPm,
         project

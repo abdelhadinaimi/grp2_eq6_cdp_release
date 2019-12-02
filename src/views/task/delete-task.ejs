@@ -18,7 +18,6 @@
 
     const form = document.querySelector(".deleteForm");
     const buttons = document.querySelectorAll(".deleteButton");
-    console.log("form:" + form);
     buttons.forEach(button => button.addEventListener("click", () => {
       const taskId = button.getAttribute("_id");
       form.setAttribute("action", "/projects/<%=project.id%>/sprints/<%=project.sprint.id%>/tasks/" + taskId + "?_method=DELETE");

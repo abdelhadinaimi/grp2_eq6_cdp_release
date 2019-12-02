@@ -114,21 +114,23 @@ module.exports.deleteProject = (projectId, userId) => new Promise((resolve, reje
  * @param {string} userId - the id of the user who did the operation
  * @returns {Promise<Object>} an object representing the result of this operation
  */
-module.exports.closeProject = (projectId, userId) => new Promise((resolve, reject) => {
+module.exports.closeOrOpenProject = (projectId, userId) => new Promise((resolve, reject) => {
   if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(userId))
     return resolve({success: false, errors: {error: errorGeneralMessages.modificationNotAllowed}});
 
+  let result;
   return Project
     .findOne({_id: projectId, projectOwner: userId})
     .then(project => {
       if (!project)
         return resolve({success: false, errors: {error: errorGeneralMessages.modificationNotAllowed}});
 
-      project.active = false;
+      project.active = !project.active;
+      result = project.active;
 
       return project.save();
     })
-    .then(() => resolve({success: true}))
+    .then(() => resolve({success: true, active: result}))
     .catch(err => reject(err));
 });
 
