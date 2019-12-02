@@ -91,6 +91,7 @@ const HOST_SRV = process.env.HOST_SRV || "localhost";
 const PORT_SRV = process.env.PORT_SRV || "4444";
 const rootUrl = "http://api:8080";
 const servUrl = `http://${HOST_SRV}:${PORT_SRV}/wd/hub`;
+console.log(servUrl);
 
 describe("User Stories",  function () {
   this.timeout(10000);
