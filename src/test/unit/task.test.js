@@ -40,7 +40,9 @@ const buildTask = task => Object.assign({},{
     testLink: "testLink"
 }, task);
 
-describe('UT Task Repository', () => {
+describe('UT Task Repository', function () {
+  this.timeout(10000);
+
   before((done) => {
     buildConnection('unit-test')
       .then(() => done())

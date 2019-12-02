@@ -12,7 +12,9 @@ const project1Id = '5dbccabe7d93dd0015ea3c21';
 const project2Id = '5dbccabe7d93dd0015ea3c22';
 const fakeProjectId = '5dbccabe7d93dd0015eac666';
 
-describe('UT Project Repository', () => {
+describe('UT Project Repository', function () {
+  this.timeout(10000);
+
   before((done) => {
     buildConnection('unit-test')
       .then(() => {

@@ -20,7 +20,9 @@ const user2 = {
   password: "Password2"
 };
 
-describe('UT User Repository', () => {
+describe('UT User Repository', function () {
+  this.timeout(10000);
+
   before((done) => {
     buildConnection('unit-test')
       .then(() => done())

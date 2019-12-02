@@ -42,7 +42,9 @@ const buildIssue = issue => Object.assign({},{
   testLink: "testLink"
 }, issue);
 
-describe('UT Issue Repository', () => {
+describe('UT Issue Repository', function () {
+  this.timeout(10000);
+
   before((done) => {
     buildConnection('unit-test')
       .then(() => done())
