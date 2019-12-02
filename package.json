@@ -10,7 +10,7 @@
     "test": "mocha src/test/unit",
     "selenium": "mocha src/test/selenium",
     "lint": "eslint src/ -c src/.eslintrc.js",
-    "generate-doc": "jsdoc src/**/*.js README.md -d doc/v0.3"
+    "generate-doc": "jsdoc src/**/*.js doc/DOC.md -d doc/v0.3"
   },
   "repository": {
     "type": "git",
