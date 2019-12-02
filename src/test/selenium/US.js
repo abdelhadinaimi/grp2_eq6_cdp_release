@@ -8,8 +8,6 @@ const Project = mongoose.model("Project");
 
 const {errorUserMessages} = require("../../util/constants");
 
-const rootUrl = "http://localhost:8080";
-
 const user = {
   username: "selenium",
   usernameUpdate: "seleniumUpd",
@@ -89,12 +87,17 @@ const attributes = {
   value: "value"
 };
 
+const HOST_SRV = process.env.HOST_SRV || "localhost";
+const PORT_SRV = process.env.PORT_SRV || "4444";
+const rootUrl = "http://api:8080";
+const servUrl = `http://${HOST_SRV}:${PORT_SRV}/wd/hub`;
+
 describe("User Stories",  function () {
   this.timeout(10000);
   let driver;
 
   before(async function() {
-    driver = await new Builder().forBrowser("chrome").build();
+    driver = await new Builder().forBrowser("chrome").usingServer(servUrl).build();
     driver.manage().setTimeouts( { implicit: 10000, pageLoad: 10000, script: 10000 } );
 
     await buildConnection('cdp');
@@ -107,12 +110,10 @@ describe("User Stories",  function () {
     it("New user", async function() {
       await driver.get(url);
 
-      await driver.wait(until.elementIsVisible(driver.findElement(By.id(fields.user.username))), 10000);
       await driver.findElement(By.id(fields.user.username)).sendKeys(user.username);
       await driver.findElement(By.id(fields.user.email)).sendKeys(user.email);
       await driver.findElement(By.id(fields.user.password)).sendKeys(user.password);
       await driver.findElement(By.id(fields.user.confirmPassword)).sendKeys(user.password, Key.ENTER);
-      await driver.wait(until.elementIsVisible(driver.findElement(By.css(cssSelectors.toast))), 10000);
       const toast = await driver.findElement(By.css(cssSelectors.toast));
       const text = await toast.getText();
 
@@ -120,9 +121,8 @@ describe("User Stories",  function () {
     });
 
     it("New user with same credentials as first", async () => {
-      driver.get(url);
+      await driver.get(url);
 
-      await driver.wait(until.elementIsVisible(driver.findElement(By.id(fields.user.username))), 10000);
       await driver.findElement(By.id(fields.user.username)).sendKeys(user.username);
       await driver.findElement(By.id(fields.user.email)).sendKeys(user.email);
       await driver.findElement(By.id(fields.user.password)).sendKeys(user.password);
@@ -134,7 +134,7 @@ describe("User Stories",  function () {
     });
 
     it("New user with non-conform username & password and not same password confirmation", async () => {
-      driver.get(url);
+      await driver.get(url);
 
       await driver.findElement(By.id(fields.user.username)).sendKeys("aze");
       await driver.findElement(By.id(fields.user.email)).sendKeys(user.email);
@@ -153,11 +153,11 @@ describe("User Stories",  function () {
     });
   });
 
-  /*describe("US#02 Login", () => {
+  describe("US#02 Login", () => {
     const url = rootUrl + "/login";
 
     it("Login with non-existing email", async () => {
-      driver.get(url);
+      await driver.get(url);
 
       await driver.findElement(By.id(fields.user.email)).sendKeys("notanemail@sel.fr");
       await driver.findElement(By.id(fields.user.password)).sendKeys(user.password, Key.ENTER);
@@ -168,7 +168,7 @@ describe("User Stories",  function () {
     });
 
     it("Login with bad password", async () => {
-      driver.get(url);
+      await driver.get(url);
 
       await driver.findElement(By.id(fields.user.email)).sendKeys(user.email);
       await driver.findElement(By.id(fields.user.password)).sendKeys("Bad Passw0rd", Key.ENTER);
@@ -179,7 +179,7 @@ describe("User Stories",  function () {
     });
 
     it("Login success", async () => {
-      driver.get(url);
+      await driver.get(url);
 
       await driver.findElement(By.id(fields.user.email)).sendKeys(user.email);
       await driver.findElement(By.id(fields.user.password)).sendKeys(user.password, Key.ENTER);
@@ -196,7 +196,7 @@ describe("User Stories",  function () {
     const url = rootUrl + "/account";
 
     it("Update username & password", async () => {
-      driver.get(url);
+      await driver.get(url);
 
       await driver.findElement(By.id(fields.user.username)).clear();
       await driver.findElement(By.id(fields.user.username)).sendKeys(user.usernameUpdate);
@@ -212,7 +212,7 @@ describe("User Stories",  function () {
     });
 
     it("Update with invalid password and not same confirm password", async () => {
-      driver.get(url);
+      await driver.get(url);
 
       await driver.findElement(By.id(fields.user.password)).sendKeys("azertyuiop");
       await driver.findElement(By.id(fields.user.confirmPassword)).sendKeys("Bad Passw0rd", Key.ENTER);
@@ -232,7 +232,7 @@ describe("User Stories",  function () {
     const url = rootUrl + "/projects/add";
 
     it("First Project", async () => {
-      driver.get(url);
+      await driver.get(url);
 
       await driver.findElement(By.id(fields.project.title)).sendKeys(firstProject.title);
       await driver.findElement(By.id(fields.project.dueDate)).sendKeys(firstProject.dueDate);
@@ -248,7 +248,7 @@ describe("User Stories",  function () {
     });
 
     it("Project without due date & description", async () => {
-      driver.get(url);
+      await driver.get(url);
 
       await driver.findElement(By.id(fields.project.title)).sendKeys(secondProject.title);
       await driver.findElement(By.css(cssSelectors.greenText)).click();
@@ -261,7 +261,7 @@ describe("User Stories",  function () {
 
   describe("US#05 Home page", () => {
     it("See my projects on homepage", async () => {
-      driver.get(rootUrl);
+      await driver.get(rootUrl);
 
       const div = await driver.findElement(By.css("div.collapsible-header.center-align"));
       const text = await div.getText();
@@ -272,12 +272,10 @@ describe("User Stories",  function () {
 
   describe("US#07 Consult Project", () => {
     it("See a project homepage", async () => {
-      driver.get(rootUrl);
+      await driver.get(rootUrl);
 
       await driver.findElement(By.css("div.collapsible-header.center-align")).click();
-      await driver.wait(until.elementIsVisible(driver.findElement(By.css(".active .row:nth-child(1) > .btn"))), 3000);
       await driver.findElement(By.css(".active .row:nth-child(1) > .btn")).click();
-      await driver.wait(until.elementIsVisible(driver.findElement(By.css("h1.left-align.white-text"))), 3000);
       const h1 = await driver.findElement(By.css("h1.left-align.white-text"));
       const text = await h1.getText();
 
@@ -287,7 +285,7 @@ describe("User Stories",  function () {
 
   describe("US#08 Update Project", () => {
     it("Update first project", async () => {
-      driver.get(rootUrl + "/projects/" + firstProject.id + "/edit");
+      await driver.get(rootUrl + "/projects/" + firstProject.id + "/edit");
 
       await driver.findElement(By.id(fields.project.title)).clear();
       await driver.findElement(By.id(fields.project.title)).sendKeys(firstProject.titleUpdate, Key.ENTER);
@@ -303,12 +301,10 @@ describe("User Stories",  function () {
 
   describe("US#09 Delete Project", () => {
     it("Delete second Project", async () => {
-      driver.get(rootUrl);
+      await driver.get(rootUrl);
 
       await driver.findElement(By.css("li:nth-child(2) > .collapsible-header")).click();
-      await driver.wait(until.elementIsVisible(driver.findElement(By.css(".active .row:nth-child(3) > .btn"))), 3000);
       await driver.findElement(By.css(".active .row:nth-child(3) > .btn")).click();
-      await driver.wait(until.elementIsVisible(driver.findElement(By.css(".btn-flat:nth-child(2)"))), 3000);
       await driver.findElement(By.css(".btn-flat:nth-child(2)")).click();
       const toast = await driver.findElement(By.css(cssSelectors.toast));
       const text = await toast.getText();
@@ -321,10 +317,9 @@ describe("User Stories",  function () {
     const url = (projectId) => rootUrl + "/projects/" + projectId;
 
     it("Invite an existing contributor", async () => {
-      driver.get(url(firstProject.id));
+      await driver.get(url(firstProject.id));
 
       await driver.findElement(By.css(cssSelectors.addContributor)).click();
-      await driver.wait(until.elementIsVisible(driver.findElement(By.id(fields.project.contributor))), 3000);
       await driver.findElement(By.id(fields.project.contributor)).sendKeys(user.email);
       await driver.findElement(By.id(fields.project.inviteButton)).click();
       const toast = await driver.findElement(By.css(cssSelectors.toast));
@@ -334,10 +329,9 @@ describe("User Stories",  function () {
     });
 
     it("Invite a non-existing user", async () => {
-      driver.get(url(firstProject.id));
+      await driver.get(url(firstProject.id));
 
       await driver.findElement(By.css(cssSelectors.addContributor)).click();
-      await driver.wait(until.elementIsVisible(driver.findElement(By.id(fields.project.contributor))), 3000);
       await driver.findElement(By.id(fields.project.contributor)).sendKeys("nonexistinguser@mail.fr");
       await driver.findElement(By.id(fields.project.inviteButton)).click();
       const toast = await driver.findElement(By.css(cssSelectors.toast));
@@ -347,10 +341,9 @@ describe("User Stories",  function () {
     });
 
     it("Invite a new contributor", async () => {
-      driver.get(url(firstProject.id));
+      await driver.get(url(firstProject.id));
 
       await driver.findElement(By.css(cssSelectors.addContributor)).click();
-      await driver.wait(until.elementIsVisible(driver.findElement(By.id(fields.project.contributor))), 3000);
       await driver.findElement(By.id(fields.project.contributor)).sendKeys(user2.email);
       await driver.findElement(By.id(fields.project.inviteButton)).click();
       const toast = await driver.findElement(By.css(cssSelectors.toast));
@@ -366,10 +359,9 @@ describe("User Stories",  function () {
 
   describe("US#11 Role Contributor", () => {
     it("Assign Project Manager Role", async () => {
-      driver.get(rootUrl + "/projects/" + firstProject.id);
+      await driver.get(rootUrl + "/projects/" + firstProject.id);
 
       await driver.findElement(By.css("input.select-dropdown")).click();
-      await driver.wait(until.elementIsVisible(driver.findElement(By.css("li > span"))), 3000);
       await driver.findElement(By.css("li > span")).click();
       const toast = await driver.findElement(By.css(cssSelectors.toast));
       const text = await toast.getText();
@@ -380,10 +372,9 @@ describe("User Stories",  function () {
 
   describe("US#12 Delete Contributor", () => {
     it("Delete a contributor", async () => {
-      driver.get(rootUrl + "/projects/" + firstProject.id);
+      await driver.get(rootUrl + "/projects/" + firstProject.id);
 
       await driver.findElement(By.css("td > .deleteButton")).click();
-      await driver.wait(until.elementIsVisible(driver.findElement(By.css("form.deleteContrForm > div.modal-footer > button.red-text"))), 3000);
       await driver.findElement(By.css("form.deleteContrForm > div.modal-footer > button.red-text")).click();
       const toast = await driver.findElement(By.css(cssSelectors.toast));
       const text = await toast.getText();
@@ -411,7 +402,7 @@ describe("User Stories",  function () {
 
     it("First issue", async () => {
     });
-  });*/
+  });
 
   describe("US#16 Update Issue", () => {
 
