@@ -15,7 +15,7 @@ Si vous ne disposez pas de cet outil sur votre machine, vous trouverez ci-dessou
 
 ## Installation de SixCess
 
-Une fois Docker installé, téléchargez le projet [en suivant ce lien](https://github.com/Version-Project/grp2_eq6_cdp_release/archive/master.zip) et décompressez l'archive.
+Une fois Docker installé, téléchargez le projet [en suivant ce lien](https://github.com/abdelhadinaimi/grp2_eq6_cdp_release/archive/master.zip) et décompressez l'archive.
 
 Rendez-vous dans le nouveau dossier ainsi obtenu (``grp2_eq6_cdp_release/``), puis lancez la commande : 
 ``docker-compose up``
