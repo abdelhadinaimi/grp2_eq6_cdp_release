@@ -320,7 +320,7 @@
 
         
 <div class="param-desc">
-    an object represeting the result of this operation
+    an object representing the result of this operation
 </div>
 
 
@@ -349,7 +349,7 @@
     
 
     
-    <h4 class="name" id=".deleteTask"><span class="type-signature">(static) </span>deleteTask<span class="signature">(projectId, taksId, userId)</span><span class="type-signature"> &rarr; {Promise.&lt;Object>}</span></h4>
+    <h4 class="name" id=".deleteTask"><span class="type-signature">(static) </span>deleteTask<span class="signature">(projectId, taskId, userId)</span><span class="type-signature"> &rarr; {Promise.&lt;Object>}</span></h4>
     
 
     
@@ -357,7 +357,7 @@
 
 
 <div class="description">
-    removes a taks from a project given its id
+    removes a task from a project given its id
 </div>
 
 
@@ -409,14 +409,14 @@
 
             
 
-            <td class="description last">the id of the project to remove the taks from</td>
+            <td class="description last">the id of the project to remove the task from</td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>taksId</code></td>
+                <td class="name"><code>taskId</code></td>
             
 
             <td class="type">
@@ -432,7 +432,7 @@
 
             
 
-            <td class="description last">the id of the taks to remove</td>
+            <td class="description last">the id of the task to remove</td>
         </tr>
 
     
@@ -496,7 +496,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="repositories_task.repository.js.html">repositories/task.repository.js</a>, <a href="repositories_task.repository.js.html#line97">line 97</a>
+        <a href="repositories_task.repository.js.html">repositories/task.repository.js</a>, <a href="repositories_task.repository.js.html#line96">line 96</a>
     </li></ul></dd>
     
 
@@ -525,7 +525,7 @@
 
         
 <div class="param-desc">
-    an object represeting the result of this operation
+    an object representing the result of this operation
 </div>
 
 
@@ -554,7 +554,7 @@
     
 
     
-    <h4 class="name" id=".getMyTasks"><span class="type-signature">(static) </span>getMyTasks<span class="signature">(projectId, userId)</span><span class="type-signature"> &rarr; {Promise.&lt;Object>}</span></h4>
+    <h4 class="name" id=".getMyTasks"><span class="type-signature">(static) </span>getMyTasks<span class="signature">(projectId, sprintId, userId)</span><span class="type-signature"> &rarr; {Promise.&lt;Object>}</span></h4>
     
 
     
@@ -621,6 +621,29 @@
 
         <tr>
             
+                <td class="name"><code>sprintId</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">the id of the sprint</td>
+        </tr>
+
+    
+
+        <tr>
+            
                 <td class="name"><code>userId</code></td>
             
 
@@ -678,7 +701,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="repositories_task.repository.js.html">repositories/task.repository.js</a>, <a href="repositories_task.repository.js.html#line198">line 198</a>
+        <a href="repositories_task.repository.js.html">repositories/task.repository.js</a>, <a href="repositories_task.repository.js.html#line214">line 214</a>
     </li></ul></dd>
     
 
@@ -707,7 +730,7 @@
 
         
 <div class="param-desc">
-    an object represeting the result of this operation
+    an object representing the result of this operation
 </div>
 
 
@@ -883,7 +906,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="repositories_task.repository.js.html">repositories/task.repository.js</a>, <a href="repositories_task.repository.js.html#line156">line 156</a>
+        <a href="repositories_task.repository.js.html">repositories/task.repository.js</a>, <a href="repositories_task.repository.js.html#line155">line 155</a>
     </li></ul></dd>
     
 
@@ -912,7 +935,7 @@
 
         
 <div class="param-desc">
-    an object represeting the result of this operation
+    an object representing the result of this operation
 </div>
 
 
@@ -1065,7 +1088,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="repositories_task.repository.js.html">repositories/task.repository.js</a>, <a href="repositories_task.repository.js.html#line122">line 122</a>
+        <a href="repositories_task.repository.js.html">repositories/task.repository.js</a>, <a href="repositories_task.repository.js.html#line121">line 121</a>
     </li></ul></dd>
     
 
@@ -1094,7 +1117,7 @@
 
         
 <div class="param-desc">
-    an object represeting the result of this operation
+    an object representing the result of this operation
 </div>
 
 
@@ -1123,7 +1146,7 @@
     
 
     
-    <h4 class="name" id=".updateTask"><span class="type-signature">(static) </span>updateTask<span class="signature">(projectId, task, userId)</span><span class="type-signature"> &rarr; {Promise.&lt;Object>}</span></h4>
+    <h4 class="name" id=".updateTask"><span class="type-signature">(static) </span>updateTask<span class="signature">(projectId, task)</span><span class="type-signature"> &rarr; {Promise.&lt;Object>}</span></h4>
     
 
     
@@ -1210,29 +1233,6 @@
         </tr>
 
     
-
-        <tr>
-            
-                <td class="name"><code>userId</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">the id of the user who did the operation</td>
-        </tr>
-
-    
     </tbody>
 </table>
 
@@ -1270,7 +1270,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="repositories_task.repository.js.html">repositories/task.repository.js</a>, <a href="repositories_task.repository.js.html#line42">line 42</a>
+        <a href="repositories_task.repository.js.html">repositories/task.repository.js</a>, <a href="repositories_task.repository.js.html#line41">line 41</a>
     </li></ul></dd>
     
 
@@ -1299,7 +1299,7 @@
 
         
 <div class="param-desc">
-    an object represeting the result of this operation
+    an object representing the result of this operation
 </div>
 
 
@@ -1475,7 +1475,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="repositories_task.repository.js.html">repositories/task.repository.js</a>, <a href="repositories_task.repository.js.html#line70">line 70</a>
+        <a href="repositories_task.repository.js.html">repositories/task.repository.js</a>, <a href="repositories_task.repository.js.html#line69">line 69</a>
     </li></ul></dd>
     
 
@@ -1504,7 +1504,7 @@
 
         
 <div class="param-desc">
-    an object represeting the result of this operation
+    an object representing the result of this operation
 </div>
 
 
@@ -1549,7 +1549,7 @@
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Sat Nov 30 2019 16:27:01 GMT+0100 (Central European Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Mon Dec 02 2019 11:16:14 GMT+0100 (Central European Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>

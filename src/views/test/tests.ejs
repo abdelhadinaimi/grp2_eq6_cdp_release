@@ -1,6 +1,6 @@
 <%- include('../partials/head.ejs') %>
 <%- include('../partials/project-header.ejs') %>
-<% if (project.tasksToTest.length > 0 || project.issuesToTest.length > 0) { %>
+<% if (project.tasksBySprint.length > 0 || project.issuesToTest.length > 0) { %>
 <div class="row">
   <div class="col s12">
     <div class="row" style="margin: 10px 0 0 0">
@@ -22,23 +22,26 @@
     <div class="col s12 m10 offset-m1 l8 offset-l2">
       <div class="row card-content">
         <h5 class="center">Tâches à tester</h5>
-        <% if (project.tasksToTest.length !== 0) { %>
+        <% if (project.tasksBySprint.length !== 0) { %>
         <table class="highlight responsive-table centered">
           <thead>
               <tr>
+                  <th>Sprint</th>
                   <th>Description</th>
                   <th>État</th>
                   <th>Lien vers le test</th>
               </tr>
           </thead>
           <tbody>
-            <% project.tasksToTest.forEach(task => { %>
+            <% project.tasksBySprint.forEach(group => { 
+                group.tasks.forEach(task => { %>
               <tr>
+                <td><a href="/projects/<%=project.id%>/sprints/<%=group.sprint._id%>"><%=group.sprint.id%></a></td>
                 <td class="truncate"><%=task.description%></td>
                 <td><%=task.state%></td>
                 <td><a target="_blank" href="<%=task.testLink%>">Lien</a></td>
               </tr>
-            <% }) %>
+            <%}); }); %>
           </tbody>
         </table>
         <% } else { %>
@@ -53,7 +56,6 @@
             <thead>
                 <tr>
                     <th>Description</th>
-                    <th>État</th>
                     <th>Lien vers le test</th>
                 </tr>
             </thead>
@@ -63,7 +65,6 @@
                   <td class="truncate">
                       <b>En tant que</b> <%= issue.userType %>, <b>je souhaite</b> <%= issue.userGoal %> <b>afin de</b> <%= issue.userReason %>.
                   </td>
-                  <td><%=issue.state%></td>
                   <td><a target="_blank" href="<%=issue.testLink%>">Lien</a></td>
                 </tr>
               <% }) %>
