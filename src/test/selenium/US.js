@@ -90,11 +90,12 @@ const attributes = {
 };
 
 describe("User Stories",  function () {
-  this.timeout(3000);
+  this.timeout(10000);
   let driver;
 
   before(async function() {
-    driver = await new Builder().forBrowser("chrome").usingServer("http://localhost:4444/wd/hub").build();
+    driver = await new Builder().forBrowser("chrome").build();
+    driver.manage().setTimeouts( { implicit: 10000, pageLoad: 10000, script: 10000 } );
 
     await buildConnection('cdp');
     await User.create({username: user2.username, email: user2.email, password: user2.password});
@@ -106,6 +107,7 @@ describe("User Stories",  function () {
     it("New user", async function() {
       await driver.get(url);
 
+      await driver.wait(until.elementIsVisible(driver.findElement(By.id(fields.user.username))), 10000);
       await driver.findElement(By.id(fields.user.username)).sendKeys(user.username);
       await driver.findElement(By.id(fields.user.email)).sendKeys(user.email);
       await driver.findElement(By.id(fields.user.password)).sendKeys(user.password);
@@ -117,9 +119,10 @@ describe("User Stories",  function () {
       assert(text === "Compte créé avec succès !");
     });
 
-    /*it("New user with same credentials as first", async () => {
+    it("New user with same credentials as first", async () => {
       driver.get(url);
 
+      await driver.wait(until.elementIsVisible(driver.findElement(By.id(fields.user.username))), 10000);
       await driver.findElement(By.id(fields.user.username)).sendKeys(user.username);
       await driver.findElement(By.id(fields.user.email)).sendKeys(user.email);
       await driver.findElement(By.id(fields.user.password)).sendKeys(user.password);
@@ -147,7 +150,7 @@ describe("User Stories",  function () {
       assert(textUsername === errorUserMessages.username.min);
       assert(textPassword === errorUserMessages.password.number);
       assert(textConfirmPassword === errorUserMessages.confirmPassword.same);
-    });*/
+    });
   });
 
   /*describe("US#02 Login", () => {
@@ -452,8 +455,10 @@ describe("User Stories",  function () {
 
   after(async function() {
     await driver.quit();
+    await User.deleteOne({username: user.username});
     await User.deleteOne({username: user.usernameUpdate});
     await User.deleteOne({username: user2.username});
+    await Project.deleteOne({title: firstProject.title});
     await Project.deleteOne({title: firstProject.titleUpdate});
     await Project.deleteOne({title: secondProject.title});
     await mongoose.disconnect();

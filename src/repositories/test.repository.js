@@ -37,7 +37,7 @@ module.exports.getProjectTests = (projectId, userId) =>
             }
           });
           if(tasks.length != 0){
-            proj.tasksBySprint.push({ tasks:tasks, sprint: { _id: sprint._id, id: sprint.id } }); 
+            proj.tasksBySprint.push({ tasks:tasks, sprint: { _id: sprint._id, id: sprint.id } });
           }
         });
         return resolve(proj);
