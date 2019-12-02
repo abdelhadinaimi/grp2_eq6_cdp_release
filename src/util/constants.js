@@ -26,7 +26,7 @@ module.exports.global = {
       addEdit: "task/add-edit-task"
     },
     sprint: {
-      sprints: "sprint/index-sprints",
+      sprints: "sprint/sprints",
       sprint: "sprint/sprint",
       addEdit: "sprint/add-edit-sprint"
     },
@@ -71,6 +71,7 @@ module.exports.global = {
     },
     sprint: {
       sprints: "Sprints",
+      sprint: "Sprint",
       add: "Nouveau Sprint",
       edit: "Éditer Sprint"
     },

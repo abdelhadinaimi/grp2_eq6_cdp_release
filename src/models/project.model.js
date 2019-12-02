@@ -33,23 +33,24 @@ const projectSchema = new Schema(
     docs: [Doc.schema],
     collaborators: [
       {
-        _id: { type: Schema.Types.ObjectId, ref: User.name },
-        userType: { type: String, enum: ["po", "pm", "user"], required: true },
+        _id: {type: Schema.Types.ObjectId, ref: User.name},
+        userType: {type: String, enum: ["po", "pm", "user"], required: true},
         activated: {type: Boolean, default: false},
-        addedAt: { type: Date, default: Date.now },
-        addedBy: { type: Schema.Types.ObjectId, ref: User.name }
+        addedAt: {type: Date, default: Date.now},
+        addedBy: {type: Schema.Types.ObjectId, ref: User.name}
       }
     ],
+    active: {type: Boolean, default: true}
   },
-  { timestamps: true }
+  {timestamps: true}
 );
 
-projectSchema.statics.findIfUserIsPo = function(projectId, userId) {
+projectSchema.statics.findIfUserIsPo = function (projectId, userId) {
   return this.findOne({_id: projectId, projectOwner: userId});
 };
 
-projectSchema.statics.findIfUserType = function(projectId, userId, userTypes) {
-  return this.findOne({_id: projectId,collaborators:{$elemMatch: {_id: userId,userType:{$in: userTypes}}}});
+projectSchema.statics.findIfUserType = function (projectId, userId, userTypes) {
+  return this.findOne({_id: projectId, collaborators: {$elemMatch: {_id: userId, userType: {$in: userTypes}}}});
 };
 
-module.exports = { name: "Project", schema: projectSchema };
+module.exports = {name: "Project", schema: projectSchema};

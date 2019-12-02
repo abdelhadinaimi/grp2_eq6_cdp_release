@@ -12,7 +12,7 @@ const {errorGeneralMessages} = require('../util/constants');
  * @param {string} projectId - the id of the project to add the task in
  * @param {Object} task - the task to add
  * @param {string} userId - the id of the user who did the operation
- * @returns {Promise<Object>} an object represeting the result of this operation
+ * @returns {Promise<Object>} an object representing the result of this operation
  */
 module.exports.createTask = (projectId, task, userId) => new Promise((resolve, reject) => {
   if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(userId))
@@ -36,8 +36,7 @@ module.exports.createTask = (projectId, task, userId) => new Promise((resolve, r
  * updates a task in a project
  * @param {string} projectId - the id of the project to update the task in
  * @param {Object} task - the task to update
- * @param {string} userId - the id of the user who did the operation
- * @returns {Promise<Object>} an object represeting the result of this operation
+ * @returns {Promise<Object>} an object representing the result of this operation
  */
 module.exports.updateTask = (projectId, task) => new Promise((resolve, reject) => {
   const errorMessage = {success: false, error: errorGeneralMessages.modificationNotAllowed};
@@ -65,7 +64,7 @@ module.exports.updateTask = (projectId, task) => new Promise((resolve, reject) =
  * @param {string} projectId - the id of the project to update the task in
  * @param {string} userId - the id of the user who did the operation
  * @param {Object} task - the task to update the state
- * @returns {Promise<Object>} an object represeting the result of this operation
+ * @returns {Promise<Object>} an object representing the result of this operation
  */
 module.exports.updateTaskState = async (projectId, userId, task) => {
   const errorMessage = {success: false, error: errorGeneralMessages.modificationNotAllowed};
@@ -88,11 +87,11 @@ module.exports.updateTaskState = async (projectId, userId, task) => {
 };
 
 /**
- * removes a taks from a project given its id
- * @param {string} projectId - the id of the project to remove the taks from
- * @param {string} taksId - the id of the taks to remove
+ * removes a task from a project given its id
+ * @param {string} projectId - the id of the project to remove the task from
+ * @param {string} taskId - the id of the task to remove
  * @param {string} userId - the id of the user who did the operation
- * @returns {Promise<Object>} an object represeting the result of this operation
+ * @returns {Promise<Object>} an object representing the result of this operation
  */
 module.exports.deleteTask = (projectId, taskId, userId) => new Promise((resolve, reject) => {
   const errorMessage = {success: false, errors: {error: errorGeneralMessages.deleteNotAllowed}};
@@ -117,7 +116,7 @@ module.exports.deleteTask = (projectId, taskId, userId) => new Promise((resolve,
  * returns a task by its id
  * @param {string} projectId - the id of a project
  * @param {Object} taskId - the id of the task to check
- * @returns {Promise<Object>} an object represeting the result of this operation
+ * @returns {Promise<Object>} an object representing the result of this operation
  */
 module.exports.getTaskById = (projectId, taskId) => new Promise((resolve, reject) => {
   return Project
@@ -151,40 +150,56 @@ module.exports.getTaskById = (projectId, taskId) => new Promise((resolve, reject
  * @param {string} projectId - the id of a project
  * @param {string} sprintId - the id of the sprint
  * @param {string} userId - the id of the user who did the operation
- * @returns {Promise<Object>} an object represeting the result of this operation
+ * @returns {Promise<Object>} an object representing the result of this operation
  */
 module.exports.getSprintTasks = (projectId, sprintId, userId) => new Promise((resolve, reject) => {
-  if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(userId))
+  if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(sprintId) ||
+      !mongoose.Types.ObjectId.isValid(userId))
     return resolve(undefined);
 
   return Project
-    .findOne({_id: projectId, 'collaborators._id': userId}, 'title tasks projectOwner collaborators issues')
+    .findOne({_id: projectId, 'collaborators._id': userId})
     .populate("collaborators._id")
     .then(project => {
       if (!project) return resolve(undefined);
 
-      project = project.toJSON();
+      project.tasks = project.tasks.filter(task => task.linkedSprint.toString() === sprintId.toString());
 
       project.tasks.forEach(task => {
-        task.linkedIssues = task.linkedIssues.map(linkedIssue => {
-          return project.issues.find(issue => issue._id.toString() === linkedIssue.toString());     
+        task.issues = [];
+        task.linkedIssues.forEach(linkedIssue => {
+          const issue = project.issues.find(issue => issue._id.toString() === linkedIssue.toString());
+          if (issue)
+            task.issues.push(issue);
         });
 
-        task.assignedContributors = task.assignedContributors.map(assContr =>
-          project.collaborators.find(coll => coll._id._id.toString() === assContr._id.toString()));
+        task.contributors = [];
+        task.assignedContributors.forEach(assContr => {
+          const contributor = project.collaborators.find(collaborator => collaborator._id._id.toString() === assContr.toString());
+          if (contributor)
+            task.contributors.push(contributor);
+        });
 
         task.assigned = !!task.assignedContributors.find(coll => coll._id._id.toString() === userId.toString());
       });
 
-      const proj = {
+      const today = new Date();
+      const sprintFound = project.sprints.find(sprint => sprint._id.toString() === sprintId.toString());
+      const sprint = {
+        id: sprintId,
+        title: sprintFound.id,
+        active: ((sprintFound.startDate <= today) && (today <= sprintFound.endDate))
+      };
+
+      return resolve({
         id: projectId,
-        sprintId,
+        active: project.active,
         title: project.title,
         tasks: project.tasks,
         projectOwner: project.projectOwner,
-        collaborators: project.collaborators
-      };
-      return resolve(proj);
+        collaborators: project.collaborators,
+        sprint
+      });
     })
     .catch(err => reject(err));
 });
@@ -192,12 +207,13 @@ module.exports.getSprintTasks = (projectId, sprintId, userId) => new Promise((re
 /**
  * returns all the tasks of a given user
  * @param {string} projectId - the id of a project
+ * @param {string} sprintId - the id of the sprint
  * @param {string} userId - the id of the user who did the operation
- * @returns {Promise<Object>} an object represeting the result of this operation
+ * @returns {Promise<Object>} an object representing the result of this operation
  */
-module.exports.getMyTasks = (projectId, userId) => new Promise((resolve, reject) => {
+module.exports.getMyTasks = (projectId, sprintId, userId) => new Promise((resolve, reject) => {
   return this
-    .getProjectTasks(projectId, userId)
+    .getSprintTasks(projectId, sprintId, userId)
     .then(project => {
       project.tasks = project.tasks.filter(task =>
         !!task.assignedContributors.find(contr => contr._id._id.toString() === userId.toString()));

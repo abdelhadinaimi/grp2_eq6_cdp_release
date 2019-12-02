@@ -1,3 +1,6 @@
+# Documentation
+La dernière version de la documentation est disponible [ici](https://abdelhadinaimi.github.io/grp2_eq6_cdp_release/doc/v0.3/).
+
 # Intégration Continue
 Dernière exécution Test Unitaire et Intégration : [![Actions Status](https://github.com/Version-Project/grp2_eq6_cdp_dev/workflows/tests/badge.svg)](https://github.com/Version-Project/grp2_eq6_cdp_dev/actions)
 
@@ -64,8 +67,8 @@ Lien vers les Releases : [Lien](https://github.com/abdelhadinaimi/grp2_eq6_cdp_r
 | US#31 | **En tant que** PO ou CP, **je souhaite** cliquer sur le bouton “Supprimer” devant le nom du sprint **afin de** supprimer ce sprint. | Low | 1 | 3 | DONE |
 | US#32 | **En tant que** utilisateur, **je souhaite** cliquer sur l’onglet “Sprints” **afin de** afficher toute la liste des sprints du projet. | Low | 1 | 3 | DONE |
 | US#33 | **En tant que** utilisateur, **je souhaite** une fois dans l’onglet “Sprint”, cliquer sur un sprint **afin de** afficher les informations relatives à ce sprint (Cf spécifications US#29), l’état d’avancement, le coût total et le temps restant| Low | 1 | 3 | DONE |
-| US#34 | **En tant que** PO ou CP, **je souhaite** cliquer sur le bouton “Crée une tâche” **afin de** d'ajouter une *tâche* au sprint. | Low | 2 | 3 | DOING |
-| US#35 | **En tant que** PO ou CP, **je souhaite** cliquer sur le bouton “Supprimer” devant chaque *tâche* **afin de** supprimer une *tâche* du sprint. | Low | 1 | 3 | TODO |
+| US#34 | **En tant que** PO ou CP, **je souhaite** cliquer sur le bouton “Crée une tâche” **afin de** d'ajouter une *tâche* au sprint. | Low | 2 | 3 | DONE |
+| US#35 | **En tant que** PO ou CP, **je souhaite** cliquer sur le bouton “Supprimer” devant chaque *tâche* **afin de** supprimer une *tâche* du sprint. | Low | 1 | 3 | DONE |
 | US#36 | **En tant que** PO ou CP, **je souhaite** cliquer sur le bouton “Ajouter une release” d’un sprint, remplir le formulaire avec les champs “Version” (format X.Y, avec X et Y des nombres), “Description” (3000 char max) et “Lien vers le dépôt” (sous forme de lien, 2000 char max) où elle peut être récupérée, puis cliquer sur le bouton “Ajouter” **afin de** ajouter une release à ce sprint. | Low | 2 | 3 | TODO |
 | US#37 | **En tant que** utilisateur, **je souhaite** cliquer sur l’onglet “Releases” **afin de** afficher la liste de toutes les *releases* du projet. | Low | 1 | 3 | DONE |
 | US#38 | **En tant que** utilisateur, **je souhaite** cliquer sur l’onglet “Tests” **afin de** afficher la liste des tests de toutes les *issues* et de toutes les tâches du projet. | Low | 1 | 3 | TODO |
