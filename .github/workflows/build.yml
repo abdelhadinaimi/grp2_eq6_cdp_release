@@ -12,7 +12,7 @@ jobs:
     steps:
        - uses: actions/checkout@v1
        - name: Build the stack
-         run: docker-compose up
+         run: docker-compose up -d
        - name: Use Node.js ${{ matrix.node-version }}
          uses: actions/setup-node@v1
          with:
@@ -27,4 +27,4 @@ jobs:
           npm run selenium
          env:
           CI: true
-          HOST_SRV: hub
+          HOST_SRV: localhost
