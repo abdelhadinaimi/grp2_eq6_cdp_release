@@ -26,12 +26,10 @@ module.exports.getSprint = (req, res) => {
       return res.render(viewsSprint.sprint, {
         pageTitle: titlesSprint.sprint,
         errors: [],
-        values: project,
-        projectId: projectId,
         url: 'spr',
-        isPo: isPo,
-        isPm: isPm,
-        project: { id: projectId }
+        isPo,
+        isPm,
+        project
       });
 
     });

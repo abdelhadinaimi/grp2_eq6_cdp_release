@@ -193,6 +193,7 @@ module.exports.getSprintTasks = (projectId, sprintId, userId) => new Promise((re
 
       return resolve({
         id: projectId,
+        active: project.active,
         title: project.title,
         tasks: project.tasks,
         projectOwner: project.projectOwner,

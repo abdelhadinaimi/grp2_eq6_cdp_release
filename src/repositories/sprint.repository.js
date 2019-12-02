@@ -23,7 +23,7 @@ module.exports.getSprint = (projectId, userId, sprintId) => new Promise((resolve
     return resolve(undefined);
 
   return Project
-    .findOne({ _id: projectId, 'collaborators._id': userId }, 'sprints tasks projectOwner collaborators')
+    .findOne({ _id: projectId, 'collaborators._id': userId }, 'active sprints tasks projectOwner collaborators')
     .then(project => {
       if (!project) return resolve(null);
 
@@ -50,13 +50,13 @@ module.exports.getSprint = (projectId, userId, sprintId) => new Promise((resolve
 
       let remaining = null;
       if (sprint.startDate <= today && today <= sprint.endDate)
-        remaining = Math.round((sprint.endDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)) + 2;
+        remaining = Math.round((sprint.endDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)) + 1;
 
       const edit = ((sprint.startDate <= today && today <= sprint.endDate) || (today < sprint.startDate));
 
       let burndown;
       if (tasks.length > 0) {
-        let labels = [];
+        const labels = [];
         const nbDays = Math.round((sprint.endDate.getTime() - sprint.startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
         const ratioPerDay = cost / (nbDays - 1);
         const idealCost = [], realCost = [];
@@ -71,8 +71,8 @@ module.exports.getSprint = (projectId, userId, sprintId) => new Promise((resolve
           associatedTasksToDate[dateStr] = 0;
         }
 
-        for (let i = cost; i >= 0; i -= ratioPerDay)
-          idealCost.push(Math.round(i * 100) / 100);
+        for (let i = 0; i < nbDays; i++)
+          idealCost.push(Math.round((cost - ratioPerDay * i) * 100) / 100);
 
         tasks.forEach(task => {
           totalCost += task.cost;
@@ -107,6 +107,7 @@ module.exports.getSprint = (projectId, userId, sprintId) => new Promise((resolve
 
       return resolve({
         id: projectId,
+        active: project.active,
         sprint: sprint,
         startDate: dateformat(sprint.startDate, dateFormatString),
         endDate: dateformat(sprint.endDate, dateFormatString),
@@ -135,7 +136,7 @@ module.exports.getProjectSprints = (projectId, userId) => new Promise((resolve, 
     return resolve(undefined);
 
   return Project
-    .findOne({ _id: projectId, 'collaborators._id': userId }, 'sprints tasks projectOwner collaborators')
+    .findOne({ _id: projectId, 'collaborators._id': userId }, 'active sprints tasks projectOwner collaborators')
     .then(project => {
       if (!project) return resolve(null);
 
@@ -158,7 +159,7 @@ module.exports.getProjectSprints = (projectId, userId) => new Promise((resolve, 
 
         let remaining = null;
         if (sprint.startDate <= today && today <= sprint.endDate)
-          remaining = Math.round((sprint.endDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)) + 2;
+          remaining = Math.round((sprint.endDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)) + 1;
 
         const edit = ((sprint.startDate <= today && today <= sprint.endDate) || (today < sprint.startDate));
 
@@ -178,6 +179,7 @@ module.exports.getProjectSprints = (projectId, userId) => new Promise((resolve, 
 
       return resolve({
         id: projectId,
+        active: project.active,
         sprints: sprints,
         projectOwner: project.projectOwner,
         collaborators: project.collaborators
@@ -209,6 +211,7 @@ module.exports.createSprint = (projectId, sprint, userId) => new Promise((resolv
   if (sprint.endDate && sprint.endDate.length > 0) {
     const [day, month, year] = sprint.endDate.split('/');
     newSprint.endDate = new Date(year, month - 1, day);
+    newSprint.endDate.setHours(newSprint.endDate.getHours() + 23, newSprint.endDate.getMinutes() + 59, newSprint.endDate.getSeconds() + 59);
   }
   if (sprint.description && sprint.description.length > 0) {
     newSprint.description = sprint.description;
@@ -247,6 +250,7 @@ module.exports.updateSprint = (projectId, sprint, userId) => new Promise((resolv
   if (sprint.endDate && sprint.endDate.length > 0) {
     const [day, month, year] = sprint['endDate'].split('/');
     sprint.endDate = new Date(year, month - 1, day);
+    sprint.endDate.setHours(sprint.endDate.getHours() + 23, sprint.endDate.getMinutes() + 59, sprint.endDate.getSeconds() + 59);
   }
 
   const set = {};

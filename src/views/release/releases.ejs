@@ -9,7 +9,7 @@
           <div class="col m4 offset-m4 center-align">
             <h5><%=pageTitle%></h5>
           </div>
-          <% if (isPo || isPm) { %>
+          <% if ((isPo || isPm) && project.active) { %>
           <div class="col m4 center-align">
             <a class="btn green modal-trigger" href="/projects/<%= project.id %>/releases/add">Créer une release</a>
           </div>
@@ -40,7 +40,7 @@
             </div>
             <div class="collapsible-body">
               <div class="row center-align hide-on-med-and-up">
-                <% if (!project.deleteEdit) { %>
+                <% if ((isPo || isPm) && project.active) { %>
                 <div class="col s6">
                   <a href="releases/<%=release._id%>/edit" class="btn-floating white">
                     <i class="material-icons black-text">edit</i>
@@ -70,7 +70,7 @@
                     </div>
                 </div>
                 <div class="col m3 l2 center-align hide-on-small-only">
-                    <% if (isPo || isPm) { %>
+                    <% if ((isPo || isPm) && project.active) { %>
                   <div class="row">
                     <a href="/projects/<%=project.id%>/releases/<%=release._id%>/edit" class="btn white black-text" style="width: 100%">Modifier</a>
                   </div>
@@ -95,7 +95,7 @@
         <div class="row">
           <h5>Il n'y a actuellement aucune release pour ce projet...</h5>
         </div>
-        <% if (isPo || isPm) { %>
+        <% if ((isPo || isPm) && project.active) { %>
           <div class="row">
             <h6>Essayez de créer une première release !</h6>
           </div>

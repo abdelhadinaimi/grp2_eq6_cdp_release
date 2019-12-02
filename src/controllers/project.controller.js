@@ -19,11 +19,11 @@ module.exports.getProject = (req, res) => {
 
         return res.status(200).render(viewsProject.project, {
           pageTitle: project.title,
-          project: project,
-          userId: userId,
-          isPo: isPo,
-          isPm: isPm,
-          url: 'pro'
+          url: 'pro',
+          project,
+          userId,
+          isPo,
+          isPm
         });
       }
 
@@ -151,6 +151,27 @@ module.exports.deleteProject = (req, res) => {
       }
       req.flash("toast", "Projet supprimé avec succès !");
       return res.status(200).redirect(routes.index);
+    })
+    .catch(err => {
+      console.log(err);
+      return res.status(500).redirect(routes.error["500"]);
+    });
+};
+
+module.exports.putClose = (req, res) => {
+  const {projectId} = req.params;
+  const userId = req.session.user._id;
+
+  return projectRepo
+    .closeProject(projectId, userId)
+    .then(result => {
+      if (!result.success) {
+        req.flash("toast", result.errors.error);
+        return res.status(403).redirect(routes.index);
+      }
+
+      req.flash("toast", "Projet terminé !");
+      return res.status(200).redirect(routes.project.project(projectId));
     })
     .catch(err => {
       console.log(err);

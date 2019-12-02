@@ -24,7 +24,7 @@ module.exports.getDocumentation = (projectId, userId) => new Promise((resolve, r
     return resolve(null);
 
   return Project
-    .findById(projectId, "projectOwner collaborators docs")
+    .findById(projectId, "active projectOwner collaborators docs")
     .populate("collaborators._id")
     .then(project => {
       if (!project)
@@ -45,6 +45,7 @@ module.exports.getDocumentation = (projectId, userId) => new Promise((resolve, r
 
       const proj = {
         id: project._id,
+        active: project.active,
         doc: {
           code: code,
           user: user,
