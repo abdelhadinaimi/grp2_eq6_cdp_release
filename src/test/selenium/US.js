@@ -8,7 +8,7 @@ const Project = mongoose.model("Project");
 
 const bcrypt = require('bcryptjs');
 
-const {errorUserMessages} = require("../../util/constants");
+const {errorUserMessages, errorIssueMessages} = require("../../util/constants");
 
 const user = {
   username: "selenium",
@@ -40,11 +40,15 @@ const firstIssue = {
   storyId: "US#01",
   userType: "Utilisateur",
   userGoal: "Saisir mes identifiants",
+  userGoalUpd: "Saisir mon email et mon mot de passe",
   userReason: "Me connecter"
 };
 
 const secondIssue = {
-
+  storyId: "US#02",
+  userType: "Utilisateur",
+  userGoal: "Rentrer un email",
+  userReason: "Générer un nouveau mot de passe"
 };
 
 const fields = {
@@ -80,7 +84,8 @@ const cssSelectors = {
     username: "input#username ~ span.helper-text",
     email: "input#email ~ span.helper-text",
     password: "input#password ~ span.helper-text",
-    confirmPassword: "input#confirmPassword ~ span.helper-text"
+    confirmPassword: "input#confirmPassword ~ span.helper-text",
+    storyId: "input#storyId ~ span.helper-text"
   }
 };
 
@@ -396,42 +401,213 @@ describe("User Stories",  function () {
     });
   });
 
-  // US#13 testée après l'US#03
-
-  // US#14 testée après l'US#03
+  // US#13 et US#14 testée après l'US#03
 
   describe("US#15 Create Issue", () => {
     const url = (projectId) => rootUrl + "/projects/" + projectId + "/issues/add";
 
     it("First issue", async () => {
+      await driver.get(url(firstProject.id));
+
+      await driver.findElement(By.id(fields.issue.storyId)).sendKeys(firstIssue.storyId);
+      await driver.findElement(By.id(fields.issue.userType)).sendKeys(firstIssue.userType);
+      await driver.findElement(By.id(fields.issue.userGoal)).sendKeys(firstIssue.userGoal);
+      await driver.findElement(By.id(fields.issue.userReason)).sendKeys(firstIssue.userReason);
+      await driver.findElement(By.css(cssSelectors.greenText)).click();
+      const toast = await driver.findElement(By.css(cssSelectors.toast));
+      const text = await toast.getText();
+
+      assert(text === "Issue créée avec succès !");
+    });
+
+    it("Same id than the first one", async () => {
+      await driver.get(url(firstProject.id));
+
+      await driver.findElement(By.id(fields.issue.storyId)).sendKeys(firstIssue.storyId);
+      await driver.findElement(By.id(fields.issue.userType)).sendKeys(firstIssue.userType);
+      await driver.findElement(By.id(fields.issue.userGoal)).sendKeys(firstIssue.userGoal);
+      await driver.findElement(By.id(fields.issue.userReason)).sendKeys(firstIssue.userReason);
+      await driver.findElement(By.css(cssSelectors.greenText)).click();
+      const spanStoryId = await driver.findElement(By.css(cssSelectors.helpers.storyId));
+      const textStoryId = await spanStoryId.getAttribute(attributes.dataError);
+
+      assert(textStoryId === errorIssueMessages.storyId.unique);
+    });
+
+    it("Second issue", async () => {
+      await driver.get(url(firstProject.id));
+
+      await driver.findElement(By.id(fields.issue.storyId)).sendKeys(secondIssue.storyId);
+      await driver.findElement(By.id(fields.issue.userType)).sendKeys(secondIssue.userType);
+      await driver.findElement(By.id(fields.issue.userGoal)).sendKeys(secondIssue.userGoal);
+      await driver.findElement(By.id(fields.issue.userReason)).sendKeys(secondIssue.userReason);
+      await driver.findElement(By.css(cssSelectors.greenText)).click();
+      const toast = await driver.findElement(By.css(cssSelectors.toast));
+      const text = await toast.getText();
+
+      assert(text === "Issue créée avec succès !");
     });
   });
 
   describe("US#16 Update Issue", () => {
+    it("Update first issue", async () => {
+      await driver.get(rootUrl + "/projects/" + firstProject.id + "/issues");
 
+      await driver.findElement(By.css("li:nth-child(2) > .collapsible-header")).click();
+      await driver.wait(until.elementIsVisible(driver.findElement(By.css("li:nth-child(2) a.black-text"))), 10000);
+      await driver.findElement(By.css("li:nth-child(2) a.black-text")).click();
+      await driver.wait(until.elementIsVisible(driver.findElement(By.id(fields.issue.userGoal))), 10000);
+      await driver.findElement(By.id(fields.issue.userGoal)).clear();
+      await driver.findElement(By.id(fields.issue.userGoal)).sendKeys(firstIssue.userGoalUpd);
+      await driver.findElement(By.css(cssSelectors.greenText)).click();
+      const toast = await driver.findElement(By.css(cssSelectors.toast));
+      const text = await toast.getText();
+
+      assert(text === "Issue mise à jour !");
+    })
+  });
+
+  // US#17 testée après l'US#18
+
+  describe("US#18 View Issues", () => {
+    it("Consult issues", async () => {
+      await driver.get(rootUrl + "/projects/" + firstProject.id + "/issues");
+
+      const lis = await driver.findElements(By.css("ul.collapsible > li"));
+
+      assert(lis.length === 3);
+    })
   });
 
   describe("US#17 Delete Issue", () => {
+  it("Delete the second issue", async () => {
+    await driver.get(rootUrl + "/projects/" + firstProject.id + "/issues");
 
-  });
+    await driver.findElement(By.css("li:nth-child(3) > .collapsible-header")).click();
+    await driver.wait(until.elementIsVisible(driver.findElement(By.css("li.active a.btn.deleteButton"))), 10000);
+    await driver.findElement(By.css("li.active a.btn.deleteButton")).click();
+    await driver.wait(until.elementIsVisible(driver.findElement(By.css("form.deleteForm > div.modal-footer > button.red-text"))), 10000);
+    await driver.findElement(By.css("form.deleteForm > div.modal-footer > button.red-text")).click();
+    const toast = await driver.findElement(By.css(cssSelectors.toast));
+    const text = await toast.getText();
 
-  describe("US#18 View Issues", () => {
-
-  });
+    assert(text === "Issue supprimée avec succès !");
+  })
+});
 
   describe("US#19 Consult one Issue", () => {
+    it("Consult first issue's information", async () => {
+      await driver.get(rootUrl + "/projects/" + firstProject.id + "/issues");
+
+      await driver.findElement(By.css("ul.collapsible > li:nth-child(2)")).click();
+      const us = await driver.findElement(By.css("li.active > div.collapsible-body > div:nth-child(2) > div.col.s12.m9.l10 > div > div:nth-child(1) > div"));
+      const text = await us.getAttribute("innerHTML");
+
+      assert(text.includes(firstIssue.userType));
+      assert(text.includes(firstIssue.userGoalUpd));
+      assert(text.includes(firstIssue.userReason));
+    })
+  });
+
+  // US#20 à US#28 après US#33
+
+  describe("US#29 Create Sprint", () => {
 
   });
 
-  describe("US#20 Create Task", () => {
+  describe("US#30 Update Sprint", () => {
 
   });
 
-  describe("US#21 Update Task", () => {
+  // US#31 à US#32
+
+  describe("US#32 View Sprints", () => {
+
+  });
+
+  describe("US#31 Delete Sprint", () => {
+
+  });
+
+  describe("US#33 Consult one Sprint", () => {
+
+  });
+
+  describe("US#20 / US#34 Create Task", () => {
+
+  });
+
+  describe("US#21 / US#35 Update Task", () => {
+
+  });
+
+  // US#22 testée après l'US#23
+
+  describe("US#23 View Tasks", () => {
 
   });
 
   describe("US#22 Delete Task", () => {
+
+  });
+
+  describe("US#24 View my Tasks", () => {
+
+  });
+
+  describe("US#25 Consult one Task", () => {
+
+  });
+
+  describe("US#26 Link issue to Task", () => {
+
+  });
+
+  describe("US#27 Assign user to Task", () => {
+
+  });
+
+  describe("US#28 Update state to Task", () => {
+
+  });
+
+  describe("US#36 Add Release", () => {
+
+  });
+
+  describe("US#37 View Releases", () => {
+
+  });
+
+  describe("US#38 View Tests", () => {
+
+  });
+
+  describe("US#39 View Documentation", () => {
+
+  });
+
+  describe("US#40 Add Documentation", () => {
+
+  });
+
+  describe("US#41 Download Documentation", () => {
+
+  });
+
+  describe("US#42 Alert on Task cost higher than 2 days", () => {
+
+  });
+
+  describe("US#43 View burndown chart", () => {
+
+  });
+
+  describe("US#44 Update Release", () => {
+
+  });
+
+  describe("US#45 Delete Release", () => {
 
   });
 
