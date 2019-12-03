@@ -1,5 +1,5 @@
 <% const states = ["TODO", "DOING", "DONE", "TOTEST", "TESTING", "TESTED"]; %>
-
+<% let mine = false;%>
 <% if (project.tasks.length > 0) { %>
 <div class="row">
   <div class="col s12">
@@ -179,10 +179,10 @@
 
 <script>
   $(document).ready(function () {
+    let mine = false;
     $('.collapsible').collapsible();
     $('.tooltipped').tooltip();
 
-    let mine = false;
     $('a#allMineButton').on("click", function(e) {
       if (mine) {
         $('.mine').attr("style", "");

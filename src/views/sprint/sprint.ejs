@@ -7,7 +7,7 @@
       <div class="col s12 m10 offset-m1 l8 offset-l2">
         <div class="row valign-wrapper hide-on-med-and-down">
           <div class="col m4 offset-m4 center-align">
-            <h5><%= project.sprint.id %></h5>
+            <h5 id="sprintId"><%= project.sprint.id %></h5>
           </div>
           <% if ((isPo || isPm) && project.active) { %>
           <div class="col m4 center-align">
@@ -22,7 +22,7 @@
         </div>
         <div class="row valign-wrapper hide-on-large-only">
           <div class="col s12 center-align">
-            <h5><%= project.sprint.id %></h5>
+            <h5 id="sprintId"><%= project.sprint.id %></h5>
           </div>
           <% if ((isPo || isPm) && project.active) { %>
           <div class="col m4 center-align">
@@ -39,10 +39,10 @@
     </div>
     <div class="row">
       <div class="col s6 center-align">
-        <h6><b>Début du Sprint : </b><%= project.startDate %></h6>
+        <h6 id="sprintStartDate"><b>Début du Sprint : </b><%= project.startDate %></h6>
       </div>
       <div class="col s6 center-align">
-        <h6><b>Fin du Sprint : </b><%= project.endDate %></h6>
+        <h6 id="sprintEndDate"><b>Fin du Sprint : </b><%= project.endDate %></h6>
       </div>
       <div class="row">
         <div class="col s12 l5 offset-l1">
