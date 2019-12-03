@@ -1,10 +1,12 @@
-const {Builder, By, Key} = require("selenium-webdriver");
+const {Builder, By, Key, until} = require("selenium-webdriver");
 const assert = require("assert");
 
 const mongoose = require("mongoose");
 const buildConnection = require("../../config/database.config");
 const User = mongoose.model("User");
 const Project = mongoose.model("Project");
+
+const bcrypt = require('bcryptjs');
 
 const {errorUserMessages} = require("../../util/constants");
 
@@ -101,7 +103,10 @@ describe("User Stories",  function () {
     driver.manage().setTimeouts( { implicit: 10000, pageLoad: 10000, script: 10000 } );
 
     await buildConnection('cdp');
-    await User.create({username: user2.username, email: user2.email, password: user2.password});
+
+    const salt = await bcrypt.genSaltSync(8);
+    const pass = await bcrypt.hashSync(user2.password, salt);
+    await User.create({username: user2.username, email: user2.email, password: pass});
   });
 
   describe("US#01 Register", () => {
@@ -304,8 +309,10 @@ describe("User Stories",  function () {
       await driver.get(rootUrl);
 
       await driver.findElement(By.css("li:nth-child(2) > .collapsible-header")).click();
-      await driver.findElement(By.css(".active .row:nth-child(3) > .btn")).click();
-      await driver.findElement(By.css(".btn-flat:nth-child(2)")).click();
+      await driver.wait(until.elementIsVisible(driver.findElement(By.css("li:nth-child(2) div.hide-on-small-only a.deleteButton"))), 10000);
+      await driver.findElement(By.css("li:nth-child(2) div.hide-on-small-only a.deleteButton")).click();
+      await driver.wait(until.elementIsVisible(driver.findElement(By.css("button.btn-flat.red-text"))), 10000);
+      await driver.findElement(By.css("button.btn-flat.red-text")).click();
       const toast = await driver.findElement(By.css(cssSelectors.toast));
       const text = await toast.getText();
 
@@ -362,7 +369,8 @@ describe("User Stories",  function () {
       await driver.get(rootUrl + "/projects/" + firstProject.id);
 
       await driver.findElement(By.css("input.select-dropdown")).click();
-      await driver.findElement(By.css("li > span")).click();
+      await driver.wait(until.elementIsVisible(driver.findElement(By.css("ul > li:nth-child(1) > span"))), 10000);
+      await driver.findElement(By.css("ul > li:nth-child(1) > span")).click();
       const toast = await driver.findElement(By.css(cssSelectors.toast));
       const text = await toast.getText();
 
@@ -374,28 +382,23 @@ describe("User Stories",  function () {
     it("Delete a contributor", async () => {
       await driver.get(rootUrl + "/projects/" + firstProject.id);
 
-      await driver.findElement(By.css("td > .deleteButton")).click();
+      await driver.findElement(By.css("td > a.deleteButton")).click();
+      await driver.wait(until.elementIsVisible(driver.findElement(By.css("form.deleteContrForm > div.modal-footer > button.red-text"))), 10000);
       await driver.findElement(By.css("form.deleteContrForm > div.modal-footer > button.red-text")).click();
       const toast = await driver.findElement(By.css(cssSelectors.toast));
       const text = await toast.getText();
 
       assert(text === "Contributeur supprimé !");
+
+      await driver.findElement(By.css(cssSelectors.addContributor)).click();
+      await driver.findElement(By.id(fields.project.contributor)).sendKeys(user2.email);
+      await driver.findElement(By.id(fields.project.inviteButton)).click();
     });
   });
 
-  describe("US#13 Accept Invitation", () => {
-    it("Test link received by email", async () => {
-      const todo = true;
-      assert(todo === true);
-    });
-  });
+  // US#13 testée après l'US#03
 
-  describe("US#14 Leave Project", () => {
-    it("Leave the project", async () => {
-      const todo = true;
-      assert(todo === true);
-    });
-  });
+  // US#14 testée après l'US#03
 
   describe("US#15 Create Issue", () => {
     const url = (projectId) => rootUrl + "/projects/" + projectId + "/issues/add";
@@ -432,17 +435,46 @@ describe("User Stories",  function () {
 
   });
 
-  /*describe("US#03 Logout", () => {
+  describe("US#03 Logout", () => {
     it("Logout", async function () {
       await driver.get(rootUrl);
+
       await driver.findElement(By.css("a.dropdown-trigger")).click();
-      await driver.wait(until.elementIsVisible(driver.findElement(By.css("a.red-text.text-lighten-3"))), 3000);
+      await driver.wait(until.elementIsVisible(driver.findElement(By.css("a.red-text.text-lighten-3"))), 10000);
       await driver.findElement(By.css("a.red-text.text-lighten-3")).click();
       const url = await driver.getCurrentUrl();
 
-      assert(url === "http://localhost:8080/");
+      assert(url === rootUrl + "/");
     });
-  });*/
+  });
+
+  describe("US#13 Accept Invitation", () => {
+    it("Test link received by email", async () => {
+      await driver.get(rootUrl + "/projects/" + firstProject.id + "/invite");
+
+      await driver.findElement(By.id(fields.user.email)).sendKeys(user2.email);
+      await driver.findElement(By.id(fields.user.password)).sendKeys(user2.password, Key.ENTER);
+
+      const toast = await driver.findElement(By.css(cssSelectors.toast));
+      const text = await toast.getText();
+
+      assert(text === "Invitation Acceptée !");
+    });
+  });
+
+  describe("US#14 Leave Project", () => {
+    it("Leave the project", async () => {
+      await driver.get(rootUrl + "/projects/" + firstProject.id);
+
+      await driver.findElement(By.css("a.quitButton")).click();
+      await driver.wait(until.elementIsVisible(driver.findElement(By.css("button.red-text"))), 10000);
+      await driver.findElement(By.css("button.red-text")).click();
+      const toast = await driver.findElement(By.css(cssSelectors.toast));
+      const text = await toast.getText();
+
+      assert(text === "Vous avez quitté le projet !");
+    });
+  });
 
   after(async function() {
     await driver.quit();
