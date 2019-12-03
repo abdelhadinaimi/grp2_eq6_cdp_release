@@ -99,6 +99,15 @@ const PORT_SRV = process.env.PORT_SRV || "4444";
 const rootUrl = "http://api:8080";
 const servUrl = `http://${HOST_SRV}:${PORT_SRV}/wd/hub`;
 
+const removeInDB = async () => {
+  await User.deleteOne({username: user.username});
+  await User.deleteOne({username: user.usernameUpdate});
+  await User.deleteOne({username: user2.username});
+  await Project.deleteOne({title: firstProject.title});
+  await Project.deleteOne({title: firstProject.titleUpdate});
+  await Project.deleteOne({title: secondProject.title});
+};
+
 describe("User Stories",  function () {
   this.timeout(10000);
   let driver;
@@ -108,7 +117,7 @@ describe("User Stories",  function () {
     driver.manage().setTimeouts( { implicit: 10000, pageLoad: 10000, script: 10000 } );
 
     await buildConnection('cdp');
-
+    await removeInDB();
     const salt = await bcrypt.genSaltSync(8);
     const pass = await bcrypt.hashSync(user2.password, salt);
     await User.create({username: user2.username, email: user2.email, password: pass});
@@ -504,7 +513,7 @@ describe("User Stories",  function () {
       const text = await us.getAttribute("innerHTML");
 
       assert(text.includes(firstIssue.userType));
-      assert(text.includes(firstIssue.userGoalUpd));
+      assert(text.includes(firstIssue.userGoal) || text.includes(firstIssue.userGoalUpd));
       assert(text.includes(firstIssue.userReason));
     })
   });
@@ -654,12 +663,7 @@ describe("User Stories",  function () {
 
   after(async function() {
     await driver.quit();
-    await User.deleteOne({username: user.username});
-    await User.deleteOne({username: user.usernameUpdate});
-    await User.deleteOne({username: user2.username});
-    await Project.deleteOne({title: firstProject.title});
-    await Project.deleteOne({title: firstProject.titleUpdate});
-    await Project.deleteOne({title: secondProject.title});
+    await removeInDB();
     await mongoose.disconnect();
   });
 });
