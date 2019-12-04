@@ -56,6 +56,7 @@ const secondIssue = {
 const firstTask = {
   _id: null,
   description: "task1",
+  descriptionUpd: "New Description",
   definitionOfDone: "definition Of Done",
   testLink: "https://test.fr/task"
 };
@@ -657,7 +658,7 @@ describe("User Stories",  function () {
       const text = await toast.getText();
 
       assert(text === "Sprint supprimé avec succès !");
-    })
+    });
   });
 
   describe("US#33 Consult one Sprint", () => {
@@ -688,7 +689,7 @@ describe("User Stories",  function () {
       assert(text === "Tâche créée avec succès !");
 
       const deleteButton = await driver.findElement(By.css(cssSelectors.deleteButton));
-      firstTask._id = await deleteButton.getAttribute("_id");
+      firstTask.id = await deleteButton.getAttribute("_id");
     });
     
     it("Second task", async () => {
@@ -709,7 +710,7 @@ describe("User Stories",  function () {
     it("Task cost shown in red if cost higher than 2 days", async () => {
       await driver.get(rootUrl + "/projects/" + firstProject.id + "/sprints/" + firstSprint._id);
 
-      const elem = await driver.findElement(By.css(`li[id='${firstTask._id}'] .red-text`));
+      const elem = await driver.findElement(By.css(`li[id='${firstTask.id}'] .red-text`));
       const text = await elem.getText();
 
       assert(text === "2 j/h");
@@ -717,33 +718,45 @@ describe("User Stories",  function () {
   });
 
   describe("US#21 / US#35 Update Task", () => {
+    it("Update first task", async () => {
+      await driver.get(rootUrl + "/projects/" + firstProject.id + "/sprints/" + firstSprint._id + "/tasks/" + firstTask.id + "/edit");
 
+      await driver.findElement(By.id(fields.task.description)).clear();
+      await driver.findElement(By.id(fields.task.description)).sendKeys(firstTask.descriptionUpd);
+      await driver.findElement(By.css(cssSelectors.greenText)).click();
+      const toast = await driver.findElement(By.css(cssSelectors.toast));
+      const text = await toast.getText();
+
+      assert(text === "Tâche modifiée avec succès !");
+    })
   });
 
   // US#22 testée après l'US#23
 
   describe("US#23 View Tasks", () => {
+    it("Consult tasks", async () => {
+      await driver.get(rootUrl + "/projects/" + firstProject.id + "/sprints/" + firstSprint._id);
 
+      const lis = await driver.findElements(By.css("ul.collapsible > li"));
+
+      assert(lis.length === 3);
+    })
   });
 
   describe("US#22 Delete Task", () => {
+    it("Delete the second task", async () => {
+      await driver.get(rootUrl + "/projects/" + firstProject.id + "/sprints/" + firstSprint._id);
 
-  });
+      await driver.findElement(By.css("li:nth-child(3) > .collapsible-header")).click();
+      await driver.wait(until.elementIsVisible(driver.findElement(By.css("li.active a.btn.deleteButton"))), 10000);
+      await driver.findElement(By.css("li.active a.btn.deleteButton")).click();
+      await driver.wait(until.elementIsVisible(driver.findElement(By.css("form.deleteForm > div.modal-footer > button.red-text"))), 10000);
+      await driver.findElement(By.css("form.deleteForm > div.modal-footer > button.red-text")).click();
+      const toast = await driver.findElement(By.css(cssSelectors.toast));
+      const text = await toast.getText();
 
-  describe("US#24 View my Tasks", () => {
-
-  });
-
-  describe("US#26 Link issue to Task", () => {
-
-  });
-
-  describe("US#27 Assign user to Task", () => {
-
-  });
-
-  describe("US#28 Update state to Task", () => {
-
+      assert(text === "Tâche supprimée avec succès !");
+    });
   });
 
   describe("US#36 Add Release", () => {
@@ -776,13 +789,31 @@ describe("User Stories",  function () {
   });
 
   describe("US#38 View Tests", () => {
+    it("View all tests", async () => {
+      await driver.get(rootUrl + "/projects/" + firstProject.id + "/tests");
 
+      const tasks = await driver.findElements(By.css("body > div.row > div.row > div > div:nth-child(1) > table > tbody > tr"));
+      const issues = await driver.findElements(By.css("body > div.row > div.row > div > div:nth-child(3) > table > tbody > tr"));
+
+      assert(tasks.length === 1);
+      assert(issues.length === 1);
+    });
   });
 
   // US#39 à US#41 non testées puisqu'il faut uploader un fichier
 
   describe("US#43 View burndown chart", () => {
+    it("Project burndown chart", async () => {
+      await driver.get(rootUrl + "/projects/" + firstProject.id);
 
+      await driver.findElement(By.css("canvas#burnDownChart"));
+    });
+
+    it("Sprint burndown chart", async () => {
+      await driver.get(rootUrl + "/projects/" + firstProject.id + "/sprints/" + firstSprint._id);
+
+      await driver.findElement(By.css("canvas#burnDownChart"));
+    });
   });
 
   describe("US#44 Update Release", () => {
