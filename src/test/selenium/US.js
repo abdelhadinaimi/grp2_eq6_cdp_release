@@ -56,17 +56,15 @@ const secondIssue = {
 const firstTask = {
   _id: null,
   description: "task1",
-  cost: "2",
   testLink: "https://google.com",
   definitionOfDone: "definition Of Done"
-}
+};
 
 const secondTask = {
   description: "task2",
-  cost: "1",
   testLink: "https://google.com",
   definitionOfDone: "definition Of Done"
-}
+};
 
 const firstSprint = {
   _id: null,
@@ -677,7 +675,7 @@ describe("User Stories",  function () {
     it("First task", async () => {
       await driver.get(rootUrl + "/projects/" + firstProject.id + "/sprints/" + firstSprint._id + "/tasks/add");
 
-      await driver.findElement(By.id(fields.task.cost)).sendKeys(firstTask.cost);
+      await driver.findElement(By.id(fields.task.cost)).sendKeys(Key.ARROW_UP, Key.ARROW_UP, Key.ARROW_UP);
       await driver.findElement(By.id(fields.task.definitionOfDone)).sendKeys(firstTask.definitionOfDone);
       await driver.findElement(By.id(fields.task.description)).sendKeys(firstTask.description);
       await driver.findElement(By.id(fields.task.testLink)).sendKeys(firstTask.testLink);
@@ -694,7 +692,6 @@ describe("User Stories",  function () {
     it("Second task", async () => {
       await driver.get(rootUrl + "/projects/" + firstProject.id + "/sprints/" + firstSprint._id + "/tasks/add");
 
-      await driver.findElement(By.id(fields.task.cost)).sendKeys(secondTask.cost);
       await driver.findElement(By.id(fields.task.definitionOfDone)).sendKeys(secondTask.definitionOfDone);
       await driver.findElement(By.id(fields.task.description)).sendKeys(secondTask.description);
       await driver.findElement(By.id(fields.task.testLink)).sendKeys(secondTask.testLink);
@@ -706,7 +703,7 @@ describe("User Stories",  function () {
     });
   });
 
-  describe("US#42 / US#25 Consult Task", () => {
+  describe("US#25 / US#42 Consult Task", () => {
     it("Task cost shown in red if cost higher than 2 days", async () => {
       await driver.get(rootUrl + "/projects/" + firstProject.id + "/sprints/" + firstSprint._id);
 
