@@ -358,11 +358,9 @@ module.exports.removeContributorToProject = (projectId, userId, remId) => new Pr
  * @returns {Promise<boolean|Error>} an object representing the result of this operation
  */
 module.exports.acceptInvitation = (projectId, contributorId) => new Promise((resolve, reject) => {
-  console.log(projectId, contributorId);
   Project
     .findOne({_id: projectId, collaborators: {$elemMatch: {_id: contributorId, activated: false}}})
     .then(project => {
-      console.log(project);
       if (!project)
         return resolve(false);
 
