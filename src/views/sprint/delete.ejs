@@ -20,7 +20,7 @@
     const buttons = document.querySelectorAll(".deleteButton");
     buttons.forEach(button => button.addEventListener("click", () => {
       const sprintId = button.getAttribute("_id");
-      form.setAttribute("action", "/projects/<%=project.id%>/sprints/" + sprintId + "?_method=DELETE");
+      form.setAttribute("action", "/projects/<%=project._id%>/sprints/" + sprintId + "?_method=DELETE");
     }));
   });
 </script>
