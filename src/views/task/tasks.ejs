@@ -41,7 +41,7 @@
             <div class="col s3 center"><strong>État</strong></div>
           </li>
           <% project.tasks.forEach(task => { %>
-          <li <%= activeTask ? (activeTask.toString() === task._id.toString() ? "class='active task'" : "class=task" ) : "class=task" %>
+          <li class="task <%= activeTask ? (activeTask.toString() === task._id.toString() ? "active" : "") : "" %>"
                   id="<%=task._id%>" mine="<%=task.assigned%>">
             <div class="collapsible-header line" tabindex="0">
               <div class="col s8 center truncate"><%=task.description %></div>

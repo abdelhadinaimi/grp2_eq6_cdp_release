@@ -42,7 +42,8 @@ const firstIssue = {
   userType: "Utilisateur",
   userGoal: "Saisir mes identifiants",
   userGoalUpd: "Saisir mon email et mon mot de passe",
-  userReason: "Me connecter"
+  userReason: "Me connecter",
+  testLink: "https://test.fr/sprint"
 };
 
 const secondIssue = {
@@ -68,6 +69,13 @@ const secondSprint = {
   description: "Le sprint 2 !!!!"
 };
 
+const firstRelease = {
+  version: "v1.0",
+  description: "Description de la première release",
+  downloadLink: "https://realease.fr/v1.0.zip",
+  docLink: "https://doc.fr/v1.0.zip"
+};
+
 const fields = {
   user: {
     username: "username",
@@ -86,16 +94,23 @@ const fields = {
     storyId: "storyId",
     userType: "userType",
     userGoal: "userGoal",
-    userReason: "userReason"
-  },
-  task: {
-
+    userReason: "userReason",
+    testLink: "testLink"
   },
   sprint: {
     id: "id",
     startDate: "startDate",
     endDate: "endDate",
     description: "description"
+  },
+  task: {
+
+  },
+  release: {
+    version: "version",
+    description: "description",
+    downloadLink: "downloadLink",
+    docLink: "docLink"
   }
 };
 
@@ -452,6 +467,7 @@ describe("User Stories",  function () {
       await driver.findElement(By.id(fields.issue.userType)).sendKeys(firstIssue.userType);
       await driver.findElement(By.id(fields.issue.userGoal)).sendKeys(firstIssue.userGoal);
       await driver.findElement(By.id(fields.issue.userReason)).sendKeys(firstIssue.userReason);
+      await driver.findElement(By.id(fields.issue.testLink)).sendKeys(firstIssue.testLink);
       await driver.findElement(By.css(cssSelectors.greenText)).click();
       const toast = await driver.findElement(By.css(cssSelectors.toast));
       const text = await toast.getText();
@@ -678,7 +694,19 @@ describe("User Stories",  function () {
   });
 
   describe("US#36 Add Release", () => {
+    it("Add first release", async () => {
+      await driver.get(rootUrl + "/projects/" + firstProject.id + "/releases/add");
 
+      await driver.findElement(By.id(fields.release.version)).sendKeys(firstRelease.version);
+      await driver.findElement(By.id(fields.release.description)).sendKeys(firstRelease.description);
+      await driver.findElement(By.id(fields.release.downloadLink)).sendKeys(firstRelease.downloadLink);
+      await driver.findElement(By.id(fields.release.docLink)).sendKeys(firstRelease.docLink);
+      await driver.findElement(By.css(cssSelectors.greenText)).click();
+      const toast = await driver.findElement(By.css(cssSelectors.toast));
+      const text = await toast.getText();
+
+      assert(text === "Release créée avec succès !");
+    });
   });
 
   describe("US#37 View Releases", () => {
@@ -689,17 +717,7 @@ describe("User Stories",  function () {
 
   });
 
-  describe("US#39 View Documentation", () => {
-
-  });
-
-  describe("US#40 Add Documentation", () => {
-
-  });
-
-  describe("US#41 Download Documentation", () => {
-
-  });
+  // US#39 à US#41 non testées puisqu'il faut uploader un fichier
 
   describe("US#42 Alert on Task cost higher than 2 days", () => {
 
