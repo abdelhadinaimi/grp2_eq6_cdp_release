@@ -56,8 +56,8 @@ const secondIssue = {
 const firstTask = {
   _id: null,
   description: "task1",
-  testLink: "https://google.com",
-  definitionOfDone: "definition Of Done"
+  definitionOfDone: "definition Of Done",
+  testLink: "https://test.fr/task"
 };
 
 const secondTask = {
@@ -83,7 +83,9 @@ const secondSprint = {
 };
 
 const firstRelease = {
+  id: null,
   version: "v1.0",
+  versionUpd: "v1.1",
   description: "Description de la première release",
   downloadLink: "https://realease.fr/v1.0.zip",
   docLink: "https://doc.fr/v1.0.zip"
@@ -757,11 +759,20 @@ describe("User Stories",  function () {
       const text = await toast.getText();
 
       assert(text === "Release créée avec succès !");
+
+      const deleteButton = await driver.findElement(By.css(cssSelectors.deleteButton));
+      firstRelease.id = await deleteButton.getAttribute("_id");
     });
   });
 
   describe("US#37 View Releases", () => {
+    it("View all releases", async () => {
+      await driver.get(rootUrl + "/projects/" + firstProject.id + "/releases");
 
+      const lis = await driver.findElements(By.css("ul.collapsible > li"));
+
+      assert(lis.length === 2);
+    });
   });
 
   describe("US#38 View Tests", () => {
@@ -775,11 +786,33 @@ describe("User Stories",  function () {
   });
 
   describe("US#44 Update Release", () => {
+    it("Update the first release", async () => {
+      await driver.get(rootUrl + "/projects/" + firstProject.id + "/releases/" + firstRelease.id + "/edit");
 
+      await driver.findElement(By.id(fields.release.version)).clear();
+      await driver.findElement(By.id(fields.release.version)).sendKeys(firstRelease.versionUpd);
+      await driver.findElement(By.css(cssSelectors.greenText)).click();
+      const toast = await driver.findElement(By.css(cssSelectors.toast));
+      const text = await toast.getText();
+
+      assert(text === "Release mise à jour !");
+    });
   });
 
   describe("US#45 Delete Release", () => {
+    it("Delete the first release", async () => {
+      await driver.get(rootUrl + "/projects/" + firstProject.id + "/releases");
 
+      await driver.findElement(By.css("li:nth-child(2) > .collapsible-header")).click();
+      await driver.wait(until.elementIsVisible(driver.findElement(By.css("li.active a.btn.deleteButton"))), 10000);
+      await driver.findElement(By.css("li.active a.btn.deleteButton")).click();
+      await driver.wait(until.elementIsVisible(driver.findElement(By.css("form.deleteForm > div.modal-footer > button.red-text"))), 10000);
+      await driver.findElement(By.css("form.deleteForm > div.modal-footer > button.red-text")).click();
+      const toast = await driver.findElement(By.css(cssSelectors.toast));
+      const text = await toast.getText();
+
+      assert(text === "Release supprimée avec succès !");
+    });
   });
 
   describe("US#03 Logout", () => {
