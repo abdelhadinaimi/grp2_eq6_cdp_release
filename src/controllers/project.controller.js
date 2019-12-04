@@ -267,7 +267,7 @@ module.exports.deleteInvite = (req, res) => {
         req.flash('toast', 'Contributeur supprimé !');
       }
       if(result && !userId){
-        req.flash('toast', 'Vous avez quittez le projet !');
+        req.flash('toast', 'Vous avez quitté le projet !');
       }
       return res.redirect(redirectUrl);
     })
