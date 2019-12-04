@@ -53,6 +53,21 @@ const secondIssue = {
   userReason: "Générer un nouveau mot de passe"
 };
 
+const firstTask = {
+  _id: null,
+  description: "task1",
+  cost: "2",
+  testLink: "https://google.com",
+  definitionOfDone: "definition Of Done"
+}
+
+const secondTask = {
+  description: "task2",
+  cost: "1",
+  testLink: "https://google.com",
+  definitionOfDone: "definition Of Done"
+}
+
 const firstSprint = {
   _id: null,
   id: "Sprint 1",
@@ -104,7 +119,10 @@ const fields = {
     description: "description"
   },
   task: {
-
+    description: "description",
+    cost: "cost",
+    testLink: "testLink",
+    definitionOfDone: "definitionOfDone"
   },
   release: {
     version: "version",
@@ -656,7 +674,47 @@ describe("User Stories",  function () {
   });
 
   describe("US#20 / US#34 Create Task", () => {
+    it("First task", async () => {
+      await driver.get(rootUrl + "/projects/" + firstProject.id + "/sprints/" + firstSprint._id + "/tasks/add");
 
+      await driver.findElement(By.id(fields.task.cost)).sendKeys(firstTask.cost);
+      await driver.findElement(By.id(fields.task.definitionOfDone)).sendKeys(firstTask.definitionOfDone);
+      await driver.findElement(By.id(fields.task.description)).sendKeys(firstTask.description);
+      await driver.findElement(By.id(fields.task.testLink)).sendKeys(firstTask.testLink);
+      await driver.findElement(By.css(cssSelectors.greenText)).click();
+      const toast = await driver.findElement(By.css(cssSelectors.toast));
+      const text = await toast.getText();
+
+      assert(text === "Tâche créée avec succès !");
+
+      const deleteButton = await driver.findElement(By.css(cssSelectors.deleteButton));
+      firstTask._id = await deleteButton.getAttribute("_id");
+    });
+    
+    it("Second task", async () => {
+      await driver.get(rootUrl + "/projects/" + firstProject.id + "/sprints/" + firstSprint._id + "/tasks/add");
+
+      await driver.findElement(By.id(fields.task.cost)).sendKeys(secondTask.cost);
+      await driver.findElement(By.id(fields.task.definitionOfDone)).sendKeys(secondTask.definitionOfDone);
+      await driver.findElement(By.id(fields.task.description)).sendKeys(secondTask.description);
+      await driver.findElement(By.id(fields.task.testLink)).sendKeys(secondTask.testLink);
+      await driver.findElement(By.css(cssSelectors.greenText)).click();
+      const toast = await driver.findElement(By.css(cssSelectors.toast));
+      const text = await toast.getText();
+
+      assert(text === "Tâche créée avec succès !");
+    });
+  });
+
+  describe("US#42 / US#25 Consult Task", () => {
+    it("Task cost shown in red if cost higher than 2 days", async () => {
+      await driver.get(rootUrl + "/projects/" + firstProject.id + "/sprints/" + firstSprint._id);
+
+      const elem = await driver.findElement(By.css(`li[id='${firstTask._id}'] .red-text`));
+      const text = await elem.getText();
+
+      assert(text === "2 j/h");
+    });
   });
 
   describe("US#21 / US#35 Update Task", () => {
@@ -674,10 +732,6 @@ describe("User Stories",  function () {
   });
 
   describe("US#24 View my Tasks", () => {
-
-  });
-
-  describe("US#25 Consult one Task", () => {
 
   });
 
@@ -718,10 +772,6 @@ describe("User Stories",  function () {
   });
 
   // US#39 à US#41 non testées puisqu'il faut uploader un fichier
-
-  describe("US#42 Alert on Task cost higher than 2 days", () => {
-
-  });
 
   describe("US#43 View burndown chart", () => {
 
