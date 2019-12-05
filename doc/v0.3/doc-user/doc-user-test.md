@@ -1,4 +1,4 @@
-# Documentation utilisateur :<br /> Gestion de compte utilisateur
+# Documentation utilisateur :<br /> Gestion des tests
 
 Cette documentation correspond à la version 0.3 de **SixCess**.
 
@@ -13,16 +13,8 @@ Cette documentation correspond à la version 0.3 de **SixCess**.
 
 ***
 
-## Se connecter à SixCess
+## Consulter l'ensemble des tests d'un projet
 
-Ci-dessous, la page d'accueil de **SixCess**, à partir de laquelle il est possible de créer un compte ou de se connecter. Aucune fonctionnalité de l'application n'est accessible tant que l'utilisateur ne s'est pas connecté.
+Pour afficher l'ensemble des tests d'un projet, rendez-vous simplement dans l'onglet "Tests". Comme vous pouvez l'observer avec l'image ci-dessous, la page "Tests" ne permet pas de créer ou de gérer les tests du projet, mais simplement de consulter ceux qui ont été associés à des issues ou à des tâches, et de cliquer sur le lien de test correspondant.
 
-![accueil](/media/doc-user/accueil.png)
-
-***
-
-## Modifier les informations du compte
-
-Il est possible de modifier les informations de son compte à tout moment, en cliquant sur le menu déroulant à droite de la barre de navigation.
-
-![mon compte](/media/doc-user/mon-compte.png)
+![tests](/media/doc-user/tests.png)

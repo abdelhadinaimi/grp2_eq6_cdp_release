@@ -1,4 +1,4 @@
-# Documentation utilisateur :<br /> Gestion de compte utilisateur
+# Documentation utilisateur :<br /> Gestion de la documentation
 
 Cette documentation correspond à la version 0.3 de **SixCess**.
 
@@ -13,16 +13,8 @@ Cette documentation correspond à la version 0.3 de **SixCess**.
 
 ***
 
-## Se connecter à SixCess
-
-Ci-dessous, la page d'accueil de **SixCess**, à partir de laquelle il est possible de créer un compte ou de se connecter. Aucune fonctionnalité de l'application n'est accessible tant que l'utilisateur ne s'est pas connecté.
-
-![accueil](/media/doc-user/accueil.png)
+## Consulter toute la documentation d'un projet
 
 ***
 
-## Modifier les informations du compte
-
-Il est possible de modifier les informations de son compte à tout moment, en cliquant sur le menu déroulant à droite de la barre de navigation.
-
-![mon compte](/media/doc-user/mon-compte.png)
+## Ajouter de la documentation
