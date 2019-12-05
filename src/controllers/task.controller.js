@@ -195,7 +195,7 @@ module.exports.deleteTask = (req, res) => {
         return res.status(403).redirect(routes.index);
       }
       req.flash("toast", "Tâche supprimée avec succès !");
-      return res.status(200).redirect(routes.task.tasks(projectId, sprintId));
+      return res.status(200).redirect(routes.sprint.sprint(projectId, sprintId));
     })
     .catch(err => {
       console.log(err);
