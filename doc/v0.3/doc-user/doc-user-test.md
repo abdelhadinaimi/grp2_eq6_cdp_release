@@ -15,6 +15,6 @@ Cette documentation correspond à la version 0.3 de **SixCess**.
 
 ## Consulter l'ensemble des tests d'un projet
 
-Pour afficher l'ensemble des tests d'un projet, rendez-vous simplement dans l'onglet "Tests". Comme vous pouvez l'observer avec l'image ci-dessous, la page "Tests" ne permet pas de créer ou de gérer les tests du projet, mais simplement de consulter ceux qui ont été associés à des issues ou à des tâches, et de cliquer sur le lien de test correspondant.
+Pour afficher l'ensemble des tests d'un projet, rendez-vous simplement dans l'onglet "Tests". Il n'est pas possible de créer ou de gérer les tests du projet depuis cette page, mais simplement de consulter ceux qui ont été associés à des issues ou à des tâches, et de cliquer sur le lien de test correspondant.
 
 ![tests](/media/doc-user/tests.png)
