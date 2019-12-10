@@ -42,7 +42,7 @@ const csrfProtection = csrf();
 const doc_storage = "doc_storage";
 
 const fileStorage = multer.diskStorage({
-  destination: (req, file, cb) => {cb(null, doc_storage)},
+  destination: (req, file, cb) => {cb(null, path.join(__dirname, doc_storage))},
   filename: (req, file, cb) => {cb(null, new Date().toISOString() + "-" + file.originalname)}
 });
 const fileFilter = (req, file, cb) => {

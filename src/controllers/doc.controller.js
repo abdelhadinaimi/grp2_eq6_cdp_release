@@ -44,7 +44,7 @@ module.exports.postAddDoc = (req, res) => {
   const doc = {
     category: req.body.type,
     version: req.body.version,
-    docUrl: req.file.path
+    docUrl: 'doc_storage/' + req.file.filename
   };
 
   return docRepo
