@@ -1,11 +1,5 @@
-<%- include('../partials/head.ejs') %>
-<%- include('../partials/project-header.ejs') %>
 <% const states = ["TODO", "DOING", "DONE", "TOTEST", "TESTING", "TESTED"]; %>
-
-<div class="row center-align" style="margin-top: 15px">
-  <a class="btn white black-text" href="/projects/<%= project.id %>/sprints/<%=project.sprint.id%>#<%=project.sprint.id%>">Retour aux sprints</a>
-</div>
-
+<% let mine = false;%>
 <% if (project.tasks.length > 0) { %>
 <div class="row">
   <div class="col s12">
@@ -13,11 +7,11 @@
       <div class="col s12 m10 offset-m1 l8 offset-l2">
         <div class="row valign-wrapper hide-on-small-only">
           <div class="col m4 offset-m4 center-align">
-            <h5><%=pageTitle%> - <%=project.sprint.title%></h5>
+            <h5><%= mine ? "Mes Tâches" : "Tâches"%></h5>
           </div>
           <% if ((isPo || isPm) && project.active) { %>
           <div class="col m4 center-align">
-            <a class="btn green modal-trigger" href="/projects/<%= project.id %>/sprints/<%= project.sprint.id %>/tasks/add">Ajouter une tâche</a>
+            <a class="btn green modal-trigger" href="/projects/<%= project.id %>/sprints/<%= project.sprint._id %>/tasks/add">Ajouter une tâche</a>
           </div>
           <% } %>
         </div>
@@ -32,15 +26,12 @@
   <div class="row">
     <div class="col s12 m10 offset-m1 l8 offset-l2">
       <div class="row">
-        <% if (mine) { %>
-          <a class="btn-small light-blue darken-1 right" href="/projects/<%= project.id %>/sprints/<%= project.sprint.id %>/tasks">
-            <i class="material-icons left">select_all</i>Toutes
-          </a>
-        <% } else { %>
-          <a class="btn-small light-blue darken-1 right" href="/projects/<%= project.id %>/sprints/<%= project.sprint.id %>/tasks/mine">
-            <i class="material-icons left">person_outline</i>Mes Tâches
-          </a>
-        <% } %>
+        <a id="allMineButton" class="btn-small light-blue darken-1 right all" style="display: none">
+          <i class="material-icons left">select_all</i>Toutes
+        </a>
+        <a id="allMineButton" class="btn-small light-blue darken-1 right mine">
+          <i class="material-icons left">person_outline</i>Mes Tâches
+        </a>
       </div>
       <div class="row card-content">
         <ul class="collapsible">
@@ -50,8 +41,8 @@
             <div class="col s3 center"><strong>État</strong></div>
           </li>
           <% project.tasks.forEach(task => { %>
-          <li <%= activeTask ? (activeTask.toString() === task._id.toString() ? "class=active" : "" ) : "" %>
-                  id="<%=task._id%>">
+          <li class="task <%= activeTask ? (activeTask.toString() === task._id.toString() ? "active" : "") : "" %>"
+                  id="<%=task._id%>" mine="<%=task.assigned%>">
             <div class="collapsible-header line" tabindex="0">
               <div class="col s8 center truncate"><%=task.description %></div>
               <div class="col s1 center <%=task.cost >= 2 ? 'red-text tooltipped' : '' %>" data-position="bottom"
@@ -66,7 +57,7 @@
               <div class="row center-align hide-on-med-and-up">
                 <% if ((isPo || isPm) && project.active) { %>
                 <div class="col s6">
-                  <a href="/projects/<%=project.id%>/sprints/<%=project.sprint.id%>/tasks/<%=task._id%>/edit" class="btn-floating white">
+                  <a href="/projects/<%=project.id%>/sprints/<%=project.sprint._id%>/tasks/<%=task._id%>/edit" class="btn-floating white">
                     <i class="material-icons black-text">edit</i>
                   </a>
                 </div>
@@ -128,7 +119,7 @@
                 <div class="col m3 l2 center-align hide-on-small-only">
                     <% if ((isPo || isPm) && project.active) { %>
                   <div class="row">
-                    <a href="/projects/<%=project.id%>/sprints/<%=project.sprint.id%>/tasks/<%=task._id%>/edit" class="btn white black-text" style="width: 100%">Modifier</a>
+                    <a href="/projects/<%=project.id%>/sprints/<%=project.sprint._id%>/tasks/<%=task._id%>/edit" class="btn white black-text" style="width: 100%">Modifier</a>
                   </div>
                   <div class="row">
                     <a href="#deleteTask" class="btn red modal-trigger deleteButton" _id="<%= task._id %>"
@@ -161,7 +152,7 @@
       <div class="col s12 center-align">
         <div class="row">
           <h5>Vous n'avez actuellement aucune tâche qui vous est assignée pour ce sprint...</h5>
-          <a href="/projects/<%= project.id %>/sprints/<%= project.sprint.id %>/tasks">Retour aux tâches</a>
+          <a href="/projects/<%= project.id %>/sprints/<%= project.sprint._id %>/tasks">Retour aux tâches</a>
         </div>
       </div>
     </div>
@@ -176,7 +167,7 @@
             <h6>Essayez de créer une première tâche !</h6>
           </div>
           <div class="row">
-            <a href="/projects/<%= project.id %>/sprints/<%= project.sprint.id %>/tasks/add" class="btn-flat green-text waves-effect">Créer une première tâche</a>
+            <a href="/projects/<%= project.id %>/sprints/<%= project.sprint._id %>/tasks/add" class="btn-flat green-text waves-effect">Créer une première tâche</a>
           </div>
         <% } %>
       </div>
@@ -184,20 +175,34 @@
   <% } %>
 <% } %>
 
-<%- include('../partials/scripts.ejs') %>
-<%- include('../partials/toast.ejs') %>
 <%- include('delete-task.ejs') %>
-<%- include('../partials/menu-connected-script.ejs') %>
 
 <script>
   $(document).ready(function () {
+    let mine = false;
     $('.collapsible').collapsible();
     $('.tooltipped').tooltip();
+
+    $('a#allMineButton').on("click", function(e) {
+      if (mine) {
+        $('.mine').attr("style", "");
+        $('.all').attr("style", "display: none");
+        $('li.task[mine=false]').attr("style", "");
+
+        mine = false;
+      } else {
+        $('.mine').attr("style", "display: none");
+        $('.all').attr("style", "");
+        $('li.task[mine=false]').attr("style", "display: none");
+
+        mine = true;
+      }
+    });
 
     $('.state-select').formSelect().change(function (){
       const taskId = this.getAttribute('_id')
       const state = this.options[this.selectedIndex].value;
-      fetch('/projects/<%=project.id%>/sprints/<%= project.sprint.id %>/tasks/' + taskId +'/state', {
+      fetch('/projects/<%=project.id%>/sprints/<%= project.sprint._id %>/tasks/' + taskId +'/state', {
         credentials: 'same-origin',
         method: 'PUT',
         headers: {

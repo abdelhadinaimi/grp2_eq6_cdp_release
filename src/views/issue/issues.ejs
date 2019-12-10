@@ -73,13 +73,10 @@
                                         </div>
                                         <div class="row">
                                             <div class="col s12 offset-m1 m10">
-                                                <b>Sprint : </b>Sprint 5
-                                            </div>
-                                            <div class="col s12 offset-m1 m10">
                                                 <% if (issue.tasks.length > 0) { %>
                                                     <b>Tâches : </b>
                                                     <% issue.tasks.forEach(task => { %>
-                                                        <a class="<%=task.color%>" href="/projects/<%=project.id%>/sprints/<%=task.linkedSprint%>/tasks/<%=task._id%>#<%=task._id%>">
+                                                        <a class="<%=task.color%>" href="/projects/<%=project.id%>/sprints/<%=task.linkedSprint%>/<%=task._id%>#<%=task._id%>">
                                                             #<%=task.index%>
                                                         </a>
                                                     <%})%>
@@ -118,7 +115,7 @@
             <div class="row">
                 <h5>Il n'y a actuellement aucune issue pour ce projet...</h5>
             </div>
-            <% if (isPo || isPm) { %>
+            <% if ((isPo || isPm) && project.active) { %>
                 <div class="row">
                     <h6>Essayez de créer une première issue !</h6>
                 </div>

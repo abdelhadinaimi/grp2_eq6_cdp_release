@@ -35,8 +35,8 @@
   <div class="row">
     <div class="col s12 m10 offset-m1 l8 offset-l2">
       <div class="row card-content">
-        <ul class="collapsible">
-          <li class="collapsible-header">
+        <ul class="collapsible popout">
+          <li class="collapsible-header not-collapse">
             <div class="col s2 center"><strong>Identifiant</strong></div>
             <div class="col s6 center"><strong>Description</strong></div>
             <div class="col s2 center"><strong>Date de début</strong></div>
@@ -53,13 +53,18 @@
             </div>
             <div class="collapsible-body">
               <div class="row center-align hide-on-med-and-up">
-                <% if ((isPo || isPm) && sprint.edit && project.active) { %>
-                <div class="col s6">
-                  <a href="sprints/<%= sprint._id %>/edit" class="btn-floating white">
+                <div class="col s4">
+                  <a href="/projects/<%= project.id %>/sprints/<%= sprint._id %>" class="btn-floating blue">
+                    <i class="material-icons">remove_red_eye</i>
+                  </a>
+                </div>
+                <% if ((isPo || isPm) && project.active) { %>
+                <div class="col s4">
+                  <a href="/projects/<%= project.id %>/sprints/<%= sprint._id %>/edit" class="btn-floating white">
                     <i class="material-icons black-text">edit</i>
                   </a>
                 </div>
-                <div class="col s6">
+                <div class="col s4">
                   <a href="#deleteSprint" class="btn-floating red modal-trigger deleteButton" _id="<%= sprint._id %>">
                     <i class="material-icons">delete</i>
                   </a>
@@ -111,7 +116,7 @@
                     <a href="/projects/<%= project.id %>/sprints/<%= sprint._id %>" class="btn blue"
                       style="width: 100%">Consulter</a>
                   </div>
-                  <% if ((isPo || isPm) && sprint.edit && project.active) { %>
+                  <% if ((isPo || isPm) && project.active) { %>
                   <div class="row">
                     <a href="/projects/<%=project.id%>/sprints/<%= sprint._id %>/edit" class="btn white black-text"
                       style="width: 100%">Modifier</a>
@@ -128,11 +133,6 @@
                 <div class="row valign-wrapper">
                   <div class="col s5 offset-s1">
                     <h5>Tâches</h5>
-                  </div>
-                  <div class="col offset-s1 s2 right-align">
-                    <a class="btn-floating blue" href="/projects/<%=project.id%>/sprints/<%=sprint._id%>/tasks">
-                      <i class="material-icons">remove_red_eye</i>
-                    </a>
                   </div>
                   <% if (sprint.edit && project.active) { %>
                   <div class="col s2 left-align">
@@ -202,6 +202,7 @@
 <script>
   $(document).ready(function () {
     $('.collapsible').collapsible();
+    $(".not-collapse").on("click", function(e) { e.stopPropagation(); });
   });
 </script>
 

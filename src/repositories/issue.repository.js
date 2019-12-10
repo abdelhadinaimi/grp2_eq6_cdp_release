@@ -15,10 +15,9 @@ const {errorGeneralMessages} = require('../util/constants');
  * @returns {Promise<Object>} an object represeting the result of this operation
  */
 module.exports.createIssue = (projectId, issue, userId) => new Promise((resolve, reject) => {
-  projectId.equals
   if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(userId))
     return resolve({success: false, error: errorGeneralMessages.notAllowed});
-  
+
   return Project.findIfUserType(projectId, userId, ['po', 'pm'])
     .then(project => {
       if (!project) {

@@ -106,11 +106,12 @@ module.exports.global = {
     issue: {
       issues: projectId => projects + projectId + "/issues"
     },
-    task: {
-      tasks: (projectId, sprintId) => projects + projectId + "/sprints/" + sprintId + "/tasks"
-    },
     sprint: {
-      sprints: projectId => projects + projectId + "/sprints"
+      sprints: projectId => projects + projectId + "/sprints",
+      sprint: (projectId, sprintId) => projects + projectId + "/sprints/" + sprintId
+    },
+    task: {
+      task: (projectId, sprintId, taskId) => projects + projectId + "/sprints/" + sprintId + "/" + taskId + "#" + taskId
     },
     release: {
       releases: projectId => projects + projectId + "/releases"

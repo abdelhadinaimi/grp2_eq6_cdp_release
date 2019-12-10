@@ -1,8 +1,9 @@
 <%- include('../partials/head.ejs') %>
 <%- include('../partials/project-header.ejs') %>
 
-<% if (isPo && project.active) { %>
+<% if (isPo) { %>
 <ul id="settings-dropdown" class="dropdown-content light-blue darken-3">
+    <% if (project.active) { %>
     <li>
         <a href="/projects/<%= project.id %>/edit" class="white-text">
             Modifier<span class="hide-on-med-and-down"> les informations</span>
@@ -13,6 +14,14 @@
             Terminer<span class="hide-on-med-and-down"> le projet</span>
         </a>
     </li>
+    <% } else { %>
+    <li>
+        <a href="#openProject" class="white-text modal-trigger openButton" _id="<%= project.id %>">
+            Réouvrir<span class="hide-on-med-and-down"> le projet</span>
+        </a>
+    </li>
+    <% } %>
+
     <li>
         <a href="#deleteProject" class="white-text modal-trigger deleteButton" _id="<%= project.id %>">
             Supprimer<span class="hide-on-med-and-down"> le projet</span>
@@ -27,7 +36,7 @@
             <div class="col s12 m7 offset-m1 l8 offset-l1">
                 <h1 class="left-align white-text" style="margin: 15px 0"><%= project.title %></h1>
             </div>
-            <% if (isPo && project.active) { %>
+            <% if (isPo) { %>
             <div class="col s12 m4 l3">
                 <ul class="center-align">
                     <li>
@@ -148,9 +157,13 @@
 <%- include('../partials/scripts.ejs') %>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
 <%- include('../partials/toast.ejs') %>
-<% if (isPo && project.active) { %>
+<% if (isPo) { %>
 <%- include('delete-project.ejs') %>
-<%- include('close-project.ejs') %>
+    <% if (project.active) { %>
+        <%- include('close-project.ejs') %>
+    <% } else { %>
+        <%- include('open-project.ejs') %>
+    <% } %>
 <% } %>
 <% if ((isPo || isPm) && project.active) { %>
 <%- include('delete-contributor.ejs') %>

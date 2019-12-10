@@ -24,7 +24,7 @@ route.put(rootProjectId, projectValidations, validate, projectController.putEdit
 
 route.delete(rootProjectId, validate, projectController.deleteProject);
 
-route.put(rootProjectId + "/close", projectController.putClose);
+route.put(rootProjectId + "/closeOpen", projectController.putCloseOpen);
 
 route.post(rootProjectId + "/invite", projectController.postInvite);
 
