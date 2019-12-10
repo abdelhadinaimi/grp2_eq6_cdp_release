@@ -34,7 +34,7 @@ Lien vers les Releases : [Lien](https://github.com/abdelhadinaimi/grp2_eq6_cdp_r
 
 # Backlog
 
-| ID | Descriptif | Priorité | Coût | N° Sprint | État |
+| ID | Descriptif | Priorité | Difficulté | N° Sprint | État |
 | :-: | -- | :-: | :-: | :-: | :-: |
 | US#01 | **En tant que** visiteur, **je souhaite** cliquer sur le bouton “Créer un compte”, remplir un formulaire composé des champs “Adresse mail” (format valide d’une adresse mail, 256 char max), “Nom d’utilisateur” (unique, 20 char max) et “Mot de Passe” (composé d’au moins une majuscule, une minuscule et un chiffre, 8 char min et 32 max), puis cliquer sur le bouton “Créer” **afin de** créer un compte. | High | 2 | 1 | DONE |
 | US#02 | **En tant que** visiteur, **je souhaite** cliquer sur le bouton “Se connecter” puis remplir un formulaire en donnant mon adresse mail et mon mot de passe (cf. spécifications US#01) **afin de** me connecter. | High | 1 | 1 | DONE |
