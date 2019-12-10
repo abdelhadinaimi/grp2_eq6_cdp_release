@@ -12,7 +12,9 @@ const project1Id = '5dbccabe7d93dd0015ea3c21';
 const project2Id = '5dbccabe7d93dd0015ea3c22';
 const fakeProjectId = '5dbccabe7d93dd0015eac666';
 
-describe('UT Project Repository', () => {
+describe('UT Project Repository', function () {
+  this.timeout(10000);
+
   before((done) => {
     buildConnection('unit-test')
       .then(() => {
@@ -38,7 +40,6 @@ describe('UT Project Repository', () => {
         dueDate: '31/12/2019',
         projectOwner: userId
       };
-
       projectRepo
         .createProject(project)
         .then(result => {
@@ -51,7 +52,7 @@ describe('UT Project Repository', () => {
       const project = {
         id: project2Id,
         title: 'Test Project 2',
-        projectOwner: userId
+        projectOwner: userId,
       };
 
       projectRepo

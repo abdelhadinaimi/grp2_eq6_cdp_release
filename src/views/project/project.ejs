@@ -3,11 +3,25 @@
 
 <% if (isPo) { %>
 <ul id="settings-dropdown" class="dropdown-content light-blue darken-3">
+    <% if (project.active) { %>
     <li>
         <a href="/projects/<%= project.id %>/edit" class="white-text">
             Modifier<span class="hide-on-med-and-down"> les informations</span>
         </a>
     </li>
+    <li>
+        <a href="#closeProject" class="white-text modal-trigger closeButton" _id="<%= project.id %>">
+            Terminer<span class="hide-on-med-and-down"> le projet</span>
+        </a>
+    </li>
+    <% } else { %>
+    <li>
+        <a href="#openProject" class="white-text modal-trigger openButton" _id="<%= project.id %>">
+            Réouvrir<span class="hide-on-med-and-down"> le projet</span>
+        </a>
+    </li>
+    <% } %>
+
     <li>
         <a href="#deleteProject" class="white-text modal-trigger deleteButton" _id="<%= project.id %>">
             Supprimer<span class="hide-on-med-and-down"> le projet</span>
@@ -37,7 +51,7 @@
                 </ul>
             </div>
             <% } %>
-            <% if (!isPo) { %>
+            <% if (!isPo && project.active) { %>
             <div class="col s12 m4 l3">
                 <a href="#quitProject" class="btn red modal-trigger quitButton" _id="<%= project.id %>">
                     <i class="material-icons left">exit_to_app</i>
@@ -58,19 +72,24 @@
                 </div>
             <% } %>
         </div>
-        <% if (project.description) { %>
-            <div class="row">
-                <div class="col s12 m1O offset-m1">
-                    <h4>Description</h4>
-                    <blockquote><%- project.description.replace(/\n/g, '<br/>') %></blockquote>
-                </div>
+        <div class="row">
+            <div class="col s12 l5 offset-l1">
+                <% if (project.description) { %>
+                <h4>Description</h4>
+                <blockquote><%- project.description.replace(/\n/g, '<br/>') %></blockquote>
+                <% } %>
             </div>
-        <% } %>
+            <div class="col s12 l5">
+                <% if (project.burndown) { %>
+                    <canvas id="burnDownChart"></canvas>
+                <% } %>
+            </div>
+        </div>
         <div class="row">
             <div class="col s12 m10 offset-m1">
                 <h4>Contributeurs</h4>
                 <div class="card-panel">
-                    <% if (isPo || isPm) { %>
+                    <% if ((isPo || isPm) && project.active) { %>
                     <a href="#addContributor" class="btn-floating right green modal-trigger">
                         <i class="material-icons">add</i>
                     </a>
@@ -81,7 +100,7 @@
                             <th>Name</th>
                             <th>Added by</th>
                             <th>Rôle</th>
-                            <% if (isPo || isPm) { %>
+                            <% if ((isPo || isPm) && project.active) { %>
                             <th class="center-align">Action</th>
                             <% } %>
                         </tr>
@@ -97,7 +116,7 @@
                                 </td>
                                 <td>
                                     <% if (collaborator.activated) { %>
-                                        <% if (isPo && collaborator.userType !== 'po') { %>
+                                        <% if (isPo && collaborator.userType !== 'po' && project.active) { %>
                                             <div class="input-field">
                                                 <form action="/projects/<%=project.id%>/<%=collaborator._id._id%>/role?_method=PUT" method="post">
                                                     <input type="hidden" name="_csrf" value="<%= csrfToken %>">
@@ -116,7 +135,7 @@
                                     En cours d'activation
                                     <% } %>
                                 </td>
-                                <% if (isPo || isPm) { %>
+                                <% if ((isPo || isPm) && project.active) { %>
                                 <td class="center-align">
                                     <%- (collaborator.userType === 'po') ? '-' :
                                             '<a href="#deleteContributor" '
@@ -136,17 +155,23 @@
 </div>
 
 <%- include('../partials/scripts.ejs') %>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
 <%- include('../partials/toast.ejs') %>
 <% if (isPo) { %>
 <%- include('delete-project.ejs') %>
+    <% if (project.active) { %>
+        <%- include('close-project.ejs') %>
+    <% } else { %>
+        <%- include('open-project.ejs') %>
+    <% } %>
 <% } %>
-<% if (isPo || isPm) { %>
+<% if ((isPo || isPm) && project.active) { %>
 <%- include('delete-contributor.ejs') %>
 <%- include('invite.ejs') %>
 <% } %>
 <%- include('../partials/project-header-script.ejs') %>
 
-<% if (!isPo) { %>
+<% if (!isPo && project.active) { %>
 <%- include('../project/quit-project.ejs') %>
 <% } %>
 
@@ -157,6 +182,28 @@
         $('select').on('change', (event) => {
           event.target.closest("form").submit();
         });
+
+        <% if (project.burndown) { %>
+          var ctx = document.getElementById('burnDownChart').getContext('2d');
+          new Chart(ctx, {
+            type: 'line',
+            data: <%- project.burndown%>,
+            options: {
+              elements: {
+                line: {
+                  tension: 0
+                }
+              },
+              title: {
+                display: true,
+                text: 'Burndown Chart'
+              },
+              legend: {
+                'position': 'bottom'
+              }
+            }
+          });
+        <% } %>
     });
 </script>
 

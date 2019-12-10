@@ -1,0 +1,121 @@
+<%- include('../partials/head.ejs') %>
+<%- include('../partials/project-header.ejs') %>
+<% if (project.releases.length > 0) { %>
+<div class="row">
+  <div class="col s12">
+    <div class="row" style="margin: 10px 0 0 0">
+      <div class="col s12 m10 offset-m1 l8 offset-l2">
+        <div class="row valign-wrapper hide-on-small-only">
+          <div class="col m4 offset-m4 center-align">
+            <h5><%=pageTitle%></h5>
+          </div>
+          <% if ((isPo || isPm) && project.active) { %>
+          <div class="col m4 center-align">
+            <a class="btn green modal-trigger" href="/projects/<%= project.id %>/releases/add">Créer une release</a>
+          </div>
+          <% } %>
+        </div>
+        <div class="row valign-wrapper hide-on-med-and-up">
+          <div class="col s12 center-align">
+            <h5><%=pageTitle%></h5>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col s12 m10 offset-m1 l8 offset-l2">
+      <div class="row card-content">
+        <ul class="collapsible">
+          <li class="collapsible-header">
+            <div class="col s8 center"><strong>Version</strong></div>
+            <div class="col s2 center"><strong>Date de release</strong></div>
+          </li>
+          <% project.releases.forEach(release => { %>
+          <li <%= activeRelease ? (activeRelease.toString() === release._id.toString() ? "class=active" : "" ) : "" %>
+                  id="<%=release._id%>">
+            <div class="collapsible-header line" tabindex="0">
+              <div class="col s8 center truncate"><%=release.version %></div>
+              <div class="col s2 center state"><%=release.releaseDate%></div>
+            </div>
+            <div class="collapsible-body">
+              <div class="row center-align hide-on-med-and-up">
+                <% if ((isPo || isPm) && project.active) { %>
+                <div class="col s6">
+                  <a href="releases/<%=release._id%>/edit" class="btn-floating white">
+                    <i class="material-icons black-text">edit</i>
+                  </a>
+                </div>
+                <div class="col s6">
+                  <a href="#deleteRelease" class="btn-floating red modal-trigger deleteButton" _id="<%= release._id %>">
+                    <i class="material-icons">delete</i>
+                  </a>
+                </div>
+                <% } %>
+              </div>
+              <div class="row" style="margin-bottom: 0">
+                <div class="col s12 m9 l10">
+                  <div class="row">
+                      <div class="row">
+                        <div class="col s12 offset-m1 m10">
+                          <b>Description :</b><br>
+                          <%= release.description %>
+                        </div>
+                        <div class="col s12 offset-m1 m10">
+                          <b><a target="_blank" href="<%= release.downloadLink %>">Télecharger</a></b>
+                          <span> - </span>
+                          <b><a target="_blank" href="<%= release.docLink %>">Documentation</a></b>
+                        </div>
+                      </div>
+                    </div>
+                </div>
+                <div class="col m3 l2 center-align hide-on-small-only">
+                    <% if ((isPo || isPm) && project.active) { %>
+                  <div class="row">
+                    <a href="/projects/<%=project.id%>/releases/<%=release._id%>/edit" class="btn white black-text" style="width: 100%">Modifier</a>
+                  </div>
+                  <div class="row">
+                    <a href="#deleteRelease" class="btn red modal-trigger deleteButton" _id="<%= release._id %>"
+                      style="width: 100%">Supprimer</a>
+                  </div>
+                  <% } %>
+                </div>
+              </div>
+            </div>
+          </li>
+          <% }) %>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+<% } else { %>
+    <div class="row valign-wrapper" style="margin-top: 10%">
+      <div class="col s12 center-align">
+        <div class="row">
+          <h5>Il n'y a actuellement aucune release pour ce projet...</h5>
+        </div>
+        <% if ((isPo || isPm) && project.active) { %>
+          <div class="row">
+            <h6>Essayez de créer une première release !</h6>
+          </div>
+          <div class="row">
+            <a href="releases/add" class="btn-flat green-text waves-effect">Créer une première release</a>
+          </div>
+        <% } %>
+      </div>
+    </div>
+
+<% } %>
+
+<%- include('../partials/scripts.ejs') %>
+<%- include('../partials/toast.ejs') %>
+<%- include('delete-release.ejs') %>
+<%- include('../partials/menu-connected-script.ejs') %>
+
+<script>
+  $(document).ready(function () {
+    $('.collapsible').collapsible();
+    $('.tooltipped').tooltip();
+  });
+</script>

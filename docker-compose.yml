@@ -12,18 +12,34 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: example
       MONGO_INITDB_DATABASE: cdp
   api:
-    build: "./src"
+    build: "."
     restart: always
     ports:
       - "8080:8080"
     depends_on:
       - mongodb
     environment:
-      SERVER_PORT: 8080
+      PORT: 8080
       MONGO_URL: mongodb
       MONGO_PORT: 27017
       MONGO_USER: root
       MONGO_PASS: example
+      HOST_SRV: hub
+  hub:
+    image: selenium/hub:3.141.59-xenon
+    ports:
+      - "4444:4444"
+  chrome:
+    image: selenium/node-chrome:3.141.59-xenon
+    volumes:
+      - /dev/shm:/dev/shm
+    depends_on:
+      - hub
+      - mongodb
+      - api
+    environment:
+      HUB_HOST: hub
+
 volumes:
   mongodb_data:
     driver: local

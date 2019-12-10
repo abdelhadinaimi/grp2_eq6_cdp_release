@@ -4,6 +4,9 @@ const Schema = mongoose.Schema;
 const Issue = require("./issue.model");
 const Task = require("./task.model");
 const User = require("./user.model");
+const Sprint = require("./sprint.model");
+const Release = require("./release.model");
+const Doc = require("./doc.model");
 
 const projectSchema = new Schema(
   {
@@ -25,25 +28,29 @@ const projectSchema = new Schema(
     },
     issues: [Issue.schema],
     tasks: [Task.schema],
+    sprints: [Sprint.schema],
+    releases: [Release.schema],
+    docs: [Doc.schema],
     collaborators: [
       {
-        _id: { type: Schema.Types.ObjectId, ref: User.name },
-        userType: { type: String, enum: ["po", "pm", "user"], required: true },
+        _id: {type: Schema.Types.ObjectId, ref: User.name},
+        userType: {type: String, enum: ["po", "pm", "user"], required: true},
         activated: {type: Boolean, default: false},
-        addedAt: { type: Date, default: Date.now },
-        addedBy: { type: Schema.Types.ObjectId, ref: User.name }
+        addedAt: {type: Date, default: Date.now},
+        addedBy: {type: Schema.Types.ObjectId, ref: User.name}
       }
     ],
+    active: {type: Boolean, default: true}
   },
-  { timestamps: true }
+  {timestamps: true}
 );
 
-projectSchema.statics.findIfUserIsPo = function(projectId, userId) {
+projectSchema.statics.findIfUserIsPo = function (projectId, userId) {
   return this.findOne({_id: projectId, projectOwner: userId});
 };
 
-projectSchema.statics.findIfUserType = function(projectId, userId, userTypes) {
-  return this.findOne({_id: projectId,collaborators:{$elemMatch: {_id: userId,userType:{$in: userTypes}}}});
+projectSchema.statics.findIfUserType = function (projectId, userId, userTypes) {
+  return this.findOne({_id: projectId, collaborators: {$elemMatch: {_id: userId, userType: {$in: userTypes}}}});
 };
 
-module.exports = { name: "Project", schema: projectSchema };
+module.exports = {name: "Project", schema: projectSchema};

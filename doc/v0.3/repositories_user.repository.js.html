@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: repositories/user.repository.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: repositories/user.repository.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * test repository module
+ * @module repositories/test
+ */
+
+const mongoose = require("mongoose");
+const User = mongoose.model("User");
+const MongoError = require("mongodb").MongoError;
+const crypto = require('crypto');
+
+const errorMessages = require("../util/constants").errorUserMessages;
+
+/**
+ * adds or updates a user
+ * @param {Object} user - the user to add or update
+ * @returns {Promise&lt;Object>} an object represeting the result of this operation
+ */
+module.exports.upsertUser = async user => {
+  if(user.password){
+    user.password = User.generateHash(user.password);
+  }else{
+    delete user.password;
+  }
+  try {
+    user._id = user._id || new mongoose.mongo.ObjectID();
+    await User.findOneAndUpdate({_id:user._id},user,{upsert:true}).exec();
+    return {success: true};
+  } catch (error) {
+    const errorMsg = {success: false, errors: []};
+    // if the error is a mongoDB error
+    if (error instanceof MongoError) {
+      // if the error is a duplication error (a unique field inserted twice)
+      if (error.code === 11000) {
+        const errorKeys = Object.keys(error["keyPattern"]);
+        errorKeys.forEach(k => {
+          // push the errors into the object one by one
+          errorMsg.errors.push({[k]: errorMessages[k].exists});
+        });
+      }
+    }
+    return errorMsg;
+  }
+};
+
+/**
+ * checks if the user's password match
+ * @param {Object} user - the user to check
+ * @returns {Promise&lt;Object>} an object represeting the result of this operation
+ */
+module.exports.checkLogin = async user => {
+  const foundUser = await User.findOne({email: user.email});
+
+  if (!foundUser) {
+    return {success: false, errors: {email: errorMessages.user.not_found}};
+  }
+  if (!foundUser.verifyPassword(user.password)) {
+    return {success: false, errors: {password: errorMessages.password.incorrect}};
+  }
+
+  return {success: true, user: {_id:foundUser._id, username:foundUser.username}};
+};
+
+module.exports.generateResetPasswordToken = email => new Promise((resolve, reject) => {
+  return User
+    .findOne({email: email})
+    .then(user => {
+      if (user) {
+        crypto.randomBytes(32, (err, buffer) => {
+          if (err)
+            reject(err);
+
+          const token = buffer.toString('hex');
+          user.resetToken = token;
+          user.resetTokenExpiration = Date.now() + 3600000;
+          user.save()
+            .then(() => resolve(token))
+            .catch(err => reject(err));
+        });
+      }
+    });
+});
+
+module.exports.resetPassword = (token, password) => new Promise((resolve, reject) => {
+  return User
+    .findOne({resetToken: token, resetTokenExpiration: {$gt: Date.now()}})
+    .then(user => {
+      if (!user) {
+        return resolve({success: false});
+      }
+      user.password = User.generateHash(password);
+      delete user.resetToken;
+      delete user.resetTokenExpiration;
+      return user.save();
+    })
+    .then(() => resolve({success: true}))
+    .catch(err => reject(err));
+});
+
+/**
+ * returns a user by its id
+ * @param {Object} userId - the user to find
+ * @returns {Promise&lt;Object>} an object represeting the result of this operation
+ */
+module.exports.getUser = async (userId) => {
+  const foundUser = await User.findById(userId);
+  if (!foundUser) {
+    return { success: false, errors: { email: errorMessages.user.not_found } };
+  }
+  return {
+    success: true,
+    user: { _id: foundUser._id, username: foundUser.username, email: foundUser.email }
+  };
+};
+
+module.exports.findUserBy = (key, value) => new Promise((resolve, reject) => {
+  let query = {};
+  query[key] = value;
+
+  User
+    .findOne(query)
+    .then(user => {
+      if (user)
+        resolve(user);
+      resolve(null);
+    })
+    .catch(err => reject(err));
+});
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-config_auth.html">config/auth</a></li><li><a href="module-config_database.html">config/database</a></li><li><a href="module-config_validations.html">config/validations</a></li><li><a href="module-repositories_issue.html">repositories/issue</a></li><li><a href="module-repositories_project.html">repositories/project</a></li><li><a href="module-repositories_release.html">repositories/release</a></li><li><a href="module-repositories_sprint.html">repositories/sprint</a></li><li><a href="module-repositories_task.html">repositories/task</a></li><li><a href="module-repositories_test.html">repositories/test</a></li><li><a href="module-util_mail.html">util/mail</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Mon Dec 02 2019 11:16:14 GMT+0100 (Central European Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

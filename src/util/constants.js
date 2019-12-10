@@ -25,6 +25,21 @@ module.exports.global = {
       tasks: "task/tasks",
       addEdit: "task/add-edit-task"
     },
+    sprint: {
+      sprints: "sprint/sprints",
+      sprint: "sprint/sprint",
+      addEdit: "sprint/add-edit-sprint"
+    },
+    release: {
+      releases: "release/releases",
+      addEdit: "release/add-edit-release"
+    },
+    doc: {
+      doc: "doc/doc"
+    },
+    test: {
+      tests: "test/tests"
+    },
     user: {
       register: "user/register",
       login: "user/login",
@@ -54,12 +69,29 @@ module.exports.global = {
       edit: "Éditer Tâche",
       mine: "Mes Tâches"
     },
+    sprint: {
+      sprints: "Sprints",
+      sprint: "Sprint",
+      add: "Nouveau Sprint",
+      edit: "Éditer Sprint"
+    },
+    doc: {
+      doc: "Documentation"
+    },
     user: {
       register: "Créer un Compte",
       login: "Connexion",
       forgotPassword: "Mot de Passe Oublié",
       resetPassword: "Réinitialisation Mot de Passe",
       account: "Mon Compte"
+    },
+    release: {
+      releases: "Releases",
+      add: "Nouvelle Release",
+      edit: "Éditer Release"
+    },
+    test: {
+      tests: "Tests"
     }
   },
   routes: {
@@ -74,8 +106,18 @@ module.exports.global = {
     issue: {
       issues: projectId => projects + projectId + "/issues"
     },
+    sprint: {
+      sprints: projectId => projects + projectId + "/sprints",
+      sprint: (projectId, sprintId) => projects + projectId + "/sprints/" + sprintId
+    },
     task: {
-      tasks: projectId => projects + projectId + "/tasks"
+      task: (projectId, sprintId, taskId) => projects + projectId + "/sprints/" + sprintId + "/" + taskId + "#" + taskId
+    },
+    release: {
+      releases: projectId => projects + projectId + "/releases"
+    },
+    doc: {
+      docs: projectId => projects + projectId + "/doc"
     },
     user: {
       register: "/register",
@@ -91,6 +133,13 @@ module.exports.errorGeneralMessages = {
   notAllowed: "Création non-autorisée !",
   modificationNotAllowed: "Modification non-autorisée !",
   deleteNotAllowed: "Suppression non-autorisée !"
+};
+
+module.exports.generaleValidationMessages = {
+  description: {
+    empty: "Il faut spécifier une description.",
+    max: "La description ne doit pas dépasser 3000 char."
+  }
 };
 
 module.exports.errorUserMessages = {
@@ -129,7 +178,7 @@ module.exports.errorProjectMessages = {
     format: "La date ne respecte pas le format (dd/mm/yyyy)."
   },
   description: {
-    max: "La description ne doit pas dépasser 3000 caractères."
+    max: this.generaleValidationMessages.description.max
   },
   role: {
     empty: "Il faut spécifier un rôle.",
@@ -168,7 +217,7 @@ module.exports.errorTaskMessages = {
   },
   description: {
     empty: "Il faut spécifier une description.",
-    max: "La description ne doit pas dépasser 3000 char."
+    max: this.generaleValidationMessages.description.max
   },
   definitionOfDone: {
     empty: "Il faut spécifier une Definition of Done.",
@@ -177,4 +226,35 @@ module.exports.errorTaskMessages = {
   state: {
     match: "If faut spécifier un état valide."
   }
+};
+
+module.exports.errorSprintMessages = {
+  id: {
+    max: "L'identifiant ne doit pas dépasser 20 caractères.",
+    empty: "Il faut spécifier un identifiant."
+  },
+  startDate: {
+    format: "La date ne respecte pas le format (dd/mm/yyyy)."
+  },
+  endDate: {
+    format: "La date ne respecte pas le format (dd/mm/yyyy)."
+  },
+  description: {
+    max: this.generaleValidationMessages.description.max
+  }
+};
+
+module.exports.errorReleaseMessages = {
+  version: {
+    max: "L'identifiant ne doit pas dépasser 20 caractères.",
+    empty: "Il faut spécifier une version."
+  },
+  description: {
+    max: this.generaleValidationMessages.description.max
+  }
+};
+
+module.exports.errorDocsMessages = {
+  success: "Documentation ajoutée !",
+  failed: "La documentation n'a pas pu être ajoutée..."
 };

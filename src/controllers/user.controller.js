@@ -54,12 +54,7 @@ module.exports.postRegisterUser = (req, res) => {
     return res.status(422).render(viewsUser.register, {
       pageTitle: titlesUser.register,
       errors: req.validation.errors,
-      values: {
-        username: user.username,
-        email: user.email,
-        password: user.password,
-        confirmPassword: user.confirmPassword
-      }
+      values: user
     });
   }
 
@@ -67,15 +62,11 @@ module.exports.postRegisterUser = (req, res) => {
     .upsertUser(user)
     .then(result => {
       if (!result.success) {
+        user.password = user.confirmPassword;
         return res.status(401).render(viewsUser.register, {
           pageTitle: titlesUser.register,
           errors: result.errors,
-          values: {
-            username: user.username,
-            email: user.email,
-            password: user.password,
-            confirmPassword: user.confirmPassword
-          }
+          values: user
         });
       }
 
@@ -101,7 +92,7 @@ module.exports.postLoginUser = (req, res) => {
         return res.status(401).render(viewsUser.login, {
           pageTitle: titlesUser.login,
           errors: [result.errors],
-          values: {email: user.email, password: user.password}
+          values: user
         });
       }
 
@@ -126,7 +117,7 @@ module.exports.postForgotPassword = (req, res) => {
         <p>
             Bonjour,<br>
             Vous avez demandé la réinitialisation de votre mot de passe.<br>
-            Veuillez cliquer sur ce lien pour l'effectuer : <a href="http://localhost:8080/reset-password/${token}">Réinitialiser</a><br>
+            Veuillez cliquer sur ce lien pour l'effectuer : <a href="http://${req.get('host')}/reset-password/${token}">Réinitialiser</a><br>
             Bonne journée !
         </p>`;
         sendMail(req.body.email, 'Réinitialisation de votre mot de passe', message);

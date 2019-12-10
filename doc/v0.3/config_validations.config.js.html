@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: config/validations.config.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: config/validations.config.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * validations config module
+ * @module config/validations
+ */
+
+const { body, validationResult } = require("express-validator");
+const {
+  errorUserMessages,
+  errorProjectMessages,
+  errorIssueMessages,
+  errorTaskMessages,
+  errorSprintMessages,
+  errorReleaseMessages
+} = require("../util/constants");
+
+const issueRepo = require("../repositories/issue.repository");
+
+/**
+ * user validations to check a post or put request conserning user
+ * @type {ValidationChain[]}
+ */
+module.exports.userValidations = [
+  body("email")
+    .isEmail()
+    .withMessage(errorUserMessages.email.valid),
+  body("password")
+    .isLength({ min: 8 })
+    .withMessage(errorUserMessages.password.min)
+    .isLength({ max: 32 })
+    .withMessage(errorUserMessages.password.max)
+    .matches(/\d/) // must contain at least one number
+    .withMessage(errorUserMessages.password.number)
+    .matches(/[a-z]/) // must contain at least one lowercase char
+    .withMessage(errorUserMessages.password.lower)
+    .matches(/[A-Z]/) // must contain at least one uppercase char
+    .withMessage(errorUserMessages.password.upper),
+  body("confirmPassword").custom((value, { req }) => {
+    if (value !== req.body.password) {
+      throw new Error(errorUserMessages.confirmPassword.same);
+    }
+    return true;
+  }),
+  body("username")
+    .isLength({ min: 4 })
+    .withMessage(errorUserMessages.username.min)
+    .isLength({ max: 20 })
+    .withMessage(errorUserMessages.username.max)
+];
+
+/**
+ * project validations to check a post or put request conserning project
+ * @type {ValidationChain[]}
+ */
+module.exports.projectValidations = [
+  body("title")
+    .not()
+    .isEmpty()
+    .withMessage(errorProjectMessages.title.empty)
+    .isLength({ max: 128 })
+    .withMessage(errorProjectMessages.title.max),
+  body("dueDate")
+    .optional({ checkFalsy: true })
+    .matches(/^\d{2}\/\d{2}\/\d{4}$/)
+    .withMessage(errorProjectMessages.dueDate.format),
+  body("description")
+    .optional({ checkFalsy: true })
+    .isLength({ max: 3000 })
+    .withMessage(errorProjectMessages.description.max)
+];
+
+/**
+ * issue validations to check a post or put request conserning issue
+ * @type {ValidationChain[]}
+ */
+module.exports.issueValidations = [
+  body("userType")
+    .not()
+    .isEmpty()
+    .withMessage(errorIssueMessages.userType.empty)
+    .isLength({ max: 1000 })
+    .withMessage(errorIssueMessages.userType.max),
+  body("userGoal")
+    .not()
+    .isEmpty()
+    .withMessage(errorIssueMessages.userGoal.empty)
+    .isLength({ max: 1000 })
+    .withMessage(errorIssueMessages.userGoal.max),
+  body("userReason")
+    .not()
+    .isEmpty()
+    .withMessage(errorIssueMessages.userReason.empty)
+    .isLength({ max: 1000 })
+    .withMessage(errorIssueMessages.userReason.max),
+  body("storyId")
+    .not()
+    .isEmpty()
+    .withMessage(errorIssueMessages.storyId.empty)
+    .isLength({ max: 20 })
+    .withMessage(errorIssueMessages.storyId.max)
+    .custom((value, { req }) => {
+      const { projectId } = req.params;
+      const { issueId } = req.params;
+      return issueRepo.isUniqueStoryId(projectId, issueId, value).then(result => {
+        if (!result) {
+          return Promise.reject(errorIssueMessages.storyId.unique);
+        }
+        return null;
+      });
+    }),
+  body("difficulty")
+    .not()
+    .isEmpty()
+    .withMessage(errorIssueMessages.difficulty.empty)
+    .isInt({ min: 1 })
+    .withMessage(errorIssueMessages.difficulty.min)
+];
+
+/**
+ * role validations to check role
+ * @type {ValidationChain[]}
+ */
+module.exports.roleValidation = [
+  body("role")
+    .matches(/^(pm|user)$/)
+    .withMessage(errorProjectMessages.role.values)
+];
+
+/**
+ * task validations to check a post or put request conserning Task
+ * @type {ValidationChain[]}
+ */
+module.exports.taskValidations = [
+  body("cost")
+    .not()
+    .isEmpty()
+    .withMessage(errorTaskMessages.cost.empty)
+    .isFloat({ min: 0.5 })
+    .withMessage(errorTaskMessages.cost.min),
+  body("description")
+    .not()
+    .isEmpty()
+    .withMessage(errorTaskMessages.description.empty)
+    .isLength({ max: 3000 })
+    .withMessage(errorTaskMessages.description.max),
+  body("definitionOfDone")
+    .not()
+    .isEmpty()
+    .withMessage(errorTaskMessages.definitionOfDone.empty)
+    .isLength({ max: 3000 })
+    .withMessage(errorTaskMessages.definitionOfDone.max)
+];
+
+/**
+ * task state validations to check a post or put request conserning task
+ * @type {ValidationChain[]}
+ */
+module.exports.taskStateValidation = [
+  body("state")
+    .matches(/^(TODO|DOING|DONE|TOTEST|TESTING|TESTED)$/)
+    .withMessage(errorTaskMessages.state.match)
+];
+
+/**
+ * sprint validations to check a post or put request conserning sprint
+ * @type {ValidationChain[]}
+ */
+module.exports.sprintValidations = [
+  body("id")
+    .not()
+    .isEmpty()
+    .withMessage(errorSprintMessages.id.empty)
+    .isLength({ max: 20 })
+    .withMessage(errorSprintMessages.id.max),
+  body("startDate")
+    .matches(/^\d{2}\/\d{2}\/\d{4}$/)
+    .withMessage(errorSprintMessages.startDate.format),
+  body("endDate")
+    .matches(/^\d{2}\/\d{2}\/\d{4}$/)
+    .withMessage(errorSprintMessages.endDate.format),
+  body("description")
+    .optional({ checkFalsy: true })
+    .isLength({ max: 3000 })
+    .withMessage(errorSprintMessages.description.max)
+];
+
+/**
+ * release validations to check a post or put request conserning release
+ * @type {ValidationChain[]}
+ */
+module.exports.releaseValidations = [
+  body("version")
+    .not()
+    .isEmpty()
+    .withMessage(errorReleaseMessages.version.empty)
+    .isLength({ max: 20 })
+    .withMessage(errorReleaseMessages.version.max),
+  body("description")
+    .optional({ checkFalsy: true })
+    .isLength({ max: 3000 })
+    .withMessage(errorReleaseMessages.description.max)
+];
+
+/**
+ * a middleware to validate the request using the provided validators
+ * if there are errors, returns a list of errors with 442 HTTP Code else it executes
+ * the next middleware.
+ * @param {Object} req
+ * @param {Object} res
+ * @param {Object} next
+ */
+module.exports.validate = (req, res, next) => {
+  req.validation = { success: true };
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    const errorMessages = [];
+    errors.array().forEach(e => errorMessages.push({ [e.param]: e.msg }));
+    req.validation = { success: false, errors: errorMessages };
+  }
+  next();
+};
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-config_auth.html">config/auth</a></li><li><a href="module-config_database.html">config/database</a></li><li><a href="module-config_validations.html">config/validations</a></li><li><a href="module-repositories_issue.html">repositories/issue</a></li><li><a href="module-repositories_project.html">repositories/project</a></li><li><a href="module-repositories_release.html">repositories/release</a></li><li><a href="module-repositories_sprint.html">repositories/sprint</a></li><li><a href="module-repositories_task.html">repositories/task</a></li><li><a href="module-repositories_test.html">repositories/test</a></li><li><a href="module-util_mail.html">util/mail</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Mon Dec 02 2019 11:16:14 GMT+0100 (Central European Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

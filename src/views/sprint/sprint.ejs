@@ -1,0 +1,98 @@
+<%- include('../partials/head.ejs') %>
+<%- include('../partials/project-header.ejs') %>
+
+<div class="row">
+  <div class="col s12">
+    <div class="row" style="margin: 10px 0 0 0">
+      <div class="col s12 m10 offset-m1 l8 offset-l2">
+        <div class="row valign-wrapper hide-on-med-and-down">
+          <div class="col m4 offset-m4 center-align">
+            <h5 id="sprintId"><%= project.sprint.id %></h5>
+          </div>
+          <% if ((isPo || isPm) && project.active) { %>
+          <div class="col m4 center-align">
+            <a class="btn green modal-trigger"
+              href="/projects/<%= project.id %>/sprints/<%= project.sprint._id %>/edit">Modifier le Sprint</a>
+          </div>
+          <% } %>
+          <div class="col m4 center-align">
+            <a class="btn white black-text"
+              href="/projects/<%= project.id %>/sprints">Retour</a>
+          </div>
+        </div>
+        <div class="row valign-wrapper hide-on-large-only">
+          <div class="col s12 center-align">
+            <h5 id="sprintId"><%= project.sprint.id %></h5>
+          </div>
+          <% if ((isPo || isPm) && project.active) { %>
+          <div class="col m4 center-align">
+            <a class="btn green modal-trigger"
+              href="/projects/<%= project.id %>/sprints/<%= project.sprint._id %>/edit">Modifier</a>
+          </div>
+          <% } %>
+          <div class="col m4 center-align">
+            <a class="btn white black-text"
+              href="/projects/<%= project.id %>/sprints/<%=project.sprintId%>#<%=project.sprintId%>">Retour</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col s6 center-align">
+        <h6 id="sprintStartDate"><b>Début du Sprint : </b><%= project.startDate %></h6>
+      </div>
+      <div class="col s6 center-align">
+        <h6 id="sprintEndDate"><b>Fin du Sprint : </b><%= project.endDate %></h6>
+      </div>
+      <div class="row">
+        <div class="col s12 l5 offset-l1">
+          <% if (project.sprint.description) { %>
+          <h4>Description</h4>
+          <blockquote><%- project.sprint.description.replace(/\n/g, '<br/>') %></blockquote>
+          <% } %>
+        </div>
+        <div class="col s12 l5">
+          <% if (project.burndown) { %>
+          <canvas id="burnDownChart"></canvas>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/scripts.ejs') %>
+
+<%- include('../task/tasks.ejs') %>
+
+<%- include('../partials/toast.ejs') %>
+<%- include('../partials/menu-connected-script.ejs') %>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+<script>
+  $(document).ready(() => {
+    <% if (project.burndown) { %>
+      var ctx = document.getElementById('burnDownChart').getContext('2d');
+      new Chart(ctx, {
+        type: 'line',
+        data: <%- project.burndown %>,
+        options: {
+          elements: {
+            line: {
+              tension: 0
+            }
+          },
+          title: {
+            display: true,
+            text: 'Burndown Chart des tâches du sprint'
+          },
+          legend: {
+            'position': 'bottom'
+          }
+        }
+      });
+    <% } %>
+  });
+</script>
+
+<%- include('../partials/foot.ejs') %>

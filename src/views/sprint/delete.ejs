@@ -1,0 +1,26 @@
+<div id="deleteSprint" class="modal">
+    <form action="" method="post" class="deleteForm">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <div class="modal-content center-align">
+            <h4>Suppression du Sprint</h4>
+            <p>Souhaitez-vous réellement supprimer ce sprint ?</p>
+        </div>
+        <div class="modal-footer">
+            <a class="btn-flat green-text modal-close">Annuler</a>
+            <button type="submit" class="btn-flat red-text">Supprimer</button>
+        </div>
+    </form>
+</div>
+
+<script>
+  $(document).ready(function () {
+    $('.modal').modal();
+
+    const form = document.querySelector(".deleteForm");
+    const buttons = document.querySelectorAll(".deleteButton");
+    buttons.forEach(button => button.addEventListener("click", () => {
+      const sprintId = button.getAttribute("_id");
+      form.setAttribute("action", "/projects/<%=project.id%>/sprints/" + sprintId + "?_method=DELETE");
+    }));
+  });
+</script>

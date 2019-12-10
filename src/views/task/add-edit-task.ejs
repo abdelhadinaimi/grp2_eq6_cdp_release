@@ -6,10 +6,12 @@
         <div class="card-panel">
             <div class="row">
                 <div class="col s12">
-                    <h5 class="center-align"><%= editing ? 'Modifier la Tâche' : 'Créer une nouvelle Tâche' %></h5>
+                    <h5 class="center-align"><%= editing ? 'Modifier la Tâche' : 'Ajouter une Tâche au sprint' %></h5>
                 </div>
             </div>
-            <form action="<%= editing ? '/projects/' + projectId + '/tasks/' + values._id + '?_method=PUT' : '/projects/' + projectId + '/tasks/add' %>"
+            <form action="<%= editing ?
+                    '/projects/' + projectId + '/sprints/' + sprintId + '/tasks/' + values._id + '?_method=PUT'
+                    : '/projects/' + projectId + '/sprints/' + sprintId + '/tasks/add' %>"
                   method="post">
                 <div class="row">
                     <div class="col s12">
@@ -94,7 +96,9 @@
                     <div class="row">
                         <div class="col s12 right-align">
                             <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-                            <a href="/projects/<%= projectId %>/tasks"
+                            <a href="<%= editing ?
+                                    "/projects/" + projectId + "/sprints/" + sprintId + "/tasks"
+                                    : "/projects/" + projectId + "/sprints/" + sprintId + "#" + sprintId %>"
                                class="waves-effect waves-green btn-flat red-text">Annuler</a>
                             <button type="submit" class="waves-effect waves-green btn-flat green-text">
                                 <%= editing ? 'Modifier' : 'Ajouter' %>

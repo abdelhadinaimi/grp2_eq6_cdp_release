@@ -8,7 +8,7 @@ const issueSchema = new Schema(
     userType: { type: String, maxlength: 1000, required: true },
     userGoal: { type: String, maxlength: 1000, required: true },
     userReason: { type: String, maxlength: 1000, required: true },
-    storyId: { type: String, maxlength: 20, required: true, unique: true },
+    storyId: { type: String, maxlength: 20, required: true },
     priority: { type: String, enum: ["-", "high", "medium", "low"] },
     difficulty: { type: Number, min: 1 },
     testLink: String,

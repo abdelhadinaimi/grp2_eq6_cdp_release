@@ -1,0 +1,26 @@
+<div id="openProject" class="modal">
+    <form action="" method="post" class="openForm">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <div class="modal-content center-align">
+            <h4>Réouverture du Projet</h4>
+            <p>Souhaitez-vous réellement relancer ce projet ?</p>
+        </div>
+        <div class="modal-footer">
+            <a class="btn-flat red-text modal-close">Annuler</a>
+            <button type="submit" class="btn-flat green-text">Valider</button>
+        </div>
+    </form>
+</div>
+
+<script>
+  $(document).ready(function () {
+    $('.modal').modal();
+
+    const form = document.querySelector(".openForm");
+    const buttons = document.querySelectorAll(".openButton");
+    buttons.forEach(button => button.addEventListener("click", () => {
+      const projectId = button.getAttribute("_id");
+      form.setAttribute("action", "/projects/" + projectId + "/closeOpen?_method=PUT");
+    }));
+  });
+</script>

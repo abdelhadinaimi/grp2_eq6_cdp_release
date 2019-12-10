@@ -6,9 +6,7 @@ const {projectValidations,roleValidation, validate} = require('../config/validat
 
 const rootProjectId = "/:projectId";
 
-route.get("/", (req, res) => {
-  res.send("all projects");
-});
+route.get("/", (req, res) => res.redirect("/"));
 
 route.get('/add', projectController.getAdd);
 
@@ -24,7 +22,9 @@ route.get(rootProjectId, [param("projectId").exists().isMongoId()], projectContr
 
 route.put(rootProjectId, projectValidations, validate, projectController.putEdit);
 
-route.delete(rootProjectId, validate,projectController.deleteProject);
+route.delete(rootProjectId, validate, projectController.deleteProject);
+
+route.put(rootProjectId + "/closeOpen", projectController.putCloseOpen);
 
 route.post(rootProjectId + "/invite", projectController.postInvite);
 

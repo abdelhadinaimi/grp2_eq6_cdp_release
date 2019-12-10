@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: repositories/project.repository.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: repositories/project.repository.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * project repository module
+ * @module repositories/project
+ */
+
+
+const mongoose = require('mongoose');
+const Project = mongoose.model('Project');
+const {errorGeneralMessages} = require('../util/constants');
+const dateformat = require('dateformat');
+
+const dateFormatString = 'dd/mm/yyyy';
+
+/**
+ * create a new project
+ * @param {Object} project - the project to create
+ * @returns {Promise&lt;boolean|Error>} true if created, else returns an error
+ */
+module.exports.createProject = project => new Promise((resolve, reject) => {
+  const newProject = new Project();
+  if (project.id)
+    newProject._id = project.id;
+  newProject.title = project.title;
+
+  if (project.dueDate &amp;&amp; project.dueDate.length > 0) {
+    const [day, month, year] = project.dueDate.split('/');
+    newProject.dueDate = new Date(year, month - 1, day);
+    newProject.dueDate.setHours(
+      newProject.dueDate.getHours() + 23,
+      newProject.dueDate.getMinutes() + 59,
+      newProject.dueDate.getSeconds() + 59);
+  }
+
+  if (project.description &amp;&amp; project.description.length > 0) {
+    newProject.description = project.description;
+  }
+  newProject.projectOwner = project.projectOwner;
+  newProject.collaborators = [{
+    _id: project.projectOwner,
+    activated: true,
+    userType: 'po',
+    addedBy: project.projectOwner
+  }];
+  newProject.issues = [];
+
+  newProject
+    .save()
+    .then(() => resolve(true))
+    .catch(err => reject(err));
+});
+
+/**
+ * updates a project
+ * @param {Object} project - the project to update
+ * @param {string} userId - the id of the user who did the operation
+ * @returns {Promise&lt;Object>} an object representing the result of this operation
+ */
+module.exports.updateProject = (project, userId) => new Promise((resolve, reject) => {
+  if (!mongoose.Types.ObjectId.isValid(project.id) || !mongoose.Types.ObjectId.isValid(userId))
+    return resolve({success: false, error: errorGeneralMessages.modificationNotAllowed});
+
+  return Project
+    .findOne({_id: project.id, projectOwner: userId})
+    .then(projectToUpdate => {
+      if (!projectToUpdate) return resolve({success: false, error: errorGeneralMessages.modificationNotAllowed});
+
+      projectToUpdate.title = project.title;
+      if (project.dueDate &amp;&amp; project.dueDate.length > 0) {
+        const [day, month, year] = project.dueDate.split('/');
+        projectToUpdate.dueDate = new Date(year, month - 1, day);
+        projectToUpdate.dueDate.setHours(
+          projectToUpdate.dueDate.getHours() + 23,
+          projectToUpdate.dueDate.getMinutes() + 59,
+          projectToUpdate.dueDate.getSeconds() + 59);
+      } else {
+        projectToUpdate.dueDate = null;
+      }
+      if (project.description &amp;&amp; project.description.length > 0)
+        projectToUpdate.description = project.description;
+      else
+        projectToUpdate.description = null;
+
+      return projectToUpdate.save()
+    })
+    .then(() => resolve({success: true}))
+    .catch(err => reject(err))
+});
+
+/**
+ * deletes a project if the userId is the project owner
+ * @param {string} projectId - the id of the project to delete
+ * @param {string} userId - the id of the user who did the operation
+ * @returns {Promise&lt;Object>} an object representing the result of this operation
+ */
+module.exports.deleteProject = (projectId, userId) => new Promise((resolve, reject) => {
+  if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(userId))
+    return resolve({success: false, errors: {error: errorGeneralMessages.deleteNotAllowed}});
+
+  return Project
+    .findOne({_id: projectId, projectOwner: userId})
+    .then(project => {
+      if (!project)
+        return resolve({success: false, errors: {error: errorGeneralMessages.deleteNotAllowed}});
+
+      return project.delete();
+    })
+    .then(() => resolve({success: true}))
+    .catch(err => reject(err));
+});
+
+/**
+ * closes a project if the userId is the project owner
+ * @param {string} projectId - the id of the project to delete
+ * @param {string} userId - the id of the user who did the operation
+ * @returns {Promise&lt;Object>} an object representing the result of this operation
+ */
+module.exports.closeProject = (projectId, userId) => new Promise((resolve, reject) => {
+  if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(userId))
+    return resolve({success: false, errors: {error: errorGeneralMessages.modificationNotAllowed}});
+
+  return Project
+    .findOne({_id: projectId, projectOwner: userId})
+    .then(project => {
+      if (!project)
+        return resolve({success: false, errors: {error: errorGeneralMessages.modificationNotAllowed}});
+
+      project.active = false;
+
+      return project.save();
+    })
+    .then(() => resolve({success: true}))
+    .catch(err => reject(err));
+});
+
+/**
+ * returns the project if the userId is a collaborator in that project
+ * @param {string} projectId - the id a project
+ * @param {string} userId - the id of the user who did the operation
+ * @returns {Promise&lt;Object>} an object representing the result of this operation
+ */
+module.exports.getProjectById = (projectId, userId) => new Promise((resolve, reject) => {
+  if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(userId))
+    return resolve(undefined);
+
+  return Project
+    .findOne({_id: projectId, 'collaborators._id': userId})
+    .populate('collaborators._id')
+    .populate('collaborators.addedBy')
+    .then(project => {
+      if (!project) return resolve(undefined);
+
+      const proj = {
+        id: projectId,
+        title: project.title,
+        projectOwner: project.projectOwner,
+        collaborators: project.collaborators,
+        active: project.active
+      };
+
+      if (project.issues.length !== 0) {
+        const labels = [];
+        const associateNbIssueToDate = [];
+        const endDate = project.dueDate ? project.dueDate : new Date();
+        const nbDays = Math.round((endDate.getTime() - project.createdAt.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+
+        for (let i = 0; i &lt; nbDays; i++) {
+          const date = new Date(project.createdAt.valueOf());
+          date.setDate(project.createdAt.getDate() + i);
+          const dateStr = dateformat(date, dateFormatString);
+          labels.push(dateStr);
+          associateNbIssueToDate[dateStr] = 0;
+        }
+
+        let totalDifficulty = 0;
+        project.issues.forEach(issue => totalDifficulty += issue.difficulty);
+
+        const ratioPerDay = totalDifficulty / (nbDays - 1);
+        const idealDifficulty = [];
+        for (let i = totalDifficulty; i >= 0; i -= ratioPerDay)
+          idealDifficulty.push(Math.round(i * 100) / 100);
+
+        project.issues.forEach(issue => {
+          const tasksIssue = project.tasks.filter(task =>
+            !!task.linkedIssues.find(linkedIssue => linkedIssue._id.toString() === issue._id.toString()));
+          if (tasksIssue.length === 0) return;
+          if (tasksIssue.filter(task => task.state !== 'DONE').length === 0) {
+            const dates = [];
+            tasksIssue.forEach(task => dates.push(task.doneAt));
+            const maxDate = Math.max.apply(null, dates);
+            const maxDateStr = dateformat(maxDate, dateFormatString);
+            associateNbIssueToDate[maxDateStr] += issue.difficulty;
+          }
+        });
+
+        const realDifficulty = [];
+        labels.forEach(label => {
+          totalDifficulty -= associateNbIssueToDate[label];
+          realDifficulty.push(totalDifficulty);
+        });
+
+        proj.burndown = {
+          labels: labels,
+          datasets: [{
+            label: 'Difficulté Restante Idéale',
+            borderColor: 'rgb(39, 99, 255)',
+            backgroundColor: 'rgb(0, 0, 0, 0)',
+            data: idealDifficulty
+          }, {
+            label: 'Difficulté Restante Réelle',
+            borderColor: 'rgb(255, 99, 132)',
+            backgroundColor: 'rgb(0, 0, 0, 0)',
+            data: realDifficulty
+          }]
+        };
+
+        proj.burndown = JSON.stringify(proj.burndown);
+      }
+
+      if (project.description)
+        proj.description = project.description;
+      if (project.createdAt)
+        proj.createdAt = dateformat(project.createdAt, dateFormatString);
+      if (project.dueDate)
+        proj.dueDate = dateformat(project.dueDate, dateFormatString);
+
+      return resolve(proj);
+    })
+    .catch(err => reject(err));
+});
+
+/**
+ * returns all the projects which the userId is a collaborator in
+ * @param {string} contributorId - the id of the user who did the operation
+ * @returns {Promise&lt;Object>} an object representing the result of this operation
+ */
+module.exports.getProjectsByContributorId = contributorId => new Promise((resolve, reject) => {
+  return Project
+    .find({
+      collaborators: {
+        $elemMatch: {
+          _id: contributorId,
+          activated: true
+        }
+      }
+    })
+    .then(projects => {
+      projects = projects.map(project => {
+        const newProject = {id: project._id, title: project.title};
+        newProject.contributorNb = project.collaborators.length;
+        newProject.beginDate = dateformat(project.createdAt, dateFormatString);
+        if (project.description)
+          newProject.description = project.description;
+        if (project.dueDate)
+          newProject.endDate = dateformat(project.dueDate, dateFormatString);
+        if (project.projectOwner.toString() === contributorId.toString() &amp;&amp; project.active)
+          newProject.deleteEdit = true;
+        if (project.tasks.length !== 0) {
+          let tasksDone = 0;
+          project.tasks.forEach(task => {
+            if (task.state === "DONE")
+              tasksDone++;
+          });
+
+          newProject.completion = Math.round((tasksDone / project.tasks.length) * 100);
+        }
+
+        return newProject;
+      });
+
+      return resolve(projects);
+    })
+    .catch(err => reject(err));
+});
+
+/**
+ * checks if the contributorId is a contributor of a project
+ * @param {string} projectId - the id a project
+ * @param {string} contributorId - the id of the user who did the operation
+ * @returns {Promise&lt;boolean>}
+ */
+module.exports.isContributorFromProject = (projectId, contributorId) => new Promise((resolve, reject) => {
+  Project
+    .findOne({_id: projectId, 'collaborators._id': contributorId})
+    .then(project => {
+      if (project)
+        return resolve(true);
+      return resolve(false);
+    })
+    .catch(err => reject(err));
+});
+
+/**
+ * checks if the contributorId has a given authorization in a project
+ * @param {string} projectId - the id a project
+ * @param {string} contributorId - the id of the user who did the operation
+ * @param {Object} authorization - the authorizations to check
+ * @returns {Promise&lt;boolean>}
+ */
+module.exports.hasAuthorizationOnProject = (projectId, contributorId, authorization) => new Promise((resolve, reject) => {
+  Project
+    .findIfUserType(projectId, contributorId, authorization)
+    .then(project => project ? resolve(true) : resolve(false))
+    .catch(err => reject(err));
+});
+
+/**
+ * add a user into a project as a contributor
+ * @param {string} projectId - the id of a project
+ * @param {string} contributorId - the user to add
+ * @param {string} addId - the id of the user who did the operation
+ * @returns {Promise&lt;Object>} an object representing the result of this operation
+ */
+module.exports.addContributorToProject = (projectId, contributorId, addId) => new Promise((resolve, reject) => {
+  Project
+    .findIfUserType(projectId, addId, ['po', 'pm'])
+    .then(project => {
+      if (!project)
+        return resolve(false);
+
+      project.collaborators.push({
+        _id: contributorId,
+        userType: 'user',
+        addedBy: addId
+      });
+      return project.save();
+    })
+    .then(() => resolve(true))
+    .catch(err => reject(err));
+});
+
+/**
+ * removes a user from a project
+ * @param {string} projectId - the id of a project
+ * @param {string} userId - the user to remove
+ * @param {string} remId - the id of the user who did the operation
+ * @returns {Promise&lt;boolean|Error>} an object representing the result of this operation
+ */
+module.exports.removeContributorToProject = (projectId, userId, remId) => new Promise((resolve, reject) => {
+  Project
+    .findIfUserType(projectId, remId, ['po', 'pm', userId === remId ? 'user' : ''])
+    .then(project => {
+      if (!project)
+        return resolve(false);
+
+      project.collaborators = project.collaborators.filter(collaborator => collaborator._id.toString() !== userId.toString());
+      return project.save();
+    })
+    .then(() => resolve(true))
+    .catch(err => reject(err));
+});
+
+/**
+ * accept an invitation to a project
+ * @param {string} projectId - the id of a project
+ * @param {string} contributorId - the user who is accepting the invitaition
+ * @returns {Promise&lt;boolean|Error>} an object representing the result of this operation
+ */
+module.exports.acceptInvitation = (projectId, contributorId) => new Promise((resolve, reject) => {
+  Project
+    .findOne({_id: projectId, collaborators: {$elemMatch: {_id: contributorId, activated: false}}})
+    .then(project => {
+      if (!project)
+        return resolve(false);
+
+      const user = project.collaborators.find(collaborator => (collaborator._id.toString() === contributorId));
+      user.activated = true;
+
+      return project.save();
+    })
+    .then(() => resolve(true))
+    .catch(err => reject(err));
+});
+
+/**
+ * updates a user's role in a given project
+ * @param {string} projectId - the id of a project
+ * @param {string} userId - the id of the user who did the operation
+ * @param {object} user - the user to update
+ * @returns {Promise&lt;Object>} an object representing the result of this operation
+ */
+module.exports.updateUserRole = (projectId, userId, user) => new Promise((resolve, reject) => {
+  const errorMessage = {success: false, error: errorGeneralMessages.modificationNotAllowed};
+
+  if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(userId) || userId === user._id) {
+    return resolve(errorMessage);
+  }
+
+  return Project.findOneAndUpdate({
+    _id: projectId,
+    collaborators: {$elemMatch: {_id: userId, userType: {$in: ["po"]}}},
+    "collaborators._id": user._id
+  }, {$set: {"collaborators.$.userType": user.role}})
+    .then(project => {
+      if (!project) return reject(errorMessage);
+      return resolve({success: true});
+    })
+    .catch(err => reject(err));
+});
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-config_auth.html">config/auth</a></li><li><a href="module-config_database.html">config/database</a></li><li><a href="module-config_validations.html">config/validations</a></li><li><a href="module-repositories_issue.html">repositories/issue</a></li><li><a href="module-repositories_project.html">repositories/project</a></li><li><a href="module-repositories_release.html">repositories/release</a></li><li><a href="module-repositories_sprint.html">repositories/sprint</a></li><li><a href="module-repositories_task.html">repositories/task</a></li><li><a href="module-repositories_test.html">repositories/test</a></li><li><a href="module-util_mail.html">util/mail</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Mon Dec 02 2019 11:16:14 GMT+0100 (Central European Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

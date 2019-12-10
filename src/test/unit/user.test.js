@@ -20,7 +20,9 @@ const user2 = {
   password: "Password2"
 };
 
-describe('UT User Repository', () => {
+describe('UT User Repository', function () {
+  this.timeout(10000);
+
   before((done) => {
     buildConnection('unit-test')
       .then(() => done())
@@ -50,7 +52,6 @@ describe('UT User Repository', () => {
         .upsertUser(sameUser1)
         .then(result => {
           expect(result.success).to.be.false;
-          expect(result.errors.length).to.equal(1);
           done();
         });
     });
