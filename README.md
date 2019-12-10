@@ -18,10 +18,12 @@ Une fois le projet lancé, il faut se placer dans le dossier *src* et il suffit 
 # Releases
 Lien vers les Releases : [Lien](https://github.com/abdelhadinaimi/grp2_eq6_cdp_release/blob/master/RELEASE.md)
 
-| Version | Date | Téléchargement |
-| :-: | :-: | :-: |
-| v0.1 | 08/11/2019 | [#1 Release](https://github.com/abdelhadinaimi/grp2_eq6_cdp_release/archive/v0.1.zip) |
-| v0.2 | 22/11/2019 | [#2 Release](https://github.com/abdelhadinaimi/grp2_eq6_cdp_release/archive/v0.2.zip) |
+| Version | Date | Téléchargement | Documentation |
+| :-: | :-: | :-: | :-: |
+| v0.3 | 10/12/2019 | [#3 Release](https://github.com/abdelhadinaimi/grp2_eq6_cdp_release/blob/master/RELEASE.md#release-3)| [v0.3](https://abdelhadinaimi.github.io/grp2_eq6_cdp_release/doc/v0.3/)
+| v0.2 | 22/11/2019 | [#2 Release](https://github.com/abdelhadinaimi/grp2_eq6_cdp_release/blob/master/RELEASE.md#release-2) | |
+| v0.1 | 08/11/2019 | [#1 Release](https://github.com/abdelhadinaimi/grp2_eq6_cdp_release/blob/master/RELEASE.md#release-1) | |
+
 
 # Sprints
 | N° | Date de Début | Date de Fin | Issues | Tasks |
