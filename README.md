@@ -2,7 +2,7 @@
 La dernière version de la documentation est disponible [ici](https://abdelhadinaimi.github.io/grp2_eq6_cdp_release/doc/v0.3/).
 
 # Intégration Continue
-Dernière exécution Test Unitaire et Intégration : [![Actions Status](https://github.com/Version-Project/grp2_eq6_cdp_dev/workflows/tests/badge.svg)](https://github.com/Version-Project/grp2_eq6_cdp_dev/actions)
+Dernière exécution Test Unitaire et Intégration : [![Actions Status](https://github.com/abdelhadinaimi/grp2_eq6_cdp_release/workflows/tests/badge.svg)](https://github.com/abdelhadinaimi/grp2_eq6_cdp_release/actions)
 
 Dernière Release disponible [ici](https://sixcess-release.herokuapp.com/)
 
