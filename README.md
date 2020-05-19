@@ -1,8 +1,8 @@
 # Documentation
-La dernière version de la documentation est disponible [ici](https://abdelhadinaimi.github.io/grp2_eq6_cdp_release/doc/v0.3/).
+La dernière version de la documentation est disponible [ici](https://abdelhadinaimi.github.io/sixcess/doc/v0.3/).
 
 # Intégration Continue
-Dernière exécution Test Unitaire et Intégration : [![Actions Status](https://github.com/abdelhadinaimi/grp2_eq6_cdp_release/workflows/tests/badge.svg)](https://github.com/abdelhadinaimi/grp2_eq6_cdp_release/actions)
+Dernière exécution Test Unitaire et Intégration : [![Actions Status](https://github.com/abdelhadinaimi/sixcess/workflows/tests/badge.svg)](https://github.com/abdelhadinaimi/sixcess/actions)
 
 Dernière Release disponible [ici](https://sixcess-release.herokuapp.com/)
 
@@ -16,21 +16,21 @@ Une fois installée et démarrée, l'application sera accessible à l'adresse : 
 Une fois le projet lancé, il faut se placer dans le dossier *src* et il suffit de faire la commande : `` npm test ``
 
 # Releases
-Lien vers les Releases : [Lien](https://github.com/abdelhadinaimi/grp2_eq6_cdp_release/blob/master/RELEASE.md)
+Lien vers les Releases : [Lien](https://github.com/abdelhadinaimi/sixcess/blob/master/RELEASE.md)
 
 | Version | Date | Téléchargement | Documentation |
 | :-: | :-: | :-: | :-: |
-| v0.3 | 10/12/2019 | [#3 Release](https://github.com/abdelhadinaimi/grp2_eq6_cdp_release/blob/master/RELEASE.md#release-3)| [v0.3](https://abdelhadinaimi.github.io/grp2_eq6_cdp_release/doc/v0.3/)
-| v0.2 | 22/11/2019 | [#2 Release](https://github.com/abdelhadinaimi/grp2_eq6_cdp_release/blob/master/RELEASE.md#release-2) | |
-| v0.1 | 08/11/2019 | [#1 Release](https://github.com/abdelhadinaimi/grp2_eq6_cdp_release/blob/master/RELEASE.md#release-1) | |
+| v0.3 | 10/12/2019 | [#3 Release](https://github.com/abdelhadinaimi/sixcess/blob/master/RELEASE.md#release-3)| [v0.3](https://abdelhadinaimi.github.io/grp2_eq6_cdp_release/doc/v0.3/)
+| v0.2 | 22/11/2019 | [#2 Release](https://github.com/abdelhadinaimi/sixcess/blob/master/RELEASE.md#release-2) | |
+| v0.1 | 08/11/2019 | [#1 Release](https://github.com/abdelhadinaimi/sixcess/blob/master/RELEASE.md#release-1) | |
 
 
 # Sprints
 | N° | Date de Début | Date de Fin | Issues | Tasks |
 | :-: | :-: | :-: | -- | -- |
-| 1 | Lundi 21 Octobre 2019 | Vendredi 8 Novembre 2019 | [#1 Issues](https://github.com/Version-Project/grp2_eq6_cdp_dev/blob/master/Sprints/sprint1.md) | [#1 Tasks](https://github.com/Version-Project/grp2_eq6_cdp_dev/blob/master/Sprints/task1.md) |
-| 2 | Mardi 12 Novembre 2019 | Vendredi 22 Novembre 2019 | [#2 Issues](https://github.com/Version-Project/grp2_eq6_cdp_dev/blob/master/Sprints/sprint2.md) | [#2 Tasks](https://github.com/Version-Project/grp2_eq6_cdp_dev/blob/master/Sprints/task2.md) |
-| 3 | Lundi 25 Novembre 2019 | Vendredi 6 Décembre 2019 | [#3 Issues](https://github.com/Version-Project/grp2_eq6_cdp_dev/blob/master/Sprints/sprint3.md) | [#3 Tasks](https://github.com/Version-Project/grp2_eq6_cdp_dev/blob/master/Sprints/task3.md) |
+| 1 | Lundi 21 Octobre 2019 | Vendredi 8 Novembre 2019 | [#1 Issues](https://github.com/abdelhadinaimi/sixcess/blob/master/Sprints/sprint1.md) | [#1 Tasks](https://github.com/abdelhadinaimi/sixcess/blob/master/Sprints/task1.md) |
+| 2 | Mardi 12 Novembre 2019 | Vendredi 22 Novembre 2019 | [#2 Issues](https://github.com/abdelhadinaimi/sixcess/blob/master/Sprints/sprint2.md) | [#2 Tasks](https://github.com/abdelhadinaimi/sixcess/blob/master/Sprints/task2.md) |
+| 3 | Lundi 25 Novembre 2019 | Vendredi 6 Décembre 2019 | [#3 Issues](https://github.com/abdelhadinaimi/sixcess/blob/master/Sprints/sprint3.md) | [#3 Tasks](https://github.com/abdelhadinaimi/sixcess/blob/master/Sprints/task3.md) |
 
 # Backlog
 
